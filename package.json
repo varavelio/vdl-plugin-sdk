@@ -20,6 +20,12 @@
   "type": "module",
   "main": "./dist/index.cjs",
   "scripts": {
+    "ci": "npm run lint && npm run test",
+    "format": "biome format",
+    "lint": "biome check",
     "test": "vitest run"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.6"
   }
 }
