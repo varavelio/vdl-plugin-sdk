@@ -1,0 +1,25 @@
+{
+  "name": "@varavel/vdl-plugin-sdk",
+  "version": "0.0.0",
+  "description": "SDK to build plugins for VDL using TypeScript",
+  "keywords": [
+    "vdl",
+    "vdl-plugin",
+    "sdk"
+  ],
+  "homepage": "https://github.com/varavelio/vdl-plugin-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/varavelio/vdl-plugin-sdk/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/varavelio/vdl-plugin-sdk.git"
+  },
+  "license": "MIT",
+  "author": "Varavel LLC",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "scripts": {
+    "test": "vitest run"
+  }
+}
