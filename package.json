@@ -19,14 +19,33 @@
   "author": "Varavel LLC",
   "type": "module",
   "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "src",
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "ci": "npm run lint && npm run test",
+    "ci": "npm run lint && npm run test && npm run build",
+    "build": "tsdown",
     "format": "biome format",
     "lint": "biome check",
     "test": "vitest run"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.6",
+    "tsdown": "0.21.0",
+    "typescript": "5.9.3",
     "vitest": "4.0.18"
   }
 }
