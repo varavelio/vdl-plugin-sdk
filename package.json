@@ -46,7 +46,7 @@
     "ci": "npm run lint && npm run test && npm run build",
     "build": "tsdown",
     "format": "biome format",
-    "lint": "biome check",
+    "lint": "tsc --noEmit && biome check",
     "test": "vitest run"
   },
   "devDependencies": {
