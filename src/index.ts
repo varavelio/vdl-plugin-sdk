@@ -16,7 +16,7 @@ export type VdlPluginHandler = (input: PluginInput) => PluginOutput;
  *
  * Example usage:
  * ```typescript
- * import { definePlugin } from "vdl-plugin-sdk";
+ * import { definePlugin } from "@varavel/vdl-plugin-sdk";
  *
  * export const generate = definePlugin((input) => {
  *  // Plugin logic goes here
