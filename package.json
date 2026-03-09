@@ -49,14 +49,14 @@
     "lint": "tsc --noEmit && biome check",
     "test": "vitest run"
   },
+  "dependencies": {
+    "esbuild": "0.27.3",
+    "typescript": "5.9.3"
+  },
   "devDependencies": {
     "@biomejs/biome": "2.4.6",
     "@varavel/vdl": "0.4.0-alpha.5",
     "tsdown": "0.21.0",
     "vitest": "4.0.18"
-  },
-  "dependencies": {
-    "esbuild": "0.27.3",
-    "typescript": "5.9.3"
   }
 }
