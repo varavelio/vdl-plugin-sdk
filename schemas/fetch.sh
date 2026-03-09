@@ -11,6 +11,7 @@ DEST_DIR="$(cd "$(dirname "$0")" && pwd)"
 # List of schema paths relative to BASE_URL (and DEST_DIR)
 SCHEMAS=(
   ir.vdl
+  plugin.vdl
   plugin_input.vdl
   plugin_output.vdl
   common/position.vdl

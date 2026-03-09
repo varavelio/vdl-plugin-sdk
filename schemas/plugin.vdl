@@ -1,0 +1,19 @@
+"""
+VDL Plugin Protocol Schema
+
+This schema defines the exact communication protocol between the VDL compiler
+core and the sandboxed plugin environment (JavaScript via Goja).
+
+## Protocol Overview
+
+1. VDL parses and compiles the schema into an IrSchema.
+2. VDL instantiates a secure JavaScript sandbox using Goja.
+3. VDL invokes the plugin's exported `generate` function, passing a `PluginInput` object.
+4. The `generate` function returns a `PluginOutput` object (or throws a fatal error).
+5. VDL reads the output. If `errors` are present, it aborts and prints them. Otherwise, it writes the `files` to the disk.
+
+A plugin SHOULD be a pure function: `function generate(input: PluginInput): PluginOutput`
+"""
+
+include "./plugin_input.vdl"
+include "./plugin_output.vdl"
