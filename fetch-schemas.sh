@@ -6,7 +6,7 @@
 set -euo pipefail
 
 BASE_URL="https://raw.githubusercontent.com/varavelio/vdl/refs/heads/main/schemas"
-DEST_DIR="$(cd "$(dirname "$0")" && pwd)"
+DEST_DIR="$(cd "$(dirname "$0")" && pwd)/schemas"
 
 # List of schema paths relative to BASE_URL (and DEST_DIR)
 SCHEMAS=(
