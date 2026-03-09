@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "SDK to build plugins for VDL using TypeScript",
   "keywords": [
+    "varavel",
     "vdl",
     "vdl-plugin",
     "sdk"
