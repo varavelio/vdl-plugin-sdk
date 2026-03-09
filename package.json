@@ -34,6 +34,7 @@
     }
   },
   "files": [
+    "schemas",
     "src",
     "dist",
     "README.md",
