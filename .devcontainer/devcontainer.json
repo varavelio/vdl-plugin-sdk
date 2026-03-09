@@ -12,7 +12,7 @@
   "postCreateCommand": "npm install",
   "customizations": {
     "vscode": {
-      "extensions": ["biomejs.biome", "vitest.explorer"],
+      "extensions": ["varavel.vdl", "biomejs.biome", "vitest.explorer"],
       "settings": {
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "biomejs.biome"
