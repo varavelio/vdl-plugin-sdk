@@ -38,6 +38,7 @@
     "schemas",
     "src",
     "dist",
+    "tsconfig.base.json",
     "README.md",
     "LICENSE"
   ],
