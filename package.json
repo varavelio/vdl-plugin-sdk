@@ -6,6 +6,8 @@
     "varavel",
     "vdl",
     "vdl-plugin",
+    "vdl-plugin-sdk",
+    "vdl-sdk",
     "sdk"
   ],
   "homepage": "https://github.com/varavelio/vdl-plugin-sdk#readme",
@@ -32,7 +34,8 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs",
       "default": "./dist/index.js"
-    }
+    },
+    "./tsconfig.base.json": "./tsconfig.base.json"
   },
   "files": [
     "schemas",

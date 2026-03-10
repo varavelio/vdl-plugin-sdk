@@ -1,5 +1,5 @@
 export * from "./types";
-
+import "./runtime";
 import type { PluginInput, PluginOutput } from "./types";
 
 /**
