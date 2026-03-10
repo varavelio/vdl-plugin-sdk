@@ -34,11 +34,11 @@ function runBuild() {
   try {
     esbuild.buildSync({
       entryPoints: [resolve(process.cwd(), "src/index.ts")],
-      bundle: true,
       outfile: resolve(process.cwd(), "dist/index.js"),
       format: "cjs",
-      target: "es2015",
       platform: "neutral",
+      target: "es2015",
+      bundle: true,
       minify: true,
       treeShaking: true,
     });
