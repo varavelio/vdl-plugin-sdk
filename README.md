@@ -45,7 +45,7 @@ npm install @varavel/vdl-plugin-sdk
 
 - `definePlugin(...)` to declare a plugin handler with typed input and output.
 - Generated VDL IR types exported directly from the package.
-- `getAnnotation` and `getAnnotationArgs` for reading annotations.
+- `getAnnotation` and `getAnnotationArg` for reading annotations.
 - `unwrapLiteral<T>()` for reading constants and annotation values.
 - `getOptionString`, `getOptionBool`, `getOptionNumber`, and `getOptionArray` for reading plugin options.
 - A `vdl-plugin` binary that supports `check` and `build`.
@@ -99,7 +99,7 @@ Import every helper below from `@varavel/vdl-plugin-sdk`. The generated IR types
 ### Annotation API
 
 - `getAnnotation(annotations, name)` returns the first matching annotation or `undefined`.
-- `getAnnotationArgs(annotations, name)` returns the raw literal argument stored in the annotation.
+- `getAnnotationArg(annotations, name)` returns the raw literal argument stored in the annotation.
 
 ### Literal API
 

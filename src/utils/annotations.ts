@@ -17,7 +17,7 @@ export function getAnnotation(
  * VDL annotations currently expose a single literal argument.
  * Pair this helper with `unwrapLiteral` when you need a plain JavaScript value.
  */
-export function getAnnotationArgs(
+export function getAnnotationArg(
   annotations: Annotation[] | undefined,
   name: string,
 ): LiteralValue | undefined {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { Annotation, LiteralValue, Position } from "../types";
-import { getAnnotation, getAnnotationArgs } from "./annotations";
+import { getAnnotation, getAnnotationArg } from "./annotations";
 import { unwrapLiteral } from "./literals";
 
 const position: Position = {
@@ -43,18 +43,18 @@ describe("getAnnotation", () => {
   });
 });
 
-describe("getAnnotationArgs", () => {
+describe("getAnnotationArg", () => {
   it("returns the raw literal argument for a matching annotation", () => {
     const argument = createLiteral("string", { stringValue: "/users" });
     const annotations = [createAnnotation("http", argument)];
 
-    expect(getAnnotationArgs(annotations, "http")).toBe(argument);
+    expect(getAnnotationArg(annotations, "http")).toBe(argument);
   });
 
   it("returns undefined when the annotation or argument is missing", () => {
-    expect(getAnnotationArgs(undefined, "http")).toBeUndefined();
+    expect(getAnnotationArg(undefined, "http")).toBeUndefined();
     expect(
-      getAnnotationArgs([createAnnotation("http")], "http"),
+      getAnnotationArg([createAnnotation("http")], "http"),
     ).toBeUndefined();
   });
 
@@ -75,7 +75,7 @@ describe("getAnnotationArgs", () => {
     });
     const annotations = [createAnnotation("http", argument)];
 
-    const rawArgument = getAnnotationArgs(annotations, "http");
+    const rawArgument = getAnnotationArg(annotations, "http");
 
     expect(rawArgument).toBeDefined();
     expect(unwrapLiteral(rawArgument as LiteralValue)).toEqual({
