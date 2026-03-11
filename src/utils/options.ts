@@ -13,9 +13,9 @@ export function getOptionString(
 /**
  * Returns a boolean option using common truthy and falsy string values.
  *
- * Accepted truthy values: `true`, `1`, `yes`, `on`, `enabled`, `y`.
+ * Accepted truthy values: `true`, `1`, `yes`, `on`, `enable`, `enabled`, `y`.
  *
- * Accepted falsy values: `false`, `0`, `no`, `off`, `disabled`, `n`.
+ * Accepted falsy values: `false`, `0`, `no`, `off`, `disable`, `disabled`, `n`.
  *
  * Invalid values fall back to the provided default.
  */
@@ -35,6 +35,7 @@ export function getOptionBool(
     case "1":
     case "yes":
     case "on":
+    case "enable":
     case "enabled":
     case "y":
       return true;
@@ -42,6 +43,7 @@ export function getOptionBool(
     case "0":
     case "no":
     case "off":
+    case "disable":
     case "disabled":
     case "n":
       return false;
