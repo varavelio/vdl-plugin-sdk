@@ -2,7 +2,5 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "types": ["@varavel/vdl-plugin-sdk", "node", "vitest/importMeta"]
-  },
-  "include": ["src/**/*.test.ts", "tests/**/*.ts", "vitest.config.ts"],
-  "exclude": []
+  }
 }
