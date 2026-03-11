@@ -6,30 +6,49 @@ import { resolve } from "node:path";
 import * as esbuild from "esbuild";
 
 const require = createRequire(import.meta.url);
-const command = process.argv[2];
+const args = process.argv.slice(2);
+const command = args[0];
+const flags = new Set(args.slice(1));
+
+const GREEN = "\x1b[32m";
+const RED = "\x1b[31m";
+const CYAN = "\x1b[36m";
+const RESET = "\x1b[0m";
+
+const log = {
+  info: (msg) => console.log(`${CYAN}[i]${RESET} ${msg}`),
+  ok: (msg) => console.log(`${GREEN}[✓]${RESET} ${msg}`),
+  error: (msg) => console.error(`${RED}[✗]${RESET} ${msg}`),
+};
 
 function printHelp() {
-  console.log(`Usage: vdl-plugin <command>
+  console.log(`Usage: vdl-plugin <command> [options]
 
 Commands:
-  check   Run TypeScript type checks without emitting files
-  build   Bundle the plugin from src/index.ts into dist/index.js`);
+  check          Run TypeScript type checks without emitting files
+  build          Bundle the plugin from src/index.ts into dist/index.js
+
+Build options:
+  --no-minify    Disable minification (minification is enabled by default)`);
 }
 
 function runCheck() {
-  console.log("Running TypeScript type checks...");
+  log.info("Running TypeScript type checks...");
 
   try {
     const tscPath = require.resolve("typescript/bin/tsc");
     execFileSync(process.execPath, [tscPath, "--noEmit"], { stdio: "inherit" });
-    console.log("Type checks completed successfully.");
+    log.ok("Type checks completed successfully.");
   } catch {
+    log.error("Type checks failed.");
     process.exit(1);
   }
 }
 
 function runBuild() {
-  console.log("Building VDL plugin...");
+  const minify = !flags.has("--no-minify");
+
+  log.info(`Building VDL plugin${minify ? "" : " (minification disabled)"}...`);
 
   try {
     esbuild.buildSync({
@@ -39,15 +58,15 @@ function runBuild() {
       platform: "neutral",
       target: "es2015",
       bundle: true,
-      minify: true,
+      minify,
       treeShaking: true,
     });
 
-    console.log("Plugin built successfully at dist/index.js.");
+    log.ok("Plugin built successfully at dist/index.js.");
   } catch (error) {
-    console.error("Failed to build the plugin.");
+    log.error("Failed to build the plugin.");
     if (error instanceof Error && error.message) {
-      console.error(error.message);
+      log.error(error.message);
     }
     process.exit(1);
   }
@@ -59,7 +78,7 @@ if (command === "check") {
   runBuild();
 } else {
   if (command) {
-    console.error(`Unknown command: ${command}`);
+    log.error(`Unknown command: ${command}`);
   }
   printHelp();
   process.exit(1);
