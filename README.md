@@ -47,6 +47,7 @@ npm install @varavel/vdl-plugin-sdk
 - Generated VDL IR types exported directly from the package.
 - `getAnnotation` and `getAnnotationArgs` for reading annotations.
 - `unwrapLiteral<T>()` for reading constants and annotation values.
+- `getOptionString`, `getOptionBool`, `getOptionNumber`, and `getOptionArray` for reading plugin options.
 - A `vdl-plugin` binary that supports `check` and `build`.
 
 ## Quick Start
@@ -83,8 +84,51 @@ Every plugin follows the same release flow:
 1. Create and export a `definePlugin(...)` handler in `./src/index.ts`.
 2. Run `vdl-plugin build` to bundle the plugin into `./dist/index.js`.
 3. Commit `./dist/index.js` to the repository.
-4. Publish a new release on GitHub including all your files (including `./dist/index.js`).
-5. When the plugin is used, VDL reads `./dist/index.js` directly from your GitHub relases.
+4. Publish a new release on GitHub including all your files, including `./dist/index.js`.
+5. When the plugin is used, VDL reads `./dist/index.js` directly from your GitHub releases.
+
+## API
+
+Import every helper below from `@varavel/vdl-plugin-sdk`. The generated IR types are also exported from the same package.
+
+### Plugin API
+
+- `definePlugin(handler)` wraps and returns your plugin entrypoint.
+- `VdlPluginHandler` is the function type for a plugin handler.
+
+### Annotation API
+
+- `getAnnotation(annotations, name)` returns the first matching annotation or `undefined`.
+- `getAnnotationArgs(annotations, name)` returns the raw literal argument stored in the annotation.
+
+### Literal API
+
+- `unwrapLiteral<T>(value)` resolves a `LiteralValue` into a plain JavaScript value.
+
+### Option API
+
+Use these helpers to read `input.options` safely:
+
+- `getOptionString(options, key, defaultValue)` reads string values.
+- `getOptionBool(options, key, defaultValue)` reads booleans from truthy/falsy values.
+    - Accepted truthy values: `true`, `1`, `yes`, `on`, `enable`, `enabled`, `y`.
+    - Accepted falsy values: `false`, `0`, `no`, `off`, `disable`, `disabled`, `n`.
+- `getOptionNumber(options, key, defaultValue)` parses numbers and falls back safely for invalid input.
+- `getOptionArray(options, key, defaultValue?, separator?)` splits a delimited string into a trimmed string array.
+
+```ts
+import {
+  getOptionArray,
+  getOptionBool,
+  getOptionNumber,
+  getOptionString,
+} from "@varavel/vdl-plugin-sdk";
+
+const prefix = getOptionString(input.options, "prefix", "Model");
+const strict = getOptionBool(input.options, "strict", false);
+const version = getOptionNumber(input.options, "version", 1);
+const tags = getOptionArray(input.options, "tags", [], ",");
+```
 
 ## CLI
 
