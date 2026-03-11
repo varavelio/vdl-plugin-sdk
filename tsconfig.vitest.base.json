@@ -1,0 +1,6 @@
+{
+  "compilerOptions": {
+    "types": ["node", "vitest/importMeta"]
+  },
+  "include": ["**/*.test.ts", "tests/**/*.ts", "vitest.config.ts"]
+}

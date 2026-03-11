@@ -37,7 +37,8 @@
       "require": "./dist/index.cjs",
       "default": "./dist/index.js"
     },
-    "./tsconfig.base.json": "./tsconfig.base.json"
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./tsconfig.vitest.base.json": "./tsconfig.vitest.base.json"
   },
   "files": [
     "bin",
@@ -45,6 +46,7 @@
     "src",
     "dist",
     "tsconfig.base.json",
+    "tsconfig.vitest.base.json",
     "README.md",
     "LICENSE"
   ],
