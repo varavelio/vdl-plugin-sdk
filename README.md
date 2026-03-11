@@ -155,13 +155,36 @@ Example `package.json` scripts:
 
 ## TypeScript Setup
 
-You can extend the shared base config exported by the SDK:
+You can extend the shared base config exported by the SDK in your `tsconfig.json` file:
 
 ```json
 {
-  "extends": "@varavel/vdl-plugin-sdk/tsconfig.base.json"
+  "extends": "@varavel/vdl-plugin-sdk/tsconfig.base.json",
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.test.ts"]
 }
 ```
+
+## Testing
+
+To add tests to your plugin, install [vitest](https://vitest.dev):
+
+```bash
+npm install --save-dev vitest
+```
+
+Then create a `tsconfig.vitest.json` in the root of your project:
+
+```json
+{
+  "extends": "@varavel/vdl-plugin-sdk/tsconfig.vitest.base.json",
+  "include": ["src/**/*.test.ts", "tests/**/*.ts", "vitest.config.ts"]
+}
+```
+
+This config extends the base provided by the SDK and includes Node.js types exclusively for test files, keeping them out of your main plugin compilation.
+
+Once the file is in place, `vdl-plugin check` will automatically type-check your test code as well.
 
 ## License
 
