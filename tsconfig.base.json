@@ -14,5 +14,7 @@
     "declarationMap": true,
     "sourceMap": true,
     "types": ["@varavel/vdl-plugin-sdk"]
-  }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.test.ts"]
 }
