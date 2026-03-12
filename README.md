@@ -43,10 +43,10 @@ npm install @varavel/vdl-plugin-sdk
 
 The package ships two entry points:
 
-| Import | Use for |
-| --- | --- |
-| `@varavel/vdl-plugin-sdk` | Plugin entrypoints, IR types, and runtime helpers |
-| `@varavel/vdl-plugin-sdk/testing` | Test-only IR builders via `irb` |
+| Import                            | Use for                                           |
+| --------------------------------- | ------------------------------------------------- |
+| `@varavel/vdl-plugin-sdk`         | Plugin entrypoints, IR types, and runtime helpers |
+| `@varavel/vdl-plugin-sdk/testing` | Test-only IR builders via `irb`                   |
 
 ## What You Get
 
