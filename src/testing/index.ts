@@ -1,1 +1,1 @@
-export * from "./builders";
+export { irb } from "./ir-builders";
