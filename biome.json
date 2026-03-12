@@ -7,7 +7,19 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!src/types"]
+    "includes": [
+      "**/*.js",
+      "**/*.mjs",
+      "**/*.cjs",
+      "**/*.ts",
+      "**/*.mts",
+      "**/*.cts",
+      "!**/node_modules",
+      "!**/dist",
+      "!**/tmp",
+      "!**/temp",
+      "!src/types"
+    ]
   },
   "formatter": {
     "enabled": true,
