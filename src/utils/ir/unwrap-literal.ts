@@ -1,19 +1,4 @@
-import type { LiteralValue } from "../types";
-
-/**
- * Native JavaScript value produced by `unwrapLiteral`.
- *
- * `undefined` is preserved when a literal is missing its kind-specific payload.
- * `null` is returned for unknown literal kinds to keep the resolver non-throwing.
- */
-export type UnwrappedLiteral =
-  | string
-  | number
-  | boolean
-  | null
-  | undefined
-  | UnwrappedLiteral[]
-  | { [key: string]: UnwrappedLiteral };
+import type { LiteralValue } from "../../types";
 
 /**
  * Resolves a `LiteralValue` into its native JavaScript representation.
@@ -26,6 +11,21 @@ export type UnwrappedLiteral =
 export function unwrapLiteral<T = unknown>(value: LiteralValue): T {
   return unwrapLiteralValue(value) as T;
 }
+
+/**
+ * Native JavaScript value produced by `unwrapLiteral`.
+ *
+ * `undefined` is preserved when a literal is missing its kind-specific payload.
+ * `null` is returned for unknown literal kinds to keep the resolver non-throwing.
+ */
+type UnwrappedLiteral =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | UnwrappedLiteral[]
+  | { [key: string]: UnwrappedLiteral };
 
 /**
  * Performs the recursive literal resolution used by `unwrapLiteral`.

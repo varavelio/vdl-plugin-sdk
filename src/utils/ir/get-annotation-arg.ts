@@ -1,15 +1,5 @@
-import type { Annotation, LiteralValue } from "../types";
-
-/**
- * Returns the first annotation that matches the provided name.
- */
-export function getAnnotation(
-  annotations: Annotation[] | undefined,
-  name: string,
-): Annotation | undefined {
-  if (!annotations) return undefined;
-  return annotations.find((anno) => anno.name === name);
-}
+import type { Annotation, LiteralValue } from "../../types";
+import { getAnnotation } from "./get-annotation";
 
 /**
  * Returns the raw literal argument stored in an annotation.
