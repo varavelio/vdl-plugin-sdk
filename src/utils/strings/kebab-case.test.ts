@@ -22,6 +22,11 @@ describe("kebabCase", () => {
     expect(kebabCase("  user__profile---name  ")).toBe("user-profile-name");
   });
 
+  it("supports uppercase output while preserving kebab separators", () => {
+    expect(kebabCase("userProfileName", true)).toBe("USER-PROFILE-NAME");
+    expect(kebabCase("HTTPServerURL", true)).toBe("HTTP-SERVER-URL");
+  });
+
   it("returns an empty string for empty or separator-only values", () => {
     expect(kebabCase("")).toBe("");
     expect(kebabCase("   ")).toBe("");

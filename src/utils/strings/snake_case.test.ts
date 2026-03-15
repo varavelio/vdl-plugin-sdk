@@ -22,6 +22,11 @@ describe("snakeCase", () => {
     expect(snakeCase("  user__profile---name  ")).toBe("user_profile_name");
   });
 
+  it("supports uppercase output while preserving snake separators", () => {
+    expect(snakeCase("userProfileName", true)).toBe("USER_PROFILE_NAME");
+    expect(snakeCase("HTTPServerURL", true)).toBe("HTTP_SERVER_URL");
+  });
+
   it("returns an empty string for empty or separator-only values", () => {
     expect(snakeCase("")).toBe("");
     expect(snakeCase("   ")).toBe("");
