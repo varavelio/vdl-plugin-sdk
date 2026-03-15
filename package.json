@@ -66,6 +66,7 @@
     "build": "npm run build:codegen && npm run build:bundle",
     "build:codegen": "node ./scripts/generate-es-toolkit-utils.mjs",
     "build:bundle": "tsdown",
+    "build:docs": "typedoc --options typedoc.json",
     "format": "npm run format:dprint && npm run format:biome",
     "format:dprint": "dprint fmt --config ./dprint.json --log-level warn",
     "format:biome": "biome format --write --config-path ./biome.json --log-level warn --no-errors-on-unmatched .",
@@ -87,6 +88,8 @@
     "dprint": "0.52.0",
     "es-toolkit": "1.45.1",
     "tsdown": "0.21.0",
+    "typedoc": "0.28.17",
+    "typedoc-plugin-markdown": "4.10.0",
     "vitest": "4.0.18"
   }
 }
