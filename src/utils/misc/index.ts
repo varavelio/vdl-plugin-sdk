@@ -1,5 +1,5 @@
 /**
- * Small synchronous utility helpers re-exported from es-toolkit.
+ * Small synchronous miscellaneous helpers re-exported from es-toolkit.
  * Licensed under the MIT License. https://github.com/toss/es-toolkit
  */
 
