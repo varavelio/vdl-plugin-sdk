@@ -25,16 +25,26 @@
   <a href="https://github.com/varavelio/vdl-plugin-sdk">
     <img src="https://img.shields.io/github/stars/varavelio/vdl-plugin-sdk?style=flat&label=github+stars" alt="GitHub Stars"/>
   </a>
-  <a href="LICENSE">
+  <a href="https://github.com/varavelio/vdl-plugin-sdk/blob/main/LICENSE">
     <img src="https://img.shields.io/github/license/varavelio/vdl-plugin-sdk.svg" alt="License"/>
   </a>
 </p>
 
+<p align="center">
+  <a href="https://vdl-plugin-sdk.varavel.com">Documentation</a>
+  ·
+  <a href="https://vdl-plugin-sdk.varavel.com/api/core/">API Reference</a>
+  ·
+  <a href="https://github.com/varavelio/vdl-plugin-template">Plugin Template</a>
+</p>
+
 ## Install
 
-This is usually installed for you. The official
+In most cases you do not install this manually. The official
 [`vdl-plugin-template`](https://github.com/varavelio/vdl-plugin-template)
-already include the SDK.
+already includes the SDK and the recommended project setup.
+
+If you are setting up a plugin project from scratch:
 
 ```bash
 npm install --save-dev --save-exact @varavel/vdl-plugin-sdk@latest
@@ -42,7 +52,7 @@ npm install --save-dev --save-exact @varavel/vdl-plugin-sdk@latest
 
 ## Quick Start
 
-Every VDL plugin should export a `definePlugin(...)` handler function from `src/index.ts` named `generate`.
+A VDL plugin exports a `generate` handler created with `definePlugin(...)` from `src/index.ts`.
 
 Create `src/index.ts` in your plugin project:
 
@@ -53,9 +63,9 @@ export const generate = definePlugin((input) => {
   // Your plugin logic goes here
 
   // Feel free to explore the plugin input
-  console.log(input.version) // The VDL version without v prefix
-  console.log(input.options) // Any option that the user passed to the plugin via vdl.config.vdl
-  console.log(input.ir) // VDL intermediate representation from where your plugin generates code
+  console.log(input.version); // The VDL version without the v prefix
+  console.log(input.options); // Plugin options from vdl.config.vdl
+  console.log(input.ir); // Typed VDL intermediate representation
 
   return {
     files: [
@@ -68,7 +78,17 @@ export const generate = definePlugin((input) => {
 });
 ```
 
-Then run `npx vdl-plugin build`, this will generate the ready-to-use code for your plugin in `./dist/index.js`.
+Then run:
+
+```bash
+npx vdl-plugin check
+npx vdl-plugin build
+```
+
+- `check` validates your TypeScript during development.
+- `build` generates the release-ready plugin bundle at `dist/index.js`.
+
+If you want the full API surface while you read, the reference docs live at [vdl-plugin-sdk.varavel.com](https://vdl-plugin-sdk.varavel.com).
 
 ## What This Package Includes
 
@@ -79,7 +99,7 @@ Think of the SDK as four pieces that work together:
 - A separate `testing` entry point for building realistic IR fixtures in unit tests.
 - A small CLI plus shared `tsconfig` presets for the normal plugin build workflow.
 
-The README focuses on how these surfaces fit together. A fuller API reference live in dedicated docs at [vdl-plugin-sdk.varavel.com](https://vdl-plugin-sdk.varavel.com).
+The README focuses on how these surfaces fit together. A fuller API reference lives at [vdl-plugin-sdk.varavel.com](https://vdl-plugin-sdk.varavel.com).
 
 ## Entry Points
 
@@ -125,6 +145,8 @@ npx vdl-plugin build
 
 - `check` runs TypeScript without emitting files. If a `tsconfig.vitest.json` is present, it also type-checks test code.
 - `build` bundles the required `src/index.ts` entry into `dist/index.js`.
+
+For a fuller walkthrough, use this page together with the hosted documentation: [vdl-plugin-sdk.varavel.com](https://vdl-plugin-sdk.varavel.com).
 
 ## Plugin Workflow
 
@@ -222,4 +244,4 @@ Once the file is in place, `vdl-plugin check` will automatically type-check your
 
 ## License
 
-This project is released under the MIT License. See [LICENSE](LICENSE).
+This project is released under the MIT License. See the [LICENSE](https://github.com/varavelio/vdl-plugin-sdk/blob/main/LICENSE).
