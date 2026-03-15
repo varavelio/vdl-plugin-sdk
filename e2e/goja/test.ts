@@ -19,9 +19,11 @@ import {
   ir,
   maps,
   math,
+  misc,
   objects,
   options,
   predicates,
+  sets,
   strings,
 } from "../../src/utils";
 
@@ -129,6 +131,19 @@ function assertUndefined(actual: unknown, message: string): void {
   if (actual !== undefined) {
     fail(`${message}: expected undefined, received ${formatValue(actual)}`);
   }
+}
+
+/**
+ * Asserts that a function throws and returns the thrown error value.
+ */
+function assertThrows(run: () => void, message: string): unknown {
+  try {
+    run();
+  } catch (error) {
+    return error;
+  }
+
+  fail(`${message}: expected function to throw`);
 }
 
 /**
@@ -973,6 +988,16 @@ function createArraySuites(): SmokeSuite[] {
               arrays.takeWhile([1, 2, 3, 4], (item) => item < 3),
               [1, 2],
               "arrays.takeWhile output",
+            );
+          },
+        },
+        {
+          name: "toFilled",
+          run: () => {
+            assertDeepEqual(
+              arrays.toFilled([1, 2, 3], 0, 1, 3),
+              [1, 0, 0],
+              "arrays.toFilled output",
             );
           },
         },
@@ -1886,6 +1911,16 @@ function createPredicateSuites(): SmokeSuite[] {
           },
         },
         {
+          name: "isEmptyObject",
+          run: () => {
+            assertEqual(
+              predicates.isEmptyObject({}),
+              true,
+              "predicates.isEmptyObject output",
+            );
+          },
+        },
+        {
           name: "isEqual",
           run: () => {
             assertEqual(
@@ -2071,6 +2106,192 @@ function createPredicateSuites(): SmokeSuite[] {
 }
 
 /**
+ * Creates smoke-test suites for `Set` helpers re-exported from es-toolkit.
+ */
+function createSetSuites(): SmokeSuite[] {
+  return [
+    {
+      name: "sets",
+      checks: [
+        {
+          name: "countBy",
+          run: () => {
+            assertDeepEqual(
+              toEntries(
+                sets.countBy(new Set([1, 2, 3]), (value) =>
+                  value % 2 === 0 ? "even" : "odd",
+                ),
+              ),
+              [
+                ["odd", 2],
+                ["even", 1],
+              ],
+              "sets.countBy output",
+            );
+          },
+        },
+        {
+          name: "every",
+          run: () => {
+            assertEqual(
+              sets.every(new Set([1, 2, 3]), (value) => value > 0),
+              true,
+              "sets.every output",
+            );
+          },
+        },
+        {
+          name: "filter",
+          run: () => {
+            assertDeepEqual(
+              Array.from(
+                sets.filter(new Set([1, 2, 3]), (value) => value >= 2),
+              ),
+              [2, 3],
+              "sets.filter output",
+            );
+          },
+        },
+        {
+          name: "find",
+          run: () => {
+            assertEqual(
+              sets.find(new Set([1, 2, 3]), (value) => value === 2),
+              2,
+              "sets.find output",
+            );
+          },
+        },
+        {
+          name: "keyBy",
+          run: () => {
+            assertDeepEqual(
+              toEntries(
+                sets.keyBy(
+                  new Set([
+                    { id: "a", value: 1 },
+                    { id: "b", value: 2 },
+                  ]),
+                  (item) => item.id,
+                ),
+              ),
+              [
+                ["a", { id: "a", value: 1 }],
+                ["b", { id: "b", value: 2 }],
+              ],
+              "sets.keyBy output",
+            );
+          },
+        },
+        {
+          name: "map",
+          run: () => {
+            assertDeepEqual(
+              Array.from(sets.map(new Set([1, 2, 3]), (value) => value * 10)),
+              [10, 20, 30],
+              "sets.map output",
+            );
+          },
+        },
+        {
+          name: "reduce",
+          run: () => {
+            assertEqual(
+              sets.reduce(new Set([1, 2, 3]), (sum, value) => sum + value, 0),
+              6,
+              "sets.reduce output",
+            );
+          },
+        },
+        {
+          name: "some",
+          run: () => {
+            assertEqual(
+              sets.some(new Set([1, 2, 3]), (value) => value === 2),
+              true,
+              "sets.some output",
+            );
+          },
+        },
+      ],
+    },
+  ];
+}
+
+/**
+ * Creates smoke-test suites for small synchronous utilities re-exported from
+ * es-toolkit.
+ */
+function createMiscSuites(): SmokeSuite[] {
+  return [
+    {
+      name: "misc",
+      checks: [
+        {
+          name: "assert",
+          run: () => {
+            misc.assert(true, "misc.assert should not throw");
+
+            const error = assertThrows(() => {
+              misc.assert(false, "bad assertion");
+            }, "misc.assert throw path");
+
+            assertEqual(
+              error instanceof Error,
+              true,
+              "misc.assert error instance",
+            );
+            assertEqual(
+              (error as Error).message,
+              "bad assertion",
+              "misc.assert error message",
+            );
+          },
+        },
+        {
+          name: "attempt",
+          run: () => {
+            const success = misc.attempt(() => 42);
+            const failure = misc.attempt(() => {
+              throw new Error("boom");
+            });
+
+            assertDeepEqual(success, [null, 42], "misc.attempt success output");
+            assertEqual(
+              failure[0] instanceof Error,
+              true,
+              "misc.attempt error instance",
+            );
+            assertEqual(failure[1], null, "misc.attempt failure output");
+          },
+        },
+        {
+          name: "invariant",
+          run: () => {
+            misc.invariant(true, "misc.invariant should not throw");
+
+            const error = assertThrows(() => {
+              misc.invariant(false, "broken invariant");
+            }, "misc.invariant throw path");
+
+            assertEqual(
+              error instanceof Error,
+              true,
+              "misc.invariant error instance",
+            );
+            assertEqual(
+              (error as Error).message,
+              "broken invariant",
+              "misc.invariant error message",
+            );
+          },
+        },
+      ],
+    },
+  ];
+}
+
+/**
  * Creates the smoke-test suites executed inside Goja.
  *
  * Each suite focuses on a small public area of the SDK so runtime failures can
@@ -2087,6 +2308,8 @@ function createSuites(): SmokeSuite[] {
     ...createMathSuites(),
     ...createObjectSuites(),
     ...createPredicateSuites(),
+    ...createSetSuites(),
+    ...createMiscSuites(),
   ];
 }
 
