@@ -11,16 +11,20 @@
  * behavior.
  */
 
-import type { Annotation, LiteralValue } from "../../src/types";
+import { irb } from "../../src/testing";
+import type { LiteralValue } from "../../src/types";
 import { ir, options, strings } from "../../src/utils";
 
-// This function is injected by the Go test runner to receive a success signal
-// from the script. Here we just need to declare it so typescript doesn't
-// complain, but it will be injected at runtime by the Go test runner.
+/**
+ * Global callback injected by the Go runner.
+ *
+ * The bundled script calls this once all smoke-test suites pass so the Go side
+ * can distinguish success from a script that merely exited without throwing.
+ */
 declare function __goja_report_ok__(): void;
 
 /**
- * Represents a single smoke check with a name and a function that runs the check.
+ * Represents one named smoke check.
  */
 type SmokeCheck = {
   name: string;
@@ -28,7 +32,7 @@ type SmokeCheck = {
 };
 
 /**
- * Represents a suite of smoke checks with a name and an array of checks to run.
+ * Groups related smoke checks under one suite name.
  */
 type SmokeSuite = {
   name: string;
@@ -36,17 +40,14 @@ type SmokeSuite = {
 };
 
 /**
- * fail the test with the provided message. This function always throws an error.
- * @param message The error message to throw when the assertion fails.
+ * Fails the current smoke test with a descriptive error.
  */
 function fail(message: string): never {
   throw new Error(message);
 }
 
 /**
- * Formats a value for display in error messages.
- * @param value The value to format.
- * @returns The formatted string.
+ * Formats a runtime value for use in assertion error messages.
  */
 function formatValue(value: unknown): string {
   if (value === undefined) {
@@ -85,9 +86,7 @@ function normalizeValue(value: unknown): unknown {
 }
 
 /**
- * Asserts that a condition is true, otherwise fails with the provided message.
- * @param condition The condition to assert.
- * @param message The error message to throw when the assertion fails.
+ * Asserts that a condition is truthy.
  */
 function assert(condition: boolean, message: string): void {
   if (!condition) {
@@ -95,6 +94,9 @@ function assert(condition: boolean, message: string): void {
   }
 }
 
+/**
+ * Asserts that two primitive values are equal using `Object.is` semantics.
+ */
 function assertEqual<T>(actual: T, expected: T, message: string): void {
   if (!Object.is(actual, expected)) {
     fail(
@@ -103,12 +105,21 @@ function assertEqual<T>(actual: T, expected: T, message: string): void {
   }
 }
 
+/**
+ * Asserts that a value is exactly `undefined`.
+ */
 function assertUndefined(actual: unknown, message: string): void {
   if (actual !== undefined) {
     fail(`${message}: expected undefined, received ${formatValue(actual)}`);
   }
 }
 
+/**
+ * Asserts that two values are deeply equal after stable normalization.
+ *
+ * This keeps array ordering intact while normalizing object key ordering so the
+ * serialized comparison remains deterministic and easy to debug.
+ */
 function assertDeepEqual(
   actual: unknown,
   expected: unknown,
@@ -126,6 +137,10 @@ function assertDeepEqual(
   }
 }
 
+/**
+ * Runs all checks in a suite and prefixes any thrown error with suite and check
+ * names so Goja failures are easy to locate.
+ */
 function runSuite(suite: SmokeSuite): void {
   for (const smokeCheck of suite.checks) {
     try {
@@ -137,30 +152,12 @@ function runSuite(suite: SmokeSuite): void {
   }
 }
 
-function createAnnotation(name: string, argument?: LiteralValue): Annotation {
-  return {
-    position: {
-      file: "schema.vdl",
-      line: 1,
-      column: 1,
-    },
-    name,
-    argument,
-  };
-}
-
-function createStringLiteral(value?: string): LiteralValue {
-  return {
-    position: {
-      file: "schema.vdl",
-      line: 1,
-      column: 1,
-    },
-    kind: "string",
-    stringValue: value,
-  };
-}
-
+/**
+ * Creates the smoke-test suites executed inside Goja.
+ *
+ * Each suite focuses on a small public area of the SDK so runtime failures can
+ * be attributed quickly without mirroring the full unit-test suite.
+ */
 function createSuites(): SmokeSuite[] {
   const sharedOptions = {
     enabled: " yes ",
@@ -473,8 +470,8 @@ function createSuites(): SmokeSuite[] {
           name: "finds annotations and returns undefined when missing",
           run: () => {
             const annotations = [
-              createAnnotation("deprecated"),
-              createAnnotation("route", createStringLiteral("/users")),
+              irb.annotation("deprecated"),
+              irb.annotation("route", irb.stringLiteral("/users")),
             ];
 
             assertDeepEqual(
@@ -491,12 +488,12 @@ function createSuites(): SmokeSuite[] {
         {
           name: "returns raw annotation literal arguments",
           run: () => {
-            const annotations = [
-              createAnnotation("route", createStringLiteral("/users")),
-            ];
+            const routeLiteral = irb.stringLiteral("/users");
+            const annotations = [irb.annotation("route", routeLiteral)];
+
             assertDeepEqual(
               ir.getAnnotationArg(annotations, "route"),
-              createStringLiteral("/users"),
+              routeLiteral,
               "getAnnotationArg output",
             );
           },
@@ -504,29 +501,13 @@ function createSuites(): SmokeSuite[] {
         {
           name: "unwraps nested literals",
           run: () => {
-            const literal = {
-              position: { file: "schema.vdl", line: 1, column: 1 },
-              kind: "object",
-              objectEntries: [
-                {
-                  position: { file: "schema.vdl", line: 1, column: 1 },
-                  key: "path",
-                  value: createStringLiteral("/users"),
-                },
-                {
-                  position: { file: "schema.vdl", line: 1, column: 1 },
-                  key: "methods",
-                  value: {
-                    position: { file: "schema.vdl", line: 1, column: 1 },
-                    kind: "array",
-                    arrayItems: [
-                      createStringLiteral("GET"),
-                      createStringLiteral("POST"),
-                    ],
-                  },
-                },
-              ],
-            } as LiteralValue;
+            const literal = irb.objectLiteral({
+              path: irb.stringLiteral("/users"),
+              methods: irb.arrayLiteral([
+                irb.stringLiteral("GET"),
+                irb.stringLiteral("POST"),
+              ]),
+            });
 
             assertDeepEqual(
               ir.unwrapLiteral(literal),
@@ -541,18 +522,22 @@ function createSuites(): SmokeSuite[] {
         {
           name: "keeps malformed literals non-throwing",
           run: () => {
+            const malformedStringLiteral = {
+              position: irb.position(),
+              kind: "string",
+            } as LiteralValue;
+
+            const unknownLiteral = {
+              position: irb.position(),
+              kind: "unknown",
+            } as unknown as LiteralValue;
+
             assertUndefined(
-              ir.unwrapLiteral({
-                position: { file: "schema.vdl", line: 1, column: 1 },
-                kind: "string",
-              } as never),
+              ir.unwrapLiteral(malformedStringLiteral),
               "unwrapLiteral malformed string payload",
             );
             assertEqual(
-              ir.unwrapLiteral({
-                position: { file: "schema.vdl", line: 1, column: 1 },
-                kind: "unknown",
-              } as never),
+              ir.unwrapLiteral(unknownLiteral),
               null,
               "unwrapLiteral unknown kind fallback",
             );
@@ -563,6 +548,10 @@ function createSuites(): SmokeSuite[] {
   ];
 }
 
+/**
+ * Executes every Goja smoke-test suite and reports success back to the Go
+ * runner when all checks pass.
+ */
 export function runGojaSmokeTest(): void {
   const suites = createSuites();
 
