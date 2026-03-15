@@ -12,7 +12,10 @@ RUN set -e && \
     # Update and install system dependencies
     apt-get update -qq && \
     apt-get install -yqq --no-install-recommends \
-        git wget curl zip unzip p7zip-full tree ripgrep && \
+        git wget curl zip unzip p7zip-full tree ripgrep \
+        python3 python3-pip && \
+    # Install mkdocs, mkdocs-material and mkdocs-llmstxt
+    pip3 install --break-system-packages -qq mkdocs-material mkdocs-llmstxt && \
     # Clean up
     rm -rf /var/lib/apt/lists/*
 
