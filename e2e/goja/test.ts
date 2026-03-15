@@ -21,6 +21,7 @@ import {
   math,
   objects,
   options,
+  predicates,
   strings,
 } from "../../src/utils";
 
@@ -1857,6 +1858,219 @@ function createObjectSuites(): SmokeSuite[] {
 }
 
 /**
+ * Creates smoke-test suites for predicate helpers re-exported from es-toolkit.
+ */
+function createPredicateSuites(): SmokeSuite[] {
+  return [
+    {
+      name: "predicates",
+      checks: [
+        {
+          name: "isBoolean",
+          run: () => {
+            assertEqual(
+              predicates.isBoolean(false),
+              true,
+              "predicates.isBoolean output",
+            );
+          },
+        },
+        {
+          name: "isDate",
+          run: () => {
+            assertEqual(
+              predicates.isDate(new Date("2024-01-01T00:00:00.000Z")),
+              true,
+              "predicates.isDate output",
+            );
+          },
+        },
+        {
+          name: "isEqual",
+          run: () => {
+            assertEqual(
+              predicates.isEqual({ a: 1, b: [2] }, { a: 1, b: [2] }),
+              true,
+              "predicates.isEqual output",
+            );
+          },
+        },
+        {
+          name: "isError",
+          run: () => {
+            assertEqual(
+              predicates.isError(new Error("boom")),
+              true,
+              "predicates.isError output",
+            );
+          },
+        },
+        {
+          name: "isFunction",
+          run: () => {
+            assertEqual(
+              predicates.isFunction(() => 1),
+              true,
+              "predicates.isFunction output",
+            );
+          },
+        },
+        {
+          name: "isJSON",
+          run: () => {
+            assertEqual(
+              predicates.isJSON('{"ok":true}'),
+              true,
+              "predicates.isJSON output",
+            );
+          },
+        },
+        {
+          name: "isJSONArray",
+          run: () => {
+            assertEqual(
+              predicates.isJSONArray([1, 2, 3]),
+              true,
+              "predicates.isJSONArray output",
+            );
+          },
+        },
+        {
+          name: "isJSONObject",
+          run: () => {
+            assertEqual(
+              predicates.isJSONObject({ a: 1 }),
+              true,
+              "predicates.isJSONObject output",
+            );
+          },
+        },
+        {
+          name: "isJSONValue",
+          run: () => {
+            assertEqual(
+              predicates.isJSONValue({ a: [1, true, null] }),
+              true,
+              "predicates.isJSONValue output",
+            );
+          },
+        },
+        {
+          name: "isMap",
+          run: () => {
+            assertEqual(
+              predicates.isMap(new Map()),
+              true,
+              "predicates.isMap output",
+            );
+          },
+        },
+        {
+          name: "isNil",
+          run: () => {
+            assertEqual(
+              predicates.isNil(null),
+              true,
+              "predicates.isNil output",
+            );
+          },
+        },
+        {
+          name: "isNotNil",
+          run: () => {
+            assertEqual(
+              predicates.isNotNil(0),
+              true,
+              "predicates.isNotNil output",
+            );
+          },
+        },
+        {
+          name: "isNull",
+          run: () => {
+            assertEqual(
+              predicates.isNull(null),
+              true,
+              "predicates.isNull output",
+            );
+          },
+        },
+        {
+          name: "isNumber",
+          run: () => {
+            assertEqual(
+              predicates.isNumber(42),
+              true,
+              "predicates.isNumber output",
+            );
+          },
+        },
+        {
+          name: "isPlainObject",
+          run: () => {
+            assertEqual(
+              predicates.isPlainObject({ a: 1 }),
+              true,
+              "predicates.isPlainObject output",
+            );
+          },
+        },
+        {
+          name: "isPrimitive",
+          run: () => {
+            assertEqual(
+              predicates.isPrimitive("value"),
+              true,
+              "predicates.isPrimitive output",
+            );
+          },
+        },
+        {
+          name: "isRegExp",
+          run: () => {
+            assertEqual(
+              predicates.isRegExp(/value/),
+              true,
+              "predicates.isRegExp output",
+            );
+          },
+        },
+        {
+          name: "isSet",
+          run: () => {
+            assertEqual(
+              predicates.isSet(new Set()),
+              true,
+              "predicates.isSet output",
+            );
+          },
+        },
+        {
+          name: "isString",
+          run: () => {
+            assertEqual(
+              predicates.isString("value"),
+              true,
+              "predicates.isString output",
+            );
+          },
+        },
+        {
+          name: "isUndefined",
+          run: () => {
+            assertEqual(
+              predicates.isUndefined(undefined),
+              true,
+              "predicates.isUndefined output",
+            );
+          },
+        },
+      ],
+    },
+  ];
+}
+
+/**
  * Creates the smoke-test suites executed inside Goja.
  *
  * Each suite focuses on a small public area of the SDK so runtime failures can
@@ -1872,6 +2086,7 @@ function createSuites(): SmokeSuite[] {
     ...createMapSuites(),
     ...createMathSuites(),
     ...createObjectSuites(),
+    ...createPredicateSuites(),
   ];
 }
 
