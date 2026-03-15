@@ -121,7 +121,7 @@ npx vdl-plugin build
 ```
 
 - `check` runs TypeScript without emitting files. If a `tsconfig.vitest.json` is present, it also type-checks test code.
-- `build` bundles the required `src/index.ts` entry into `dist/index.js`. Minification is enabled by default; pass `--no-minify` to disable it.
+- `build` bundles the required `src/index.ts` entry into `dist/index.js`.
 
 Example `package.json` scripts:
 

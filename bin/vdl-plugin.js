@@ -9,7 +9,6 @@ import * as esbuild from "esbuild";
 const require = createRequire(import.meta.url);
 const args = process.argv.slice(2);
 const command = args[0];
-const flags = new Set(args.slice(1));
 
 const GREEN = "\x1b[32m";
 const RED = "\x1b[31m";
@@ -27,10 +26,7 @@ function printHelp() {
 
 Commands:
   check          Run TypeScript type checks without emitting files
-  build          Bundle the plugin from src/index.ts into dist/index.js
-
-Build options:
-  --no-minify    Disable minification (minification is enabled by default)`);
+  build          Bundle the plugin from src/index.ts into dist/index.js`);
 }
 
 function runCheck() {
@@ -64,9 +60,7 @@ function runCheck() {
 }
 
 function runBuild() {
-  const minify = !flags.has("--no-minify");
-
-  log.info(`Building VDL plugin${minify ? "" : " (minification disabled)"}...`);
+  log.info(`Building VDL plugin...`);
 
   try {
     esbuild.buildSync({
@@ -76,7 +70,8 @@ function runBuild() {
       platform: "neutral",
       target: "es2015",
       bundle: true,
-      minify,
+      minify: false,
+      keepNames: true,
       treeShaking: true,
     });
 
