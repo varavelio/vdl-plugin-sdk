@@ -39,6 +39,7 @@ export {
   takeRight,
   takeRightWhile,
   takeWhile,
+  toFilled,
   union,
   unionBy,
   unionWith,

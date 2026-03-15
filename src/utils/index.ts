@@ -6,4 +6,6 @@ export * as math from "./math";
 export * as objects from "./objects";
 export * as options from "./options";
 export * as predicates from "./predicates";
+export * as sets from "./sets";
 export * as strings from "./strings";
+export * as util from "./util";

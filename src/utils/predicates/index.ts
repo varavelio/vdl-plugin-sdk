@@ -6,6 +6,7 @@
 export {
   isBoolean,
   isDate,
+  isEmptyObject,
   isEqual,
   isError,
   isFunction,
