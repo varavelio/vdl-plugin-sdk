@@ -70,7 +70,9 @@
     "lint": "tsc --noEmit && npm run lint:dprint && npm run lint:biome",
     "lint:dprint": "dprint check --config ./dprint.json --log-level warn",
     "lint:biome": "biome check --config-path ./biome.json --log-level warn --no-errors-on-unmatched .",
-    "test": "vitest run",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "vitest run",
+    "test:e2e": "node ./e2e/goja/run.mjs",
     "ci": "npm run lint && npm run test && npm run build"
   },
   "dependencies": {
