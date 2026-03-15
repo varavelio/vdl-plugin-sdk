@@ -5,4 +5,5 @@ export * as maps from "./maps";
 export * as math from "./math";
 export * as objects from "./objects";
 export * as options from "./options";
+export * as predicates from "./predicates";
 export * as strings from "./strings";
