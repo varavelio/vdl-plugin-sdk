@@ -9,7 +9,7 @@
 <h1 align="center">VDL Plugin SDK</h1>
 
 <p align="center">
-  Build VDL plugins in TypeScript with typed IR access, utility helpers, a simple CLI, and test builders for plugin unit tests.
+  Build VDL plugins in TypeScript with a simple CLI, typed IR access, utility helpers, and test builders for plugin unit tests.
 </p>
 
 <p align="center">
@@ -32,35 +32,17 @@
 
 ## Install
 
-This is a reference install command. In most cases you do not need it manually:
-`vdl plugin init` and the official
+This is usually installed for you. The official
 [`vdl-plugin-template`](https://github.com/varavelio/vdl-plugin-template)
-already include this SDK by default.
+already include the SDK.
 
 ```bash
-npm install @varavel/vdl-plugin-sdk
+npm install --save-dev --save-exact @varavel/vdl-plugin-sdk@latest
 ```
-
-The package ships two entry points:
-
-| Import                            | Use for                                           |
-| --------------------------------- | ------------------------------------------------- |
-| `@varavel/vdl-plugin-sdk`         | Plugin entrypoints, IR types, and runtime helpers |
-| `@varavel/vdl-plugin-sdk/testing` | Test-only IR builders via `irb`                   |
-
-## What You Get
-
-- `definePlugin(...)` to declare a plugin handler with typed input and output.
-- Generated VDL IR types exported directly from the package.
-- `getAnnotation` and `getAnnotationArg` for reading annotations.
-- `unwrapLiteral<T>()` for reading constants and annotation values.
-- `getOptionString`, `getOptionBool`, `getOptionNumber`, and `getOptionArray` for reading plugin options.
-- `irb` from `@varavel/vdl-plugin-sdk/testing` for building IR test fixtures fast.
-- A `vdl-plugin` binary that supports `check` and `build`.
 
 ## Quick Start
 
-Every VDL plugin should export a `definePlugin(...)` handler from `src/index.ts`.
+Every VDL plugin should export a `definePlugin(...)` handler function from `src/index.ts` named `generate`.
 
 Create `src/index.ts` in your plugin project:
 
@@ -69,6 +51,7 @@ import { definePlugin } from "@varavel/vdl-plugin-sdk";
 
 export const generate = definePlugin((input) => {
   // Your plugin logic goes here
+
   // Feel free to explore the plugin input
   console.log(input.version) // The VDL version without v prefix
   console.log(input.options) // Any option that the user passed to the plugin via vdl.config.vdl
@@ -85,31 +68,51 @@ export const generate = definePlugin((input) => {
 });
 ```
 
-## Plugin Workflow
+Then run `npx vdl-plugin build`, this will generate the ready-to-use code for your plugin in `./dist/index.js`.
 
-Every plugin follows the same release flow:
+## What This Package Includes
 
-1. Create and export a `definePlugin(...)` handler in `./src/index.ts`.
-2. Run `vdl-plugin build` to bundle the plugin into `./dist/index.js`.
-3. Commit `./dist/index.js` to the repository.
-4. Publish a new release on GitHub including all your files, including `./dist/index.js`.
-5. When the plugin is used, VDL reads `./dist/index.js` directly from your GitHub releases.
+Think of the SDK as four pieces that work together:
 
-## API
+- The main package for authoring a plugin handler and working with the typed VDL IR.
+- A separate `utils` entry point for reusable helper namespaces used in plugin logic.
+- A separate `testing` entry point for building realistic IR fixtures in unit tests.
+- A small CLI plus shared `tsconfig` presets for the normal plugin build workflow.
+
+The README focuses on how these surfaces fit together. A fuller API reference live in dedicated docs.
+
+## Entry Points
+
+| Import                            | Use for                                                                                            |
+| --------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `@varavel/vdl-plugin-sdk`         | Main plugin authoring surface: define your plugin, receive typed input, and return generated files |
+| `@varavel/vdl-plugin-sdk/utils`   | Helper namespaces for deterministic transformations and VDL-specific utility work                  |
+| `@varavel/vdl-plugin-sdk/testing` | Test-only builders for creating plugin input and IR fixtures quickly                               |
 
 ### `@varavel/vdl-plugin-sdk`
 
-- `definePlugin(handler)` defines the plugin entrypoint, and `VdlPluginHandler` is the matching function type.
-- `getAnnotation(...)`, `getAnnotationArg(...)`, and `unwrapLiteral(...)` help you read annotation and literal data from the IR.
-- `getOptionString(...)`, `getOptionBool(...)`, `getOptionNumber(...)`, and `getOptionArray(...)` read plugin options safely.
-- Core IR types such as `PluginInput`, `IrSchema`, `TypeDef`, `EnumDef`, `TypeRef`, and `LiteralValue` are exported directly from the package.
+Use `@varavel/vdl-plugin-sdk` in your plugin runtime code. This is the package surface you start from when writing `src/index.ts`.
+
+It is the home for the plugin definition flow and the generated VDL types that describe the input your plugin receives.
+
+### `@varavel/vdl-plugin-sdk/utils`
+
+Use `@varavel/vdl-plugin-sdk/utils` when your plugin code needs reusable transformations, string and object helpers, option helpers, or IR-oriented convenience functions.
+
+The utilities are organized into namespaces such as `arrays`, `functions`, `maps`, `math`, `misc`, `objects`, `options`, `predicates`, `sets`, `strings`, and `ir`, so plugin code can stay explicit without pulling everything from the main SDK entry point.
 
 ### `@varavel/vdl-plugin-sdk/testing`
 
-- `irb.pluginInput(...)` builds a complete `PluginInput` with sensible defaults.
-- `irb.schema(...)`, `irb.typeDef(...)`, `irb.enumDef(...)`, `irb.constantDef(...)`, and `irb.field(...)` build common IR nodes.
-- `irb.primitiveType(...)`, `irb.namedType(...)`, `irb.enumType(...)`, `irb.arrayType(...)`, `irb.mapType(...)`, and `irb.objectType(...)` build `TypeRef` values.
-- Literal and metadata helpers such as `irb.stringLiteral(...)`, `irb.objectLiteral(...)`, `irb.annotation(...)`, and `irb.position(...)` cover the pieces most tests need.
+Use `@varavel/vdl-plugin-sdk/testing` only in tests. It exposes `irb`, a compact IR builder for creating realistic plugin input and schema fixtures without hand-writing large object graphs.
+
+This keeps test helpers separate from runtime imports and makes unit tests easier to read.
+
+## Recommended Mental Model
+
+- Reach for `@varavel/vdl-plugin-sdk` when you are writing the plugin itself.
+- Reach for `@varavel/vdl-plugin-sdk/utils` when your plugin logic needs shared helper functions.
+- Reach for `@varavel/vdl-plugin-sdk/testing` when you are constructing test fixtures.
+- Treat the CLI and `tsconfig` presets as project scaffolding around those imports, not as part of your runtime code.
 
 ## CLI
 
@@ -122,6 +125,19 @@ npx vdl-plugin build
 
 - `check` runs TypeScript without emitting files. If a `tsconfig.vitest.json` is present, it also type-checks test code.
 - `build` bundles the required `src/index.ts` entry into `dist/index.js`.
+
+## Plugin Workflow
+
+Most plugins follow the same path:
+
+1. Author the plugin in `src/index.ts` with the main SDK entry point.
+2. Use `@varavel/vdl-plugin-sdk/utils` only where helper namespaces make the implementation clearer.
+3. Add unit tests with `@varavel/vdl-plugin-sdk/testing` when you need realistic IR input.
+4. Run `vdl-plugin check` during development.
+5. Run `vdl-plugin build` to produce `dist/index.js` for release.
+6. Commit `dist/index.js` to GitHub and create a new release (tag).
+
+When a plugin is published, VDL consumes the built `dist/index.js` artifact rather than the TypeScript source.
 
 Example `package.json` scripts:
 
@@ -191,7 +207,12 @@ Then create a `tsconfig.vitest.json` in the root of your project:
 ```json
 {
   "extends": "@varavel/vdl-plugin-sdk/tsconfig.vitest.base.json",
-  "include": ["src/**/*.test.ts", "tests/**/*.ts", "vitest.config.ts"]
+  "include": [
+    "src/**/*.test.ts",
+    "tests/**/*.ts",
+    "e2e/**/*.ts",
+    "vitest.config.ts"
+  ]
 }
 ```
 
