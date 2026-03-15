@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
@@ -7,6 +8,7 @@ const currentFilePath = fileURLToPath(import.meta.url);
 const gojaDirectoryPath = path.dirname(currentFilePath);
 const goRunnerDirectoryPath = path.join(gojaDirectoryPath, "go");
 const testEntryFilePath = path.join(gojaDirectoryPath, "test.ts");
+const bundledTestFilePath = path.join(gojaDirectoryPath, "test.bundled.js");
 
 /**
  * Bundles the TypeScript smoke test into a single self-executing script.
@@ -68,8 +70,19 @@ function runBundledSmokeTest(bundledScript) {
   }
 }
 
+/**
+ * Writes the final bundled script to disk for debugging purposes.
+ *
+ * The file is gitignored and intentionally kept next to the smoke-test sources
+ * so any Goja stack trace can be mapped back to the exact code that was run.
+ */
+async function writeBundledSmokeTestFile(bundledScript) {
+  await writeFile(bundledTestFilePath, bundledScript, "utf8");
+}
+
 async function main() {
   const bundledScript = await bundleSmokeTest();
+  await writeBundledSmokeTestFile(bundledScript);
   runBundledSmokeTest(bundledScript);
   process.stdout.write("e2e: goja ok\n");
 }
