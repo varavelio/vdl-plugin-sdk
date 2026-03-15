@@ -12,6 +12,11 @@ import { buildPadding, getPaddingTargetLength } from "./pad-internal";
  * The target length is truncated with `Math.trunc`, and non-finite lengths are
  * ignored by returning the original string.
  *
+ * @param str - String to pad.
+ * @param length - Final string length to target.
+ * @param chars - Optional padding characters to repeat.
+ * @returns `str` padded on the left up to `length` characters.
+ *
  * @example
  * padLeft("cat", 5, "0")
  * // "00cat"

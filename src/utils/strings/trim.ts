@@ -15,6 +15,10 @@ import { trimWithCharacters } from "./trim-internal";
  * Characters are removed only at the outer edges; matching characters inside
  * the string are preserved.
  *
+ * @param str - String to trim.
+ * @param chars - Optional characters to remove instead of whitespace.
+ * @returns A copy of `str` without the matching leading and trailing characters.
+ *
  * @example
  * trim("  hello  ")
  * // "hello"

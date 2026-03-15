@@ -1,32 +1,50 @@
 import type { PluginInput, PluginOutput } from "./types";
 
 /**
- * Defines a VDL plugin handler function.
+ * Function signature implemented by every VDL plugin entry point.
  *
- * @param input - The input data for the plugin containing the IR and other relevant information.
- * @returns The output data from the plugin containing the generated files and any errors.
+ * The handler receives the typed plugin input produced by VDL and returns the
+ * generated files and any diagnostics for the current run.
+ *
+ * @param input - The plugin invocation context, including version, options, and IR.
+ * @returns The files and errors produced by the plugin.
+ *
+ * @example
+ * ```ts
+ * const generate: VdlPluginHandler = (input) => {
+ *   return {
+ *     files: [{ path: "hello.txt", content: input.version }],
+ *   };
+ * };
+ * ```
  */
 export type VdlPluginHandler = (input: PluginInput) => PluginOutput;
 
 /**
- * Defines a VDL plugin by wrapping the provided handler function. This is a helper function
- * that can be used to create plugins in a more concise way.
+ * Wraps a plugin handler so it can be exported as the canonical VDL entry point.
  *
- * Example usage:
- * ```typescript
+ * `definePlugin` is intentionally minimal. It preserves the handler's type
+ * information and gives plugin projects a single, explicit pattern for exporting
+ * `generate` from `src/index.ts`.
+ *
+ * @param handler - The plugin implementation to expose as the runtime entry point.
+ * @returns The same handler function, unchanged.
+ *
+ * @example
+ * ```ts
  * import { definePlugin } from "@varavel/vdl-plugin-sdk";
  *
  * export const generate = definePlugin((input) => {
- *  // Plugin logic goes here
- *  return {
- *    files: [],
- *    errors: []
- *  };
+ *   return {
+ *     files: [
+ *       {
+ *         path: "schema-summary.txt",
+ *         content: `VDL ${input.version}`,
+ *       },
+ *     ],
+ *   };
  * });
  * ```
- *
- * @param handler - The plugin handler function that contains the logic for processing the input and generating the output.
- * @returns The same handler function, which can be exported as the plugin's main entry point.
  */
 export function definePlugin(handler: VdlPluginHandler): VdlPluginHandler {
   return handler;

@@ -15,6 +15,15 @@ const WHITESPACE_SEQUENCE_RE = /\s+/;
  * `HTTPServer`, `snake_case`, `kebab-case`, and mixed separator variants.
  *
  * Empty or separator-only inputs return an empty array.
+ *
+ * @param str - String to tokenize.
+ * @returns An array of normalized word tokens.
+ *
+ * @example
+ * ```ts
+ * words("HTTPServer_error-code");
+ * // returns ["HTTP", "Server", "error", "code"]
+ * ```
  */
 export function words(str: string): string[] {
   const normalized = str

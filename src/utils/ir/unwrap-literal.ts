@@ -7,6 +7,41 @@ import type { LiteralValue } from "../../types";
  * Omit it to get `unknown` and narrow the result yourself.
  *
  * The generic only affects TypeScript types. It does not validate the runtime value.
+ *
+ * @param value - The VDL literal to convert.
+ * @returns The recursively unwrapped JavaScript value.
+ *
+ * @example
+ * ```ts
+ * const raw = unwrapLiteral({
+ *   position: { file: "schema.vdl", line: 1, column: 1 },
+ *   kind: "string",
+ *   stringValue: "hello",
+ * });
+ * // returns "hello"
+ * ```
+ *
+ * @example
+ * ```ts
+ * const value = unwrapLiteral<{ enabled: boolean }>(
+ *   {
+ *     position: { file: "schema.vdl", line: 1, column: 1 },
+ *     kind: "object",
+ *     objectEntries: [
+ *       {
+ *         position: { file: "schema.vdl", line: 1, column: 1 },
+ *         key: "enabled",
+ *         value: {
+ *           position: { file: "schema.vdl", line: 1, column: 1 },
+ *           kind: "bool",
+ *           boolValue: true,
+ *         },
+ *       },
+ *     ],
+ *   },
+ * );
+ * // returns { enabled: true }
+ * ```
  */
 export function unwrapLiteral<T = unknown>(value: LiteralValue): T {
   return unwrapLiteralValue(value) as T;

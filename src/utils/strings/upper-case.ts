@@ -9,6 +9,9 @@ import { words } from "./words";
  *
  * Empty or separator-only inputs return an empty string.
  *
+ * @param str - String to normalize.
+ * @returns The uppercased space-separated representation of `str`.
+ *
  * @example
  * upperCase("userProfileName")
  * // "USER PROFILE NAME"

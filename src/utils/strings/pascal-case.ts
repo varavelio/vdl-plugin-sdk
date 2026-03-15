@@ -14,6 +14,9 @@ function capitalize(word: string): string {
  * Every token is normalized to an initial uppercase letter followed by a
  * lowercased remainder. Empty or separator-only inputs return an empty string.
  *
+ * @param str - String to normalize.
+ * @returns The `PascalCase` representation of `str`.
+ *
  * @example
  * pascalCase("user_profile-name")
  * // "UserProfileName"

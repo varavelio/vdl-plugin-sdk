@@ -14,6 +14,9 @@ function capitalize(word: string): string {
  * The first token is lowercased. Every following token is capitalized with the
  * remainder lowercased. Empty or separator-only inputs return an empty string.
  *
+ * @param str - String to normalize.
+ * @returns The `camelCase` representation of `str`.
+ *
  * @example
  * camelCase("user_profile-name")
  * // "userProfileName"

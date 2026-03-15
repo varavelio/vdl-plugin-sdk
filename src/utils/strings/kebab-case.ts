@@ -13,6 +13,10 @@ import { words } from "./words";
  *
  * Empty or separator-only inputs return an empty string.
  *
+ * @param str - String to normalize.
+ * @param upperCase - When `true`, uppercases each token before joining.
+ * @returns The `kebab-case` representation of `str`.
+ *
  * @example
  * kebabCase("UserProfileName")
  * // "user-profile-name"

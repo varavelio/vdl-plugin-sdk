@@ -9,6 +9,12 @@
  * // For options: { "features": "feature1, feature2, feature3" }
  * getOptionArray(options, "features", [], ",")
  * // returns ["feature1", "feature2", "feature3"]
+ *
+ * @param options - Plugin options record.
+ * @param key - Option name to read.
+ * @param defaultValue - Value returned when the option is missing.
+ * @param separator - Delimiter used to split the raw string.
+ * @returns A trimmed array of non-empty entries, an empty array for blank values, or the default when the key is missing.
  */
 export function getOptionArray(
   options: Record<string, string> | undefined,

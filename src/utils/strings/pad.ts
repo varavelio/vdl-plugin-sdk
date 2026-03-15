@@ -14,6 +14,11 @@ import { buildPadding, getPaddingTargetLength } from "./pad-internal";
  * The target length is truncated with `Math.trunc`, so decimal lengths behave
  * predictably. Non-finite lengths are ignored and return the original string.
  *
+ * @param str - String to pad.
+ * @param length - Final string length to target.
+ * @param chars - Optional padding characters to repeat.
+ * @returns `str` centered within the requested width.
+ *
  * @example
  * pad("cat", 7)
  * // "  cat  "

@@ -12,6 +12,10 @@ import { trimWithCharacters } from "./trim-internal";
  *
  * Matching characters that appear later in the string are preserved.
  *
+ * @param str - String to trim.
+ * @param chars - Optional characters to remove instead of whitespace.
+ * @returns A copy of `str` without the matching leading characters.
+ *
  * @example
  * trimStart("  hello  ")
  * // "hello  "
