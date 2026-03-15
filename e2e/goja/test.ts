@@ -13,7 +13,16 @@
 
 import { irb } from "../../src/testing";
 import type { LiteralValue } from "../../src/types";
-import { ir, options, strings } from "../../src/utils";
+import {
+  arrays,
+  functions as functionUtils,
+  ir,
+  maps,
+  math,
+  objects,
+  options,
+  strings,
+} from "../../src/utils";
 
 /**
  * Global callback injected by the Go runner.
@@ -86,6 +95,13 @@ function normalizeValue(value: unknown): unknown {
 }
 
 /**
+ * Converts a `Map` into a serializable array of entries for comparisons.
+ */
+function toEntries<Key, Value>(map: Map<Key, Value>): Array<[Key, Value]> {
+  return Array.from(map.entries());
+}
+
+/**
  * Asserts that a condition is truthy.
  */
 function assert(condition: boolean, message: string): void {
@@ -153,19 +169,9 @@ function runSuite(suite: SmokeSuite): void {
 }
 
 /**
- * Creates the smoke-test suites executed inside Goja.
- *
- * Each suite focuses on a small public area of the SDK so runtime failures can
- * be attributed quickly without mirroring the full unit-test suite.
+ * Creates smoke-test suites for the string helpers implemented by the SDK.
  */
-function createSuites(): SmokeSuite[] {
-  const sharedOptions = {
-    enabled: " yes ",
-    retries: " 3 ",
-    features: "api, core , v1",
-    mode: "strict",
-  };
-
+function createStringSuites(): SmokeSuite[] {
   return [
     {
       name: "strings.words",
@@ -373,6 +379,21 @@ function createSuites(): SmokeSuite[] {
         },
       ],
     },
+  ];
+}
+
+/**
+ * Creates smoke-test suites for the option-parsing helpers.
+ */
+function createOptionSuites(): SmokeSuite[] {
+  const sharedOptions = {
+    enabled: " yes ",
+    retries: " 3 ",
+    features: "api, core , v1",
+    mode: "strict",
+  };
+
+  return [
     {
       name: "options",
       checks: [
@@ -463,6 +484,14 @@ function createSuites(): SmokeSuite[] {
         },
       ],
     },
+  ];
+}
+
+/**
+ * Creates smoke-test suites for the IR helpers.
+ */
+function createIrSuites(): SmokeSuite[] {
+  return [
     {
       name: "ir",
       checks: [
@@ -545,6 +574,1304 @@ function createSuites(): SmokeSuite[] {
         },
       ],
     },
+  ];
+}
+
+/**
+ * Creates smoke-test suites for deterministic array helpers re-exported from
+ * es-toolkit.
+ */
+function createArraySuites(): SmokeSuite[] {
+  return [
+    {
+      name: "arrays",
+      checks: [
+        {
+          name: "at",
+          run: () => {
+            assertDeepEqual(
+              arrays.at(["a", "b", "c"], [0, 2]),
+              ["a", "c"],
+              "arrays.at output",
+            );
+          },
+        },
+        {
+          name: "chunk",
+          run: () => {
+            assertDeepEqual(
+              arrays.chunk([1, 2, 3, 4, 5], 2),
+              [[1, 2], [3, 4], [5]],
+              "arrays.chunk output",
+            );
+          },
+        },
+        {
+          name: "compact",
+          run: () => {
+            assertDeepEqual(
+              arrays.compact([0, 1, false, 2, "", 3, null, undefined]),
+              [1, 2, 3],
+              "arrays.compact output",
+            );
+          },
+        },
+        {
+          name: "countBy",
+          run: () => {
+            assertDeepEqual(
+              arrays.countBy(["one", "two", "three"], (item) => item.length),
+              { 3: 2, 5: 1 },
+              "arrays.countBy output",
+            );
+          },
+        },
+        {
+          name: "difference",
+          run: () => {
+            assertDeepEqual(
+              arrays.difference([1, 2, 3], [2, 4]),
+              [1, 3],
+              "arrays.difference output",
+            );
+          },
+        },
+        {
+          name: "differenceBy",
+          run: () => {
+            assertDeepEqual(
+              arrays.differenceBy(
+                [{ id: 1 }, { id: 2 }],
+                [{ id: 2 }],
+                (item) => item.id,
+              ),
+              [{ id: 1 }],
+              "arrays.differenceBy output",
+            );
+          },
+        },
+        {
+          name: "differenceWith",
+          run: () => {
+            assertDeepEqual(
+              arrays.differenceWith(
+                [{ id: 1 }, { id: 2 }],
+                [{ id: 2 }],
+                (left, right) => left.id === right.id,
+              ),
+              [{ id: 1 }],
+              "arrays.differenceWith output",
+            );
+          },
+        },
+        {
+          name: "drop",
+          run: () => {
+            assertDeepEqual(
+              arrays.drop([1, 2, 3, 4], 2),
+              [3, 4],
+              "arrays.drop output",
+            );
+          },
+        },
+        {
+          name: "dropRight",
+          run: () => {
+            assertDeepEqual(
+              arrays.dropRight([1, 2, 3, 4], 2),
+              [1, 2],
+              "arrays.dropRight output",
+            );
+          },
+        },
+        {
+          name: "dropRightWhile",
+          run: () => {
+            assertDeepEqual(
+              arrays.dropRightWhile([1, 2, 3, 4], (item) => item > 2),
+              [1, 2],
+              "arrays.dropRightWhile output",
+            );
+          },
+        },
+        {
+          name: "dropWhile",
+          run: () => {
+            assertDeepEqual(
+              arrays.dropWhile([1, 2, 3, 4], (item) => item < 3),
+              [3, 4],
+              "arrays.dropWhile output",
+            );
+          },
+        },
+        {
+          name: "flatMap",
+          run: () => {
+            assertDeepEqual(
+              arrays.flatMap([1, 2, 3], (item) => [item, item * 10]),
+              [1, 10, 2, 20, 3, 30],
+              "arrays.flatMap output",
+            );
+          },
+        },
+        {
+          name: "flatMapDeep",
+          run: () => {
+            assertDeepEqual(
+              arrays.flatMapDeep([1, 2], (item) => [[item, [item * 10]]]),
+              [1, 10, 2, 20],
+              "arrays.flatMapDeep output",
+            );
+          },
+        },
+        {
+          name: "flatten",
+          run: () => {
+            assertDeepEqual(
+              arrays.flatten([
+                [1, 2],
+                [3, 4],
+              ]),
+              [1, 2, 3, 4],
+              "arrays.flatten output",
+            );
+          },
+        },
+        {
+          name: "flattenDeep",
+          run: () => {
+            assertDeepEqual(
+              arrays.flattenDeep([1, [2, [3, [4]]]]),
+              [1, 2, 3, 4],
+              "arrays.flattenDeep output",
+            );
+          },
+        },
+        {
+          name: "groupBy",
+          run: () => {
+            assertDeepEqual(
+              arrays.groupBy(["ant", "bear", "bat"], (item) => item[0] ?? ""),
+              { a: ["ant"], b: ["bear", "bat"] },
+              "arrays.groupBy output",
+            );
+          },
+        },
+        {
+          name: "head",
+          run: () => {
+            assertEqual(arrays.head([1, 2, 3]), 1, "arrays.head output");
+          },
+        },
+        {
+          name: "initial",
+          run: () => {
+            assertDeepEqual(
+              arrays.initial([1, 2, 3]),
+              [1, 2],
+              "arrays.initial output",
+            );
+          },
+        },
+        {
+          name: "intersection",
+          run: () => {
+            assertDeepEqual(
+              arrays.intersection([1, 2, 3], [2, 3, 4]),
+              [2, 3],
+              "arrays.intersection output",
+            );
+          },
+        },
+        {
+          name: "intersectionBy",
+          run: () => {
+            assertDeepEqual(
+              arrays.intersectionBy(
+                [{ id: 1 }, { id: 2 }],
+                [{ id: 2 }],
+                (item) => item.id,
+              ),
+              [{ id: 2 }],
+              "arrays.intersectionBy output",
+            );
+          },
+        },
+        {
+          name: "intersectionWith",
+          run: () => {
+            assertDeepEqual(
+              arrays.intersectionWith(
+                [{ id: 1 }, { id: 2 }],
+                [{ id: 2 }],
+                (left, right) => left.id === right.id,
+              ),
+              [{ id: 2 }],
+              "arrays.intersectionWith output",
+            );
+          },
+        },
+        {
+          name: "isSubset",
+          run: () => {
+            assertEqual(
+              arrays.isSubset([1, 2, 3], [1, 2]),
+              true,
+              "arrays.isSubset output",
+            );
+          },
+        },
+        {
+          name: "isSubsetWith",
+          run: () => {
+            assertEqual(
+              arrays.isSubsetWith(
+                [{ id: 1 }, { id: 2 }, { id: 3 }],
+                [{ id: 1 }, { id: 2 }],
+                (left, right) => left.id === right.id,
+              ),
+              true,
+              "arrays.isSubsetWith output",
+            );
+          },
+        },
+        {
+          name: "keyBy",
+          run: () => {
+            assertDeepEqual(
+              arrays.keyBy(
+                [
+                  { id: "a", value: 1 },
+                  { id: "b", value: 2 },
+                ],
+                (item) => item.id,
+              ),
+              {
+                a: { id: "a", value: 1 },
+                b: { id: "b", value: 2 },
+              },
+              "arrays.keyBy output",
+            );
+          },
+        },
+        {
+          name: "last",
+          run: () => {
+            assertEqual(arrays.last([1, 2, 3]), 3, "arrays.last output");
+          },
+        },
+        {
+          name: "maxBy",
+          run: () => {
+            assertDeepEqual(
+              arrays.maxBy([{ n: 1 }, { n: 3 }, { n: 2 }], (item) => item.n),
+              { n: 3 },
+              "arrays.maxBy output",
+            );
+          },
+        },
+        {
+          name: "minBy",
+          run: () => {
+            assertDeepEqual(
+              arrays.minBy([{ n: 1 }, { n: 3 }, { n: 2 }], (item) => item.n),
+              { n: 1 },
+              "arrays.minBy output",
+            );
+          },
+        },
+        {
+          name: "orderBy",
+          run: () => {
+            assertDeepEqual(
+              arrays.orderBy(
+                [
+                  { name: "b", age: 2 },
+                  { name: "a", age: 2 },
+                  { name: "c", age: 1 },
+                ],
+                [(item) => item.age, (item) => item.name],
+                ["asc", "asc"],
+              ),
+              [
+                { name: "c", age: 1 },
+                { name: "a", age: 2 },
+                { name: "b", age: 2 },
+              ],
+              "arrays.orderBy output",
+            );
+          },
+        },
+        {
+          name: "partition",
+          run: () => {
+            assertDeepEqual(
+              arrays.partition([1, 2, 3, 4], (item) => item % 2 === 0),
+              [
+                [2, 4],
+                [1, 3],
+              ],
+              "arrays.partition output",
+            );
+          },
+        },
+        {
+          name: "sortBy",
+          run: () => {
+            assertDeepEqual(
+              arrays.sortBy([{ n: 3 }, { n: 1 }, { n: 2 }], ["n"]),
+              [{ n: 1 }, { n: 2 }, { n: 3 }],
+              "arrays.sortBy output",
+            );
+          },
+        },
+        {
+          name: "tail",
+          run: () => {
+            assertDeepEqual(
+              arrays.tail([1, 2, 3]),
+              [2, 3],
+              "arrays.tail output",
+            );
+          },
+        },
+        {
+          name: "take",
+          run: () => {
+            assertDeepEqual(
+              arrays.take([1, 2, 3], 2),
+              [1, 2],
+              "arrays.take output",
+            );
+          },
+        },
+        {
+          name: "takeRight",
+          run: () => {
+            assertDeepEqual(
+              arrays.takeRight([1, 2, 3], 2),
+              [2, 3],
+              "arrays.takeRight output",
+            );
+          },
+        },
+        {
+          name: "takeRightWhile",
+          run: () => {
+            assertDeepEqual(
+              arrays.takeRightWhile([1, 2, 3, 4], (item) => item > 2),
+              [3, 4],
+              "arrays.takeRightWhile output",
+            );
+          },
+        },
+        {
+          name: "takeWhile",
+          run: () => {
+            assertDeepEqual(
+              arrays.takeWhile([1, 2, 3, 4], (item) => item < 3),
+              [1, 2],
+              "arrays.takeWhile output",
+            );
+          },
+        },
+        {
+          name: "union",
+          run: () => {
+            assertDeepEqual(
+              arrays.union([1, 2], [2, 3]),
+              [1, 2, 3],
+              "arrays.union output",
+            );
+          },
+        },
+        {
+          name: "unionBy",
+          run: () => {
+            assertDeepEqual(
+              arrays.unionBy(
+                [{ id: 1 }, { id: 2 }],
+                [{ id: 2 }, { id: 3 }],
+                (item) => item.id,
+              ),
+              [{ id: 1 }, { id: 2 }, { id: 3 }],
+              "arrays.unionBy output",
+            );
+          },
+        },
+        {
+          name: "unionWith",
+          run: () => {
+            assertDeepEqual(
+              arrays.unionWith(
+                [{ id: 1 }, { id: 2 }],
+                [{ id: 2 }, { id: 3 }],
+                (left, right) => left.id === right.id,
+              ),
+              [{ id: 1 }, { id: 2 }, { id: 3 }],
+              "arrays.unionWith output",
+            );
+          },
+        },
+        {
+          name: "uniq",
+          run: () => {
+            assertDeepEqual(
+              arrays.uniq([1, 2, 2, 3, 1]),
+              [1, 2, 3],
+              "arrays.uniq output",
+            );
+          },
+        },
+        {
+          name: "uniqBy",
+          run: () => {
+            assertDeepEqual(
+              arrays.uniqBy(
+                [{ id: 1 }, { id: 1 }, { id: 2 }],
+                (item) => item.id,
+              ),
+              [{ id: 1 }, { id: 2 }],
+              "arrays.uniqBy output",
+            );
+          },
+        },
+        {
+          name: "uniqWith",
+          run: () => {
+            assertDeepEqual(
+              arrays.uniqWith(
+                [{ id: 1 }, { id: 1 }, { id: 2 }],
+                (left, right) => left.id === right.id,
+              ),
+              [{ id: 1 }, { id: 2 }],
+              "arrays.uniqWith output",
+            );
+          },
+        },
+        {
+          name: "unzip",
+          run: () => {
+            assertDeepEqual(
+              arrays.unzip([
+                ["a", 1, true],
+                ["b", 2, false],
+              ]),
+              [
+                ["a", "b"],
+                [1, 2],
+                [true, false],
+              ],
+              "arrays.unzip output",
+            );
+          },
+        },
+        {
+          name: "unzipWith",
+          run: () => {
+            assertDeepEqual(
+              arrays.unzipWith(
+                [
+                  [1, 10],
+                  [2, 20],
+                ],
+                (first, second) => first + second,
+              ),
+              [3, 30],
+              "arrays.unzipWith output",
+            );
+          },
+        },
+        {
+          name: "windowed",
+          run: () => {
+            assertDeepEqual(
+              arrays.windowed([1, 2, 3, 4], 2),
+              [
+                [1, 2],
+                [2, 3],
+                [3, 4],
+              ],
+              "arrays.windowed output",
+            );
+          },
+        },
+        {
+          name: "without",
+          run: () => {
+            assertDeepEqual(
+              arrays.without([1, 2, 3, 2], 2),
+              [1, 3],
+              "arrays.without output",
+            );
+          },
+        },
+        {
+          name: "xor",
+          run: () => {
+            assertDeepEqual(
+              arrays.xor([1, 2, 3], [2, 3, 4]),
+              [1, 4],
+              "arrays.xor output",
+            );
+          },
+        },
+        {
+          name: "xorBy",
+          run: () => {
+            assertDeepEqual(
+              arrays.xorBy(
+                [{ id: 1 }, { id: 2 }],
+                [{ id: 2 }, { id: 3 }],
+                (item) => item.id,
+              ),
+              [{ id: 1 }, { id: 3 }],
+              "arrays.xorBy output",
+            );
+          },
+        },
+        {
+          name: "xorWith",
+          run: () => {
+            assertDeepEqual(
+              arrays.xorWith(
+                [{ id: 1 }, { id: 2 }],
+                [{ id: 2 }, { id: 3 }],
+                (left, right) => left.id === right.id,
+              ),
+              [{ id: 1 }, { id: 3 }],
+              "arrays.xorWith output",
+            );
+          },
+        },
+        {
+          name: "zip",
+          run: () => {
+            assertDeepEqual(
+              arrays.zip(["a", "b"], [1, 2], [true, false]),
+              [
+                ["a", 1, true],
+                ["b", 2, false],
+              ],
+              "arrays.zip output",
+            );
+          },
+        },
+        {
+          name: "zipObject",
+          run: () => {
+            assertDeepEqual(
+              arrays.zipObject(["a", "b"], [1, 2]),
+              { a: 1, b: 2 },
+              "arrays.zipObject output",
+            );
+          },
+        },
+        {
+          name: "zipWith",
+          run: () => {
+            assertDeepEqual(
+              arrays.zipWith([1, 2], [10, 20], (left, right) => left + right),
+              [11, 22],
+              "arrays.zipWith output",
+            );
+          },
+        },
+      ],
+    },
+  ];
+}
+
+/**
+ * Creates smoke-test suites for synchronous function helpers re-exported from
+ * es-toolkit.
+ */
+function createFunctionSuites(): SmokeSuite[] {
+  return [
+    {
+      name: "functions",
+      checks: [
+        {
+          name: "after",
+          run: () => {
+            let calls = 0;
+            const afterFn = functionUtils.after(2, () => {
+              calls += 1;
+              return calls;
+            });
+
+            assertUndefined(afterFn(), "functions.after first call");
+            assertEqual(afterFn(), 1, "functions.after second call");
+            assertEqual(afterFn(), 2, "functions.after third call");
+          },
+        },
+        {
+          name: "ary",
+          run: () => {
+            assertDeepEqual(
+              functionUtils.ary((...args: number[]) => args, 2)(1, 2, 3),
+              [1, 2],
+              "functions.ary output",
+            );
+          },
+        },
+        {
+          name: "before",
+          run: () => {
+            let calls = 0;
+            const beforeFn = functionUtils.before(3, () => {
+              calls += 1;
+              return calls;
+            });
+
+            assertEqual(beforeFn(), 1, "functions.before first call");
+            assertEqual(beforeFn(), 2, "functions.before second call");
+            assertUndefined(beforeFn(), "functions.before third call");
+          },
+        },
+        {
+          name: "curry",
+          run: () => {
+            assertEqual(
+              functionUtils.curry(
+                (a: number, b: number, c: number) => a + b + c,
+              )(1)(2)(3),
+              6,
+              "functions.curry output",
+            );
+          },
+        },
+        {
+          name: "curryRight",
+          run: () => {
+            assertDeepEqual(
+              functionUtils.curryRight((a: number, b: number, c: number) => [
+                a,
+                b,
+                c,
+              ])(3)(2)(1),
+              [1, 2, 3],
+              "functions.curryRight output",
+            );
+          },
+        },
+        {
+          name: "flow",
+          run: () => {
+            assertEqual(
+              functionUtils.flow(
+                (value: number) => value + 1,
+                (value) => value * 2,
+              )(3),
+              8,
+              "functions.flow output",
+            );
+          },
+        },
+        {
+          name: "flowRight",
+          run: () => {
+            assertEqual(
+              functionUtils.flowRight(
+                (value: number) => value + 1,
+                (value) => value * 2,
+              )(3),
+              7,
+              "functions.flowRight output",
+            );
+          },
+        },
+        {
+          name: "identity",
+          run: () => {
+            assertEqual(
+              functionUtils.identity("value"),
+              "value",
+              "functions.identity output",
+            );
+          },
+        },
+        {
+          name: "memoize",
+          run: () => {
+            let calls = 0;
+            const memoized = functionUtils.memoize((value: number) => {
+              calls += 1;
+              return value * 2;
+            });
+
+            assertEqual(memoized(2), 4, "functions.memoize first result");
+            assertEqual(memoized(2), 4, "functions.memoize cached result");
+            assertEqual(calls, 1, "functions.memoize call count");
+          },
+        },
+        {
+          name: "negate",
+          run: () => {
+            assertEqual(
+              functionUtils.negate((value: number) => value > 2)(1),
+              true,
+              "functions.negate output",
+            );
+          },
+        },
+        {
+          name: "noop",
+          run: () => {
+            assertUndefined(functionUtils.noop(), "functions.noop output");
+          },
+        },
+        {
+          name: "once",
+          run: () => {
+            let calls = 0;
+            const onceFn = functionUtils.once(() => {
+              calls += 1;
+              return calls;
+            });
+
+            assertEqual(onceFn(), 1, "functions.once first result");
+            assertEqual(onceFn(), 1, "functions.once cached result");
+            assertEqual(calls, 1, "functions.once call count");
+          },
+        },
+        {
+          name: "partial",
+          run: () => {
+            assertEqual(
+              functionUtils.partial(
+                (left: number, right: number) => left + right,
+                1,
+              )(2),
+              3,
+              "functions.partial output",
+            );
+          },
+        },
+        {
+          name: "partialRight",
+          run: () => {
+            assertEqual(
+              functionUtils.partialRight(
+                (left: number, right: number) => left + right,
+                2,
+              )(1),
+              3,
+              "functions.partialRight output",
+            );
+          },
+        },
+        {
+          name: "rest",
+          run: () => {
+            assertDeepEqual(
+              functionUtils.rest((args: number[]) => args)(1, 2, 3),
+              [1, 2, 3],
+              "functions.rest output",
+            );
+          },
+        },
+        {
+          name: "spread",
+          run: () => {
+            assertDeepEqual(
+              functionUtils.spread((a: number, b: number, c: number) => [
+                a,
+                b,
+                c,
+              ])([1, 2, 3]),
+              [1, 2, 3],
+              "functions.spread output",
+            );
+          },
+        },
+        {
+          name: "unary",
+          run: () => {
+            assertEqual(
+              functionUtils.unary((...args: number[]) => args.length)(1, 2, 3),
+              1,
+              "functions.unary output",
+            );
+          },
+        },
+      ],
+    },
+  ];
+}
+
+/**
+ * Creates smoke-test suites for `Map` helpers re-exported from es-toolkit.
+ */
+function createMapSuites(): SmokeSuite[] {
+  return [
+    {
+      name: "maps",
+      checks: [
+        {
+          name: "every",
+          run: () => {
+            const map = new Map([
+              ["a", 1],
+              ["b", 2],
+              ["c", 3],
+            ]);
+
+            assertEqual(
+              maps.every(map, (value) => value > 0),
+              true,
+              "maps.every output",
+            );
+          },
+        },
+        {
+          name: "filter",
+          run: () => {
+            const map = new Map([
+              ["a", 1],
+              ["b", 2],
+              ["c", 3],
+            ]);
+
+            assertDeepEqual(
+              toEntries(maps.filter(map, (value) => value >= 2)),
+              [
+                ["b", 2],
+                ["c", 3],
+              ],
+              "maps.filter output",
+            );
+          },
+        },
+        {
+          name: "findKey",
+          run: () => {
+            const map = new Map([
+              ["a", 1],
+              ["b", 2],
+              ["c", 3],
+            ]);
+
+            assertEqual(
+              maps.findKey(map, (value) => value === 2),
+              "b",
+              "maps.findKey output",
+            );
+          },
+        },
+        {
+          name: "findValue",
+          run: () => {
+            const map = new Map([
+              ["a", 1],
+              ["b", 2],
+              ["c", 3],
+            ]);
+
+            assertEqual(
+              maps.findValue(map, (value) => value === 2),
+              2,
+              "maps.findValue output",
+            );
+          },
+        },
+        {
+          name: "hasValue",
+          run: () => {
+            const map = new Map([
+              ["a", 1],
+              ["b", 2],
+              ["c", 3],
+            ]);
+
+            assertEqual(maps.hasValue(map, 3), true, "maps.hasValue output");
+          },
+        },
+        {
+          name: "mapKeys",
+          run: () => {
+            const map = new Map([
+              ["a", 1],
+              ["b", 2],
+              ["c", 3],
+            ]);
+
+            assertDeepEqual(
+              toEntries(maps.mapKeys(map, (_value, key) => key.toUpperCase())),
+              [
+                ["A", 1],
+                ["B", 2],
+                ["C", 3],
+              ],
+              "maps.mapKeys output",
+            );
+          },
+        },
+        {
+          name: "mapValues",
+          run: () => {
+            const map = new Map([
+              ["a", 1],
+              ["b", 2],
+              ["c", 3],
+            ]);
+
+            assertDeepEqual(
+              toEntries(maps.mapValues(map, (value) => value * 10)),
+              [
+                ["a", 10],
+                ["b", 20],
+                ["c", 30],
+              ],
+              "maps.mapValues output",
+            );
+          },
+        },
+        {
+          name: "reduce",
+          run: () => {
+            const map = new Map([
+              ["a", 1],
+              ["b", 2],
+              ["c", 3],
+            ]);
+
+            assertEqual(
+              maps.reduce(map, (sum, value) => sum + value, 0),
+              6,
+              "maps.reduce output",
+            );
+          },
+        },
+        {
+          name: "some",
+          run: () => {
+            const map = new Map([
+              ["a", 1],
+              ["b", 2],
+              ["c", 3],
+            ]);
+
+            assertEqual(
+              maps.some(map, (value) => value === 2),
+              true,
+              "maps.some output",
+            );
+          },
+        },
+      ],
+    },
+  ];
+}
+
+/**
+ * Creates smoke-test suites for deterministic math helpers re-exported from
+ * es-toolkit.
+ */
+function createMathSuites(): SmokeSuite[] {
+  return [
+    {
+      name: "math",
+      checks: [
+        {
+          name: "clamp",
+          run: () => {
+            assertEqual(math.clamp(10, 0, 5), 5, "math.clamp output");
+          },
+        },
+        {
+          name: "inRange",
+          run: () => {
+            assertEqual(math.inRange(3, 1, 5), true, "math.inRange output");
+          },
+        },
+        {
+          name: "mean",
+          run: () => {
+            assertEqual(math.mean([2, 4, 6]), 4, "math.mean output");
+          },
+        },
+        {
+          name: "meanBy",
+          run: () => {
+            assertEqual(
+              math.meanBy([{ n: 2 }, { n: 4 }, { n: 6 }], (item) => item.n),
+              4,
+              "math.meanBy output",
+            );
+          },
+        },
+        {
+          name: "median",
+          run: () => {
+            assertEqual(math.median([5, 1, 3]), 3, "math.median output");
+          },
+        },
+        {
+          name: "medianBy",
+          run: () => {
+            assertEqual(
+              math.medianBy([{ n: 5 }, { n: 1 }, { n: 3 }], (item) => item.n),
+              3,
+              "math.medianBy output",
+            );
+          },
+        },
+        {
+          name: "range",
+          run: () => {
+            assertDeepEqual(
+              math.range(1, 5),
+              [1, 2, 3, 4],
+              "math.range output",
+            );
+          },
+        },
+        {
+          name: "rangeRight",
+          run: () => {
+            assertDeepEqual(
+              math.rangeRight(1, 5),
+              [4, 3, 2, 1],
+              "math.rangeRight output",
+            );
+          },
+        },
+        {
+          name: "round",
+          run: () => {
+            assertEqual(math.round(1.2345, 2), 1.23, "math.round output");
+          },
+        },
+        {
+          name: "sum",
+          run: () => {
+            assertEqual(math.sum([1, 2, 3]), 6, "math.sum output");
+          },
+        },
+        {
+          name: "sumBy",
+          run: () => {
+            assertEqual(
+              math.sumBy([{ n: 1 }, { n: 2 }, { n: 3 }], (item) => item.n),
+              6,
+              "math.sumBy output",
+            );
+          },
+        },
+      ],
+    },
+  ];
+}
+
+/**
+ * Creates smoke-test suites for object helpers re-exported from es-toolkit.
+ */
+function createObjectSuites(): SmokeSuite[] {
+  return [
+    {
+      name: "objects",
+      checks: [
+        {
+          name: "clone",
+          run: () => {
+            const source = { nested: { count: 1 } };
+            const cloned = objects.clone(source);
+
+            assert(
+              cloned !== source,
+              "objects.clone should create a new object",
+            );
+            cloned.nested.count = 2;
+            assertEqual(
+              source.nested.count,
+              2,
+              "objects.clone should preserve shallow references",
+            );
+          },
+        },
+        {
+          name: "cloneDeep",
+          run: () => {
+            const source = { nested: { count: 1 } };
+            const cloned = objects.cloneDeep(source);
+
+            cloned.nested.count = 2;
+
+            assertEqual(
+              source.nested.count,
+              1,
+              "objects.cloneDeep should isolate nested objects",
+            );
+            assertEqual(
+              cloned.nested.count,
+              2,
+              "objects.cloneDeep mutated clone output",
+            );
+          },
+        },
+        {
+          name: "findKey",
+          run: () => {
+            assertEqual(
+              objects.findKey({ a: 1, b: 2, c: 3 }, (value) => value === 2),
+              "b",
+              "objects.findKey output",
+            );
+          },
+        },
+        {
+          name: "flattenObject",
+          run: () => {
+            assertDeepEqual(
+              objects.flattenObject({ a: { b: 1 }, c: 2 }),
+              { "a.b": 1, c: 2 },
+              "objects.flattenObject output",
+            );
+          },
+        },
+        {
+          name: "invert",
+          run: () => {
+            assertDeepEqual(
+              objects.invert({ a: "x", b: "y" }),
+              { x: "a", y: "b" },
+              "objects.invert output",
+            );
+          },
+        },
+        {
+          name: "mapKeys",
+          run: () => {
+            assertDeepEqual(
+              objects.mapKeys({ a: 1, b: 2 }, (_value, key) =>
+                key.toUpperCase(),
+              ),
+              { A: 1, B: 2 },
+              "objects.mapKeys output",
+            );
+          },
+        },
+        {
+          name: "mapValues",
+          run: () => {
+            assertDeepEqual(
+              objects.mapValues({ a: 1, b: 2 }, (value) => value * 10),
+              { a: 10, b: 20 },
+              "objects.mapValues output",
+            );
+          },
+        },
+        {
+          name: "merge",
+          run: () => {
+            assertDeepEqual(
+              objects.merge(
+                { a: 1, nested: { x: 1 } },
+                { b: 2, nested: { y: 2 } },
+              ),
+              { a: 1, b: 2, nested: { x: 1, y: 2 } },
+              "objects.merge output",
+            );
+          },
+        },
+        {
+          name: "mergeWith",
+          run: () => {
+            assertDeepEqual(
+              objects.mergeWith(
+                { items: [1] },
+                { items: [2] },
+                (objectValue, sourceValue) => {
+                  if (
+                    Array.isArray(objectValue) &&
+                    Array.isArray(sourceValue)
+                  ) {
+                    return objectValue.concat(sourceValue);
+                  }
+
+                  return undefined;
+                },
+              ),
+              { items: [1, 2] },
+              "objects.mergeWith output",
+            );
+          },
+        },
+        {
+          name: "omit",
+          run: () => {
+            assertDeepEqual(
+              objects.omit({ a: 1, b: 2, c: 3 }, ["b"]),
+              { a: 1, c: 3 },
+              "objects.omit output",
+            );
+          },
+        },
+        {
+          name: "omitBy",
+          run: () => {
+            assertDeepEqual(
+              objects.omitBy({ a: 1, b: 2, c: 3 }, (value) => value % 2 === 0),
+              { a: 1, c: 3 },
+              "objects.omitBy output",
+            );
+          },
+        },
+        {
+          name: "pick",
+          run: () => {
+            assertDeepEqual(
+              objects.pick({ a: 1, b: 2, c: 3 }, ["a", "c"]),
+              { a: 1, c: 3 },
+              "objects.pick output",
+            );
+          },
+        },
+        {
+          name: "pickBy",
+          run: () => {
+            assertDeepEqual(
+              objects.pickBy({ a: 1, b: 2, c: 3 }, (value) => value >= 2),
+              { b: 2, c: 3 },
+              "objects.pickBy output",
+            );
+          },
+        },
+        {
+          name: "toMerged",
+          run: () => {
+            assertDeepEqual(
+              objects.toMerged(
+                { a: 1, nested: { x: 1 } },
+                { nested: { y: 2 } },
+              ),
+              { a: 1, nested: { x: 1, y: 2 } },
+              "objects.toMerged output",
+            );
+          },
+        },
+      ],
+    },
+  ];
+}
+
+/**
+ * Creates the smoke-test suites executed inside Goja.
+ *
+ * Each suite focuses on a small public area of the SDK so runtime failures can
+ * be attributed quickly without mirroring the full unit-test suite.
+ */
+function createSuites(): SmokeSuite[] {
+  return [
+    ...createStringSuites(),
+    ...createOptionSuites(),
+    ...createIrSuites(),
+    ...createArraySuites(),
+    ...createFunctionSuites(),
+    ...createMapSuites(),
+    ...createMathSuites(),
+    ...createObjectSuites(),
   ];
 }
 
