@@ -79,7 +79,7 @@ Think of the SDK as four pieces that work together:
 - A separate `testing` entry point for building realistic IR fixtures in unit tests.
 - A small CLI plus shared `tsconfig` presets for the normal plugin build workflow.
 
-The README focuses on how these surfaces fit together. A fuller API reference live in dedicated docs.
+The README focuses on how these surfaces fit together. A fuller API reference live in dedicated docs at [vdl-plugin-sdk.varavel.com](https://vdl-plugin-sdk.varavel.com).
 
 ## Entry Points
 
