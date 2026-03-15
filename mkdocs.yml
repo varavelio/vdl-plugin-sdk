@@ -1,0 +1,86 @@
+site_name: VDL Plugin SDK
+site_description: SDK to build plugins for VDL using TypeScript
+site_url: https://vdl-plugin-sdk.varavel.com
+repo_url: https://github.com/varavelio/vdl-plugin-sdk
+repo_name: varavelio/vdl-plugin-sdk
+
+nav:
+  - Getting Started: index.md
+  - API Reference:
+      - Core: api/core.md
+      - Utils:
+          - IR: api/utils/ir.md
+          - Options: api/utils/options.md
+          - Strings: api/utils/strings.md
+          - Arrays: api/utils/arrays.md
+          - Functions: api/utils/functions.md
+          - Maps: api/utils/maps.md
+          - Math: api/utils/math.md
+          - Misc: api/utils/misc.md
+          - Objects: api/utils/objects.md
+          - Predicates: api/utils/predicates.md
+          - Sets: api/utils/sets.md
+      - Testing: api/testing.md
+  - LLMs:
+      - llms.txt ↗: llms.txt
+
+theme:
+  name: material
+  logo: https://raw.githubusercontent.com/varavelio/vdl/9cb8432f972f986ba91ffa1e4fe82220a8aa373f/assets/png/vdl.png
+  favicon: https://raw.githubusercontent.com/varavelio/vdl/9cb8432f972f986ba91ffa1e4fe82220a8aa373f/assets/png/icon.png
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - content.code.copy
+    - content.code.annotate
+
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      primary: black
+      accent: blue
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to automatic mode
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+  - md_in_html
+
+plugins:
+  - llmstxt:
+      full_output: llms.txt
+      sections:
+        "Full documentation":
+          - "*.md"
+
+extra_javascript:
+  - assets/js/llms-link.js
