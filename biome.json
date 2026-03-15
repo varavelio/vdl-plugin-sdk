@@ -18,7 +18,10 @@
       "!**/dist",
       "!**/tmp",
       "!**/temp",
-      "!src/types"
+      "!**/site",
+      "!**/es-toolkit.ts",
+      "!src/types",
+      "!docs/api"
     ]
   },
   "formatter": {

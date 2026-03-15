@@ -5,7 +5,12 @@
   "excludes": [
     "**/*.js",
     "**/*.ts",
-    "**/*-lock.json"
+    "**/*-lock.json",
+    "**/es-toolkit.ts",
+    "docs/api/**",
+    "dist/**",
+    "node_modules/**",
+    "site/**"
   ],
   "plugins": [
     "https://plugins.dprint.dev/json-0.21.1.wasm",
