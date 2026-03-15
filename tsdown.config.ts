@@ -1,7 +1,7 @@
 import { defineConfig } from "tsdown";
 
 export default defineConfig({
-  entry: ["./src/index.ts", "./src/testing/index.ts"],
+  entry: ["./src/index.ts", "./src/utils/index.ts", "./src/testing/index.ts"],
   format: ["esm", "cjs"],
   platform: "neutral",
   target: "es2015",
