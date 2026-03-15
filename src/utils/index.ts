@@ -1,3 +1,8 @@
+export * as arrays from "./arrays";
+export * as functions from "./functions";
 export * as ir from "./ir";
+export * as maps from "./maps";
+export * as math from "./math";
+export * as objects from "./objects";
 export * as options from "./options";
 export * as strings from "./strings";
