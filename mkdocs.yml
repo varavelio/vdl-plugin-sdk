@@ -25,6 +25,7 @@ nav:
       - Testing: api/testing.md
   - LLMs:
       - llms.txt ↗: llms.txt
+      - llms-full.txt ↗: llms-full.txt
 
 theme:
   name: material
