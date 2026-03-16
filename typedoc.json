@@ -5,15 +5,17 @@
     "./src/entrypoints/testing.ts"
   ],
   "entryPointStrategy": "resolve",
-  "excludeInternal": true,
-  "excludePrivate": true,
-  "excludeProtected": true,
   "readme": "none",
   "router": "module",
   "entryFileName": "index",
+  "excludeInternal": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
   "hideBreadcrumbs": true,
   "hidePageHeader": true,
   "disableSources": true,
+  "useCodeBlocks": true,
+  "cleanOutputDir": true,
   "plugin": ["typedoc-plugin-markdown"],
   "out": "./docs/api"
 }
