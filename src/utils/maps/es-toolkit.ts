@@ -43,7 +43,7 @@ import {
  * const result2 = every(map, (value) => value > 15);
  * // result2 will be: false
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const every: typeof esToolkit_every = esToolkit_every;
 
@@ -73,7 +73,7 @@ export const every: typeof esToolkit_every = esToolkit_every;
  * //   'd' => 4
  * // }
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const filter: typeof esToolkit_filter = esToolkit_filter;
 
@@ -99,7 +99,7 @@ export const filter: typeof esToolkit_filter = esToolkit_filter;
  * const result = findKey(map, (value) => value.quantity > 10);
  * // result will be: 'grape'
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const findKey: typeof esToolkit_findKey = esToolkit_findKey;
 
@@ -125,7 +125,7 @@ export const findKey: typeof esToolkit_findKey = esToolkit_findKey;
  * const result = findValue(map, (value) => value.quantity > 10);
  * // result will be: { color: 'purple', quantity: 15 }
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const findValue: typeof esToolkit_findValue = esToolkit_findValue;
 
@@ -154,7 +154,7 @@ export const findValue: typeof esToolkit_findValue = esToolkit_findValue;
  * const result2 = hasValue(map, 5);
  * // result2 will be: false
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const hasValue: typeof esToolkit_hasValue = esToolkit_hasValue;
 
@@ -185,7 +185,7 @@ export const hasValue: typeof esToolkit_hasValue = esToolkit_hasValue;
  * //   'C' => 3
  * // }
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const mapKeys: typeof esToolkit_mapKeys = esToolkit_mapKeys;
 
@@ -216,7 +216,7 @@ export const mapKeys: typeof esToolkit_mapKeys = esToolkit_mapKeys;
  * //   'c' => 6
  * // }
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const mapValues: typeof esToolkit_mapValues = esToolkit_mapValues;
 
@@ -252,7 +252,7 @@ export const mapValues: typeof esToolkit_mapValues = esToolkit_mapValues;
  * const result = reduce(map, (acc, value) => acc + value);
  * // result will be: 30 (starts with first value 10)
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const reduce: typeof esToolkit_reduce = esToolkit_reduce;
 
@@ -281,6 +281,6 @@ export const reduce: typeof esToolkit_reduce = esToolkit_reduce;
  * const result2 = some(map, (value) => value > 5);
  * // result2 will be: false
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const some: typeof esToolkit_some = esToolkit_some;

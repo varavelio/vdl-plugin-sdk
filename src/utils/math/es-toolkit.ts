@@ -33,7 +33,7 @@ import {
  * @example
  * const result1 = clamp(10, 5); // result1 will be 5, as 10 is clamped to the bound 5
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const clamp: typeof esToolkit_clamp = esToolkit_clamp;
 
@@ -48,7 +48,7 @@ export const clamp: typeof esToolkit_clamp = esToolkit_clamp;
  * const result = inRange(3, 5); // result will be true.
  * const result2 = inRange(5, 5); // result2 will be false.
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const inRange: typeof esToolkit_inRange = esToolkit_inRange;
 
@@ -65,7 +65,7 @@ export const inRange: typeof esToolkit_inRange = esToolkit_inRange;
  * const result = mean(numbers);
  * // result will be 3
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const mean: typeof esToolkit_mean = esToolkit_mean;
 
@@ -84,7 +84,7 @@ export const mean: typeof esToolkit_mean = esToolkit_mean;
  * meanBy([{ a: 1 }, { a: 2 }, { a: 3 }], x => x.a); // Returns: 2
  * meanBy([], x => x.a); // Returns: NaN
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const meanBy: typeof esToolkit_meanBy = esToolkit_meanBy;
 
@@ -110,7 +110,7 @@ export const meanBy: typeof esToolkit_meanBy = esToolkit_meanBy;
  * const result = median(arrayWithEvenNumberOfElements);
  * // result will be 2.5
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const median: typeof esToolkit_median = esToolkit_median;
 
@@ -134,7 +134,7 @@ export const median: typeof esToolkit_median = esToolkit_median;
  * medianBy([{ a: 1 }, { a: 2 }, { a: 3 }, { a: 4 }], x => x.a); // Returns: 2.5
  * medianBy([], x => x.a); // Returns: NaN
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const medianBy: typeof esToolkit_medianBy = esToolkit_medianBy;
 
@@ -148,7 +148,7 @@ export const medianBy: typeof esToolkit_medianBy = esToolkit_medianBy;
  * // Returns [0, 1, 2, 3]
  * range(4);
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const range: typeof esToolkit_range = esToolkit_range;
 
@@ -162,7 +162,7 @@ export const range: typeof esToolkit_range = esToolkit_range;
  * // Returns [3, 2, 1, 0]
  * rangeRight(4);
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const rangeRight: typeof esToolkit_rangeRight = esToolkit_rangeRight;
 
@@ -183,7 +183,7 @@ export const rangeRight: typeof esToolkit_rangeRight = esToolkit_rangeRight;
  * const result3 = round(1.2345, 3); // result3 will be 1.235
  * const result4 = round(1.2345, 3.1); // This will throw an error
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const round: typeof esToolkit_round = esToolkit_round;
 
@@ -200,7 +200,7 @@ export const round: typeof esToolkit_round = esToolkit_round;
  * const result = sum(numbers);
  * // result will be 15
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const sum: typeof esToolkit_sum = esToolkit_sum;
 
@@ -220,6 +220,6 @@ export const sum: typeof esToolkit_sum = esToolkit_sum;
  * sumBy([{ a: 1 }, { a: 2 }, { a: 3 }], (x, i) => x.a * i); // Returns: 8
  * sumBy([], () => 1); // Returns: 0
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const sumBy: typeof esToolkit_sumBy = esToolkit_sumBy;

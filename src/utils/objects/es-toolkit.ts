@@ -51,7 +51,7 @@ import {
  * console.log(clonedObj); // { a: 1, b: 'es-toolkit', c: [1, 2, 3] }
  * console.log(clonedObj === obj); // false
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const clone: typeof esToolkit_clone = esToolkit_clone;
 
@@ -101,7 +101,7 @@ export const clone: typeof esToolkit_clone = esToolkit_clone;
  * console.log(clonedObj); // { a: 1, b: { c: 1 } }
  * console.log(clonedObj === obj); // false
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const cloneDeep: typeof esToolkit_cloneDeep = esToolkit_cloneDeep;
 
@@ -123,7 +123,7 @@ export const cloneDeep: typeof esToolkit_cloneDeep = esToolkit_cloneDeep;
  * };
  * findKey(users, function(o) { return o.age < 40; }); => 'barney'
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const findKey: typeof esToolkit_findKey = esToolkit_findKey;
 
@@ -131,7 +131,7 @@ export const findKey: typeof esToolkit_findKey = esToolkit_findKey;
  * The delimiter to use between nested keys.
  * @default '.'
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const flattenObject: typeof esToolkit_flattenObject =
   esToolkit_flattenObject;
@@ -154,7 +154,7 @@ export const flattenObject: typeof esToolkit_flattenObject =
  * invert({ a: 1, 2: 'b', c: 3, 4: 'd' }); // { 1: 'a', b: '2', 3: 'c', d: '4' }
  * invert({ a: Symbol('sym1'), b: Symbol('sym2') }); // { [Symbol('sym1')]: 'a', [Symbol('sym2')]: 'b' }
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const invert: typeof esToolkit_invert = esToolkit_invert;
 
@@ -175,7 +175,7 @@ export const invert: typeof esToolkit_invert = esToolkit_invert;
  * const result = mapKeys(obj, (value, key) => key + value);
  * console.log(result); // { a1: 1, b2: 2 }
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const mapKeys: typeof esToolkit_mapKeys = esToolkit_mapKeys;
 
@@ -197,7 +197,7 @@ export const mapKeys: typeof esToolkit_mapKeys = esToolkit_mapKeys;
  * const result = mapValues(obj, (value) => value * 2);
  * console.log(result); // { a: 2, b: 4 }
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const mapValues: typeof esToolkit_mapValues = esToolkit_mapValues;
 
@@ -241,7 +241,7 @@ export const mapValues: typeof esToolkit_mapValues = esToolkit_mapValues;
  * console.log(result);
  * // Output: { a: [1, 2, 3] }
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const merge: typeof esToolkit_merge = esToolkit_merge;
 
@@ -293,7 +293,7 @@ export const merge: typeof esToolkit_merge = esToolkit_merge;
  *
  * expect(result).toEqual({ a: [1, 3], b: [2, 4] });
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const mergeWith: typeof esToolkit_mergeWith = esToolkit_mergeWith;
 
@@ -314,7 +314,7 @@ export const mergeWith: typeof esToolkit_mergeWith = esToolkit_mergeWith;
  * const result = omit(obj, ['b', 'c']);
  * // result will be { a: 1 }
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const omit: typeof esToolkit_omit = esToolkit_omit;
 
@@ -337,7 +337,7 @@ export const omit: typeof esToolkit_omit = esToolkit_omit;
  * const result = omitBy(obj, shouldOmit);
  * // result will be { a: 1, c: 3 }
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const omitBy: typeof esToolkit_omitBy = esToolkit_omitBy;
 
@@ -358,7 +358,7 @@ export const omitBy: typeof esToolkit_omitBy = esToolkit_omitBy;
  * const result = pick(obj, ['a', 'c']);
  * // result will be { a: 1, c: 3 }
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const pick: typeof esToolkit_pick = esToolkit_pick;
 
@@ -381,7 +381,7 @@ export const pick: typeof esToolkit_pick = esToolkit_pick;
  * const result = pickBy(obj, shouldPick);
  * // result will be { b: 'pick' }
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const pickBy: typeof esToolkit_pickBy = esToolkit_pickBy;
 
@@ -427,6 +427,6 @@ export const pickBy: typeof esToolkit_pickBy = esToolkit_pickBy;
  * console.log(result);
  * // Output: { a: [1, 2, 3] }
  *
- * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)
  */
 export const toMerged: typeof esToolkit_toMerged = esToolkit_toMerged;
