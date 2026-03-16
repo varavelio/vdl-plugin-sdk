@@ -18,7 +18,7 @@ import { hash as ohashHash } from "ohash";
  * // returns a deterministic hash string such as "g82Nh7Lh3CUR..."
  * ```
  *
- * @copyright Powered by `ohash` (MIT): https://github.com/unjs/ohash
+ * @see Powered by `ohash` (MIT): https://github.com/unjs/ohash
  */
 export function hash(input: unknown): string {
   return ohashHash(input);

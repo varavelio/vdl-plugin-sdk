@@ -76,7 +76,7 @@ import {
  * const result = at(numbers, [1, 3, 4]);
  * console.log(result); // [20, 40, 50]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const at: typeof esToolkit_at = esToolkit_at;
 
@@ -103,7 +103,7 @@ export const at: typeof esToolkit_at = esToolkit_at;
  * chunk(['a', 'b', 'c', 'd', 'e', 'f', 'g'], 3);
  * // Returns: [['a', 'b', 'c'], ['d', 'e', 'f'], ['g']]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const chunk: typeof esToolkit_chunk = esToolkit_chunk;
 
@@ -118,7 +118,7 @@ export const chunk: typeof esToolkit_chunk = esToolkit_chunk;
  * compact([0, -0, 0n, 1, false, 2, '', 3, null, undefined, 4, NaN, 5]);
  * Returns: [1, 2, 3, 4, 5]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const compact: typeof esToolkit_compact = esToolkit_compact;
 
@@ -155,7 +155,7 @@ export const compact: typeof esToolkit_compact = esToolkit_compact;
  * const result = countBy(array, (item, index) => index < 2 ? 'first' : 'rest');
  * // result will be { first: 2, rest: 2 }
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const countBy: typeof esToolkit_countBy = esToolkit_countBy;
 
@@ -181,7 +181,7 @@ export const countBy: typeof esToolkit_countBy = esToolkit_countBy;
  * const result = difference(array1, array2);
  * // result will be [1, 3, 5] since 2 and 4 are in both arrays and are excluded from the result.
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const difference: typeof esToolkit_difference = esToolkit_difference;
 
@@ -217,7 +217,7 @@ export const difference: typeof esToolkit_difference = esToolkit_difference;
  * const result = differenceBy(array1, array2, mapper);
  * // result will be [{ id: 1 }, { id: 3 }] since 2 is present in both arrays after mapping, and is excluded from the result.
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const differenceBy: typeof esToolkit_differenceBy =
   esToolkit_differenceBy;
@@ -250,7 +250,7 @@ export const differenceBy: typeof esToolkit_differenceBy =
  * const result = differenceWith(array1, array2, areItemsEqual);
  * // result will be [{ id: 1 }, { id: 3 }] since the element with id 2 is considered equal to the second array's element and is excluded from the result.
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const differenceWith: typeof esToolkit_differenceWith =
   esToolkit_differenceWith;
@@ -271,7 +271,7 @@ export const differenceWith: typeof esToolkit_differenceWith =
  * const result = drop(array, 2);
  * // result will be [3, 4, 5] since the first two elements are dropped.
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const drop: typeof esToolkit_drop = esToolkit_drop;
 
@@ -291,7 +291,7 @@ export const drop: typeof esToolkit_drop = esToolkit_drop;
  * const result = dropRight(array, 2);
  * // result will be [1, 2, 3] since the last two elements are dropped.
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const dropRight: typeof esToolkit_dropRight = esToolkit_dropRight;
 
@@ -313,7 +313,7 @@ export const dropRight: typeof esToolkit_dropRight = esToolkit_dropRight;
  * const result = dropRightWhile(array, x => x > 3);
  * // result will be [1, 2, 3] since elements greater than 3 are dropped from the end.
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const dropRightWhile: typeof esToolkit_dropRightWhile =
   esToolkit_dropRightWhile;
@@ -336,7 +336,7 @@ export const dropRightWhile: typeof esToolkit_dropRightWhile =
  * const result = dropWhile(array, x => x < 3);
  * // result will be [3, 4, 5] since elements less than 3 are dropped.
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const dropWhile: typeof esToolkit_dropWhile = esToolkit_dropWhile;
 
@@ -360,7 +360,7 @@ export const dropWhile: typeof esToolkit_dropWhile = esToolkit_dropWhile;
  * flatMap(arr, (item: number) => [[item, item]], 2);
  * // [1, 1, 2, 2, 3, 3]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const flatMap: typeof esToolkit_flatMap = esToolkit_flatMap;
 
@@ -377,7 +377,7 @@ export const flatMap: typeof esToolkit_flatMap = esToolkit_flatMap;
  * const result = flatMapDeep([1, 2, 3], n => [[n, n]]);
  * // [1, 1, 2, 2, 3, 3]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const flatMapDeep: typeof esToolkit_flatMapDeep = esToolkit_flatMapDeep;
 
@@ -397,7 +397,7 @@ export const flatMapDeep: typeof esToolkit_flatMapDeep = esToolkit_flatMapDeep;
  * const arr = flatten([1, [2, 3], [4, [5, 6]]], 2);
  * // Returns: [1, 2, 3, 4, 5, 6]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const flatten: typeof esToolkit_flatten = esToolkit_flatten;
 
@@ -411,7 +411,7 @@ export const flatten: typeof esToolkit_flatten = esToolkit_flatten;
  * ExtractNestedArrayType<(boolean | (string | number[])[])[]>
  * // string | number | boolean
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const flattenDeep: typeof esToolkit_flattenDeep = esToolkit_flattenDeep;
 
@@ -453,7 +453,7 @@ export const flattenDeep: typeof esToolkit_flattenDeep = esToolkit_flattenDeep;
  * const result = groupBy(items, (item, index) => index % 2 === 0 ? 'even' : 'odd');
  * // result will be: { even: ['a', 'c'], odd: ['b', 'd'] }
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const groupBy: typeof esToolkit_groupBy = esToolkit_groupBy;
 
@@ -472,7 +472,7 @@ export const groupBy: typeof esToolkit_groupBy = esToolkit_groupBy;
  * const firstElement = head(arr);
  * // firstElement will be 1
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const head: typeof esToolkit_head = esToolkit_head;
 
@@ -488,7 +488,7 @@ export const head: typeof esToolkit_head = esToolkit_head;
  * const result = initial(array);
  * // result will be []
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const initial: typeof esToolkit_initial = esToolkit_initial;
 
@@ -510,7 +510,7 @@ export const initial: typeof esToolkit_initial = esToolkit_initial;
  * const result = intersection(array1, array2);
  * // result will be [3, 4, 5] since these elements are in both arrays.
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const intersection: typeof esToolkit_intersection =
   esToolkit_intersection;
@@ -548,7 +548,7 @@ export const intersection: typeof esToolkit_intersection =
  * const result = intersectionBy(array1, array2, mapper);
  * // result will be [{ id: 2, name: 'amy' }] since only this element has a matching id that is equal to seconds array's element.
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const intersectionBy: typeof esToolkit_intersectionBy =
   esToolkit_intersectionBy;
@@ -587,7 +587,7 @@ export const intersectionBy: typeof esToolkit_intersectionBy =
  * const result = intersectionWith(array1, array2, areItemsEqual);
  * // result will be [{ id: 2, name: 'amy' }] since this element has a matching id that is equal to seconds array's element.
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const intersectionWith: typeof esToolkit_intersectionWith =
   esToolkit_intersectionWith;
@@ -615,7 +615,7 @@ export const intersectionWith: typeof esToolkit_intersectionWith =
  * isSubset(superset, subset); // false
  * ```
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isSubset: typeof esToolkit_isSubset = esToolkit_isSubset;
 
@@ -649,7 +649,7 @@ export const isSubset: typeof esToolkit_isSubset = esToolkit_isSubset;
  * isSubsetWith(superset, subset, areItemsEqual); // false
  * ```
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isSubsetWith: typeof esToolkit_isSubsetWith =
   esToolkit_isSubsetWith;
@@ -687,7 +687,7 @@ export const isSubsetWith: typeof esToolkit_isSubsetWith =
  * const result = keyBy(items, (item, index) => index);
  * // result will be: { 0: 'a', 1: 'b', 2: 'c' }
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const keyBy: typeof esToolkit_keyBy = esToolkit_keyBy;
 
@@ -713,7 +713,7 @@ export const keyBy: typeof esToolkit_keyBy = esToolkit_keyBy;
  * const noElement = last(emptyArr);
  * // noElement will be undefined
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const last: typeof esToolkit_last = esToolkit_last;
 
@@ -737,7 +737,7 @@ export const last: typeof esToolkit_last = esToolkit_last;
  *   x => x.age
  * ); // Returns: { name: 'john', age: 30 }
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const maxBy: typeof esToolkit_maxBy = esToolkit_maxBy;
 
@@ -761,7 +761,7 @@ export const maxBy: typeof esToolkit_maxBy = esToolkit_maxBy;
  *   x => x.age
  * ); // Returns: { name: 'joe', age: 26 }
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const minBy: typeof esToolkit_minBy = esToolkit_minBy;
 
@@ -799,7 +799,7 @@ export const minBy: typeof esToolkit_minBy = esToolkit_minBy;
  * //   { user: 'fred', age: 40 },
  * // ]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const orderBy: typeof esToolkit_orderBy = esToolkit_orderBy;
 
@@ -826,7 +826,7 @@ export const orderBy: typeof esToolkit_orderBy = esToolkit_orderBy;
  * const [even, odd]: [(2 | 4)[], (2 | 4)[]] = partition(array, isEven);
  * // even will be [2, 4], and odd will be [1, 3]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const partition: typeof esToolkit_partition = esToolkit_partition;
 
@@ -862,7 +862,7 @@ export const partition: typeof esToolkit_partition = esToolkit_partition;
  * //   { user : 'foo', age: 24 },
  * // ]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const sortBy: typeof esToolkit_sortBy = esToolkit_sortBy;
 
@@ -878,7 +878,7 @@ export const sortBy: typeof esToolkit_sortBy = esToolkit_sortBy;
  * const result = tail(arr);
  * // result will be []
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const tail: typeof esToolkit_tail = esToolkit_tail;
 
@@ -910,7 +910,7 @@ export const tail: typeof esToolkit_tail = esToolkit_tail;
  * const arr = [1, 2, 3];
  * const result = arr.map((v, i, array) => take(array, i, true));
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const take: typeof esToolkit_take = esToolkit_take;
 
@@ -935,7 +935,7 @@ export const take: typeof esToolkit_take = esToolkit_take;
  * // Returns [1, 2, 3]
  * takeRight([1, 2, 3], 5);
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const takeRight: typeof esToolkit_takeRight = esToolkit_takeRight;
 
@@ -961,7 +961,7 @@ export const takeRight: typeof esToolkit_takeRight = esToolkit_takeRight;
  * takeRightWhile([10, 20, 30, 40], (x, index) => index > 1);
  * // Returns: [30, 40]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const takeRightWhile: typeof esToolkit_takeRightWhile =
   esToolkit_takeRightWhile;
@@ -989,7 +989,7 @@ export const takeRightWhile: typeof esToolkit_takeRightWhile =
  * takeWhile([10, 20, 30, 40], (x, index) => index < 2);
  * // Returns: [10, 20]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const takeWhile: typeof esToolkit_takeWhile = esToolkit_takeWhile;
 
@@ -1021,7 +1021,7 @@ export const takeWhile: typeof esToolkit_takeWhile = esToolkit_takeWhile;
  * console.log(result); // [1, '*', '*', '*', 5]
  * console.log(array); // [1, 2, 3, 4, 5]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const toFilled: typeof esToolkit_toFilled = esToolkit_toFilled;
 
@@ -1042,7 +1042,7 @@ export const toFilled: typeof esToolkit_toFilled = esToolkit_toFilled;
  * const result = union(array1, array2);
  * // result will be [1, 2, 3, 4, 5]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const union: typeof esToolkit_union = esToolkit_union;
 
@@ -1068,7 +1068,7 @@ export const union: typeof esToolkit_union = esToolkit_union;
  * unionBy([{ id: 1 }, { id: 2 }], [{ id: 2 }, { id: 3 }], idMapper);
  * // Returns [{ id: 1 }, { id: 2 }, { id: 3 }]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const unionBy: typeof esToolkit_unionBy = esToolkit_unionBy;
 
@@ -1092,7 +1092,7 @@ export const unionBy: typeof esToolkit_unionBy = esToolkit_unionBy;
  * const result = unionWith(array1, array2, areItemsEqual);
  * // result will be [{ id: 1 }, { id: 2 }, { id: 3 }] since { id: 2 } is considered equal in both arrays
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const unionWith: typeof esToolkit_unionWith = esToolkit_unionWith;
 
@@ -1111,7 +1111,7 @@ export const unionWith: typeof esToolkit_unionWith = esToolkit_unionWith;
  * const result = uniq(array);
  * // result will be [1, 2, 3, 4, 5]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const uniq: typeof esToolkit_uniq = esToolkit_uniq;
 
@@ -1143,7 +1143,7 @@ export const uniq: typeof esToolkit_uniq = esToolkit_uniq;
  * // 2
  * ```
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const uniqBy: typeof esToolkit_uniqBy = esToolkit_uniqBy;
 
@@ -1162,7 +1162,7 @@ export const uniqBy: typeof esToolkit_uniqBy = esToolkit_uniqBy;
  * // [1.2, 3.2, 5.7, 7.19]
  * ```
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const uniqWith: typeof esToolkit_uniqWith = esToolkit_uniqWith;
 
@@ -1179,7 +1179,7 @@ export const uniqWith: typeof esToolkit_uniqWith = esToolkit_uniqWith;
  * const result = unzip(zipped);
  * // result will be [['a', 'b'], [true, false], [1, 2]]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const unzip: typeof esToolkit_unzip = esToolkit_unzip;
 
@@ -1197,7 +1197,7 @@ export const unzip: typeof esToolkit_unzip = esToolkit_unzip;
  * const result = unzipWith(nestedArray, (item, item2, item3) => item + item2 + item3);
  * // result will be [9, 12]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const unzipWith: typeof esToolkit_unzipWith = esToolkit_unzipWith;
 
@@ -1207,7 +1207,7 @@ export const unzipWith: typeof esToolkit_unzipWith = esToolkit_unzipWith;
  * @interface WindowedOptions
  * @property {boolean} [partialWindows=false] - Whether to include partial windows at the end of the array.
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const windowed: typeof esToolkit_windowed = esToolkit_windowed;
 
@@ -1231,7 +1231,7 @@ export const windowed: typeof esToolkit_windowed = esToolkit_windowed;
  * without(['a', 'b', 'c', 'a'], 'a');
  * // Returns: ['b', 'c']
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const without: typeof esToolkit_without = esToolkit_without;
 
@@ -1252,7 +1252,7 @@ export const without: typeof esToolkit_without = esToolkit_without;
  * // Returns ['a', 'c']
  * xor(['a', 'b'], ['b', 'c']);
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const xor: typeof esToolkit_xor = esToolkit_xor;
 
@@ -1275,7 +1275,7 @@ export const xor: typeof esToolkit_xor = esToolkit_xor;
  * xorBy([{ id: 1 }, { id: 2 }], [{ id: 2 }, { id: 3 }], idMapper);
  * // Returns [{ id: 1 }, { id: 3 }]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const xorBy: typeof esToolkit_xorBy = esToolkit_xorBy;
 
@@ -1297,7 +1297,7 @@ export const xorBy: typeof esToolkit_xorBy = esToolkit_xorBy;
  * xorWith([{ id: 1 }, { id: 2 }], [{ id: 2 }, { id: 3 }], areObjectsEqual);
  * // Returns [{ id: 1 }, { id: 3 }]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const xorWith: typeof esToolkit_xorWith = esToolkit_xorWith;
 
@@ -1318,7 +1318,7 @@ export const xorWith: typeof esToolkit_xorWith = esToolkit_xorWith;
  * const result = zip(arr1);
  * // result will be [[1], [2], [3]]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const zip: typeof esToolkit_zip = esToolkit_zip;
 
@@ -1352,7 +1352,7 @@ export const zip: typeof esToolkit_zip = esToolkit_zip;
  * const result2 = zipObject(keys2, values2);
  * // result2 will be { a: 1, b: 2 }
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const zipObject: typeof esToolkit_zipObject = esToolkit_zipObject;
 
@@ -1383,6 +1383,6 @@ export const zipObject: typeof esToolkit_zipObject = esToolkit_zipObject;
  * const result = zipWith(arr1, arr2, arr3, (a, b, c) => `${a}${b}${c}`);
  * // result will be [`135`, `246`]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const zipWith: typeof esToolkit_zipWith = esToolkit_zipWith;

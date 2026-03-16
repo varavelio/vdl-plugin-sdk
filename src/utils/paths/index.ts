@@ -25,7 +25,7 @@ import { filename as patheFilename } from "pathe/utils";
  * // returns "generated/models/user.ts"z
  * ```
  *
- * @copyright Powered by `pathe` (MIT License): https://github.com/unjs/pathe
+ * @see Powered by `pathe` (MIT License): https://github.com/unjs/pathe
  */
 export function join(...parts: string[]): string {
   return patheJoin(...parts);
@@ -46,7 +46,7 @@ export function join(...parts: string[]): string {
  * // returns "/workspace/plugin/dist/index.js"
  * ```
  *
- * @copyright Powered by `pathe` (MIT License): https://github.com/unjs/pathe
+ * @see Powered by `pathe` (MIT License): https://github.com/unjs/pathe
  */
 export function resolve(...parts: string[]): string {
   return patheResolve(...parts);
@@ -67,7 +67,7 @@ export function resolve(...parts: string[]): string {
  * // returns "generated/types/user.ts"
  * ```
  *
- * @copyright Powered by `pathe` (MIT License): https://github.com/unjs/pathe
+ * @see Powered by `pathe` (MIT License): https://github.com/unjs/pathe
  */
 export function normalize(path: string): string {
   return patheNormalize(path);
@@ -86,7 +86,7 @@ export function normalize(path: string): string {
  * // returns "../types/user.ts"
  * ```
  *
- * @copyright Powered by `pathe` (MIT License): https://github.com/unjs/pathe
+ * @see Powered by `pathe` (MIT License): https://github.com/unjs/pathe
  */
 export function relative(from: string, to: string): string {
   return patheRelative(from, to);
@@ -104,7 +104,7 @@ export function relative(from: string, to: string): string {
  * // returns "generated/models"
  * ```
  *
- * @copyright Powered by `pathe` (MIT License): https://github.com/unjs/pathe
+ * @see Powered by `pathe` (MIT License): https://github.com/unjs/pathe
  */
 export function dirname(path: string): string {
   return patheDirname(path);
@@ -123,7 +123,7 @@ export function dirname(path: string): string {
  * // returns "user.ts"
  * ```
  *
- * @copyright Powered by `pathe` (MIT License): https://github.com/unjs/pathe
+ * @see Powered by `pathe` (MIT License): https://github.com/unjs/pathe
  */
 export function basename(path: string, extension?: string): string {
   return patheBasename(path, extension);
@@ -141,7 +141,7 @@ export function basename(path: string, extension?: string): string {
  * // returns ".ts"
  * ```
  *
- * @copyright Powered by `pathe` (MIT License): https://github.com/unjs/pathe
+ * @see Powered by `pathe` (MIT License): https://github.com/unjs/pathe
  */
 export function extname(path: string): string {
   return patheExtname(path);
@@ -162,7 +162,7 @@ export function extname(path: string): string {
  * // returns "user"
  * ```
  *
- * @copyright Powered by `pathe` (MIT License): https://github.com/unjs/pathe
+ * @see Powered by `pathe` (MIT License): https://github.com/unjs/pathe
  */
 export function filename(path: string): string | undefined {
   return patheFilename(path);
@@ -180,7 +180,7 @@ export function filename(path: string): string | undefined {
  * // returns true
  * ```
  *
- * @copyright Powered by `pathe` (MIT License): https://github.com/unjs/pathe
+ * @see Powered by `pathe` (MIT License): https://github.com/unjs/pathe
  */
 export function isAbsolute(path: string): boolean {
   return patheIsAbsolute(path);

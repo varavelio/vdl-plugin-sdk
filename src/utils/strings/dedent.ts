@@ -20,7 +20,7 @@ import dedentLibrary from "dedent";
  * // returns "export interface User {\n  id: string;\n}"
  * ```
  *
- * @copyright Powered by `dedent` (MIT License): https://github.com/dmnd/dedent
+ * @see Powered by `dedent` (MIT License): https://github.com/dmnd/dedent
  */
 export function dedent(input: string): string {
   return dedentLibrary(input);

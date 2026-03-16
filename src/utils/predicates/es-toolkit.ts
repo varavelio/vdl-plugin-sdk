@@ -51,7 +51,7 @@ import {
  * console.log(isBoolean(value2)); // false
  * console.log(isBoolean(value3)); // false
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isBoolean: typeof esToolkit_isBoolean = esToolkit_isBoolean;
 
@@ -68,7 +68,7 @@ export const isBoolean: typeof esToolkit_isBoolean = esToolkit_isBoolean;
  * console.log(isDate(value1)); // true
  * console.log(isDate(value2)); // false
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isDate: typeof esToolkit_isDate = esToolkit_isDate;
 
@@ -84,7 +84,7 @@ export const isDate: typeof esToolkit_isDate = esToolkit_isDate;
  * isEmptyObject([]); // false
  * isEmptyObject(null); // false
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isEmptyObject: typeof esToolkit_isEmptyObject =
   esToolkit_isEmptyObject;
@@ -103,7 +103,7 @@ export const isEmptyObject: typeof esToolkit_isEmptyObject =
  * isEqual(new Date('2020-01-01'), new Date('2020-01-01')); // true
  * isEqual([1, 2, 3], [1, 2, 3]); // true
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isEqual: typeof esToolkit_isEqual = esToolkit_isEqual;
 
@@ -120,7 +120,7 @@ export const isEqual: typeof esToolkit_isEqual = esToolkit_isEqual;
  * console.log(isError({ name: 'Error', message: '' })); // false
  * ```
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isError: typeof esToolkit_isError = esToolkit_isError;
 
@@ -137,7 +137,7 @@ export const isError: typeof esToolkit_isError = esToolkit_isError;
  * isFunction(Proxy); // true
  * isFunction(Int8Array); // true
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isFunction: typeof esToolkit_isFunction = esToolkit_isFunction;
 
@@ -169,7 +169,7 @@ export const isFunction: typeof esToolkit_isFunction = esToolkit_isFunction;
  * isJSON({ name: 'John' }); // false (not a string)
  * isJSON(null); // false (not a string)
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isJSON: typeof esToolkit_isJSON = esToolkit_isJSON;
 
@@ -197,7 +197,7 @@ export const isJSON: typeof esToolkit_isJSON = esToolkit_isJSON;
  * console.log(isJSONValue(undefined)); // false
  * console.log(isJSONValue(() => {})); // false
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isJSONArray: typeof esToolkit_isJSONArray = esToolkit_isJSONArray;
 
@@ -225,7 +225,7 @@ export const isJSONArray: typeof esToolkit_isJSONArray = esToolkit_isJSONArray;
  * console.log(isJSONValue(undefined)); // false
  * console.log(isJSONValue(() => {})); // false
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isJSONObject: typeof esToolkit_isJSONObject =
   esToolkit_isJSONObject;
@@ -254,7 +254,7 @@ export const isJSONObject: typeof esToolkit_isJSONObject =
  * console.log(isJSONValue(undefined)); // false
  * console.log(isJSONValue(() => {})); // false
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isJSONValue: typeof esToolkit_isJSONValue = esToolkit_isJSONValue;
 
@@ -275,7 +275,7 @@ export const isJSONValue: typeof esToolkit_isJSONValue = esToolkit_isJSONValue;
  * console.log(isMap(value2)); // false
  * console.log(isMap(value3)); // false
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isMap: typeof esToolkit_isMap = esToolkit_isMap;
 
@@ -298,7 +298,7 @@ export const isMap: typeof esToolkit_isMap = esToolkit_isMap;
  * const result2 = isNil(value2); // true
  * const result3 = isNil(value3); // false
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isNil: typeof esToolkit_isNil = esToolkit_isNil;
 
@@ -318,7 +318,7 @@ export const isNil: typeof esToolkit_isNil = esToolkit_isNil;
  * const result = arr.filter(isNotNil);
  * // result will be [1, 3]
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isNotNil: typeof esToolkit_isNotNil = esToolkit_isNotNil;
 
@@ -342,7 +342,7 @@ export const isNotNil: typeof esToolkit_isNotNil = esToolkit_isNotNil;
  * console.log(isNull(value2)); // false
  * console.log(isNull(value3)); // false
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isNull: typeof esToolkit_isNull = esToolkit_isNull;
 
@@ -367,7 +367,7 @@ export const isNull: typeof esToolkit_isNull = esToolkit_isNull;
  * console.log(isNumber(value2)); // false
  * console.log(isNumber(value3)); // false
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isNumber: typeof esToolkit_isNumber = esToolkit_isNumber;
 
@@ -413,7 +413,7 @@ export const isNumber: typeof esToolkit_isNumber = esToolkit_isNumber;
  * isPlainObject(globalThis);          // ❌,
  * ```
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isPlainObject: typeof esToolkit_isPlainObject =
   esToolkit_isPlainObject;
@@ -446,7 +446,7 @@ export const isPlainObject: typeof esToolkit_isPlainObject =
  * isPrimitive(new Set()); // false
  * isPrimitive([1, 2, 3]); // false
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isPrimitive: typeof esToolkit_isPrimitive = esToolkit_isPrimitive;
 
@@ -463,7 +463,7 @@ export const isPrimitive: typeof esToolkit_isPrimitive = esToolkit_isPrimitive;
  * console.log(isRegExp(value1)); // true
  * console.log(isRegExp(value2)); // false
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isRegExp: typeof esToolkit_isRegExp = esToolkit_isRegExp;
 
@@ -484,7 +484,7 @@ export const isRegExp: typeof esToolkit_isRegExp = esToolkit_isRegExp;
  * console.log(isSet(value2)); // false
  * console.log(isSet(value3)); // false
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isSet: typeof esToolkit_isSet = esToolkit_isSet;
 
@@ -505,7 +505,7 @@ export const isSet: typeof esToolkit_isSet = esToolkit_isSet;
  * console.log(isString(value2)); // false
  * console.log(isString(value3)); // false
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isString: typeof esToolkit_isString = esToolkit_isString;
 
@@ -529,6 +529,6 @@ export const isString: typeof esToolkit_isString = esToolkit_isString;
  * console.log(isUndefined(value2)); // false
  * console.log(isUndefined(value3)); // false
  *
- * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
+ * @see Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const isUndefined: typeof esToolkit_isUndefined = esToolkit_isUndefined;
