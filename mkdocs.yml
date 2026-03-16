@@ -79,9 +79,9 @@ markdown_extensions:
 
 plugins:
   - llmstxt:
-      full_output: llms.txt
+      full_output: llms-full.txt
       sections:
-        "Full documentation":
+        "Documentation":
           - "*.md"
 
 extra_javascript:
