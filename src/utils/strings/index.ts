@@ -1,4 +1,5 @@
 export * from "./camel-case";
+export * from "./dedent";
 export * from "./kebab-case";
 export * from "./lower-case";
 export * from "./pad";
