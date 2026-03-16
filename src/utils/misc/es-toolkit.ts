@@ -27,7 +27,7 @@ import {
  * // This call will fail and throw an error with the message 'This should throw'
  * invariant(false, 'This should throw');
  *
- * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const assert: typeof esToolkit_assert = esToolkit_assert;
 
@@ -70,7 +70,7 @@ export const assert: typeof esToolkit_assert = esToolkit_assert;
  * });
  * ```
  *
- * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const attempt: typeof esToolkit_attempt = esToolkit_attempt;
 
@@ -89,6 +89,6 @@ export const attempt: typeof esToolkit_attempt = esToolkit_attempt;
  * // This call will fail and throw an error with the message 'This should throw'
  * invariant(false, 'This should throw');
  *
- * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const invariant: typeof esToolkit_invariant = esToolkit_invariant;

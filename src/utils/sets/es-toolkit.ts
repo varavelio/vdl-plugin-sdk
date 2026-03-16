@@ -40,7 +40,7 @@ import {
  * const result = countBy(set, (value) => value.length);
  * // result will be Map(2) { 5 => 1, 6 => 2 }
  *
- * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const countBy: typeof esToolkit_countBy = esToolkit_countBy;
 
@@ -64,7 +64,7 @@ export const countBy: typeof esToolkit_countBy = esToolkit_countBy;
  * const result2 = every(set, (value) => value > 15);
  * // result2 will be: false
  *
- * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const every: typeof esToolkit_every = esToolkit_every;
 
@@ -85,7 +85,7 @@ export const every: typeof esToolkit_every = esToolkit_every;
  * // result will be:
  * // Set(3) { 3, 4, 5 }
  *
- * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const filter: typeof esToolkit_filter = esToolkit_filter;
 
@@ -110,7 +110,7 @@ export const filter: typeof esToolkit_filter = esToolkit_filter;
  * const result = find(set, (value) => value.quantity > 10);
  * // result will be: { name: 'grape', quantity: 15 }
  *
- * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const find: typeof esToolkit_find = esToolkit_find;
 
@@ -141,7 +141,7 @@ export const find: typeof esToolkit_find = esToolkit_find;
  * //   'vegetable' => { type: 'vegetable', name: 'carrot' }
  * // }
  *
- * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const keyBy: typeof esToolkit_keyBy = esToolkit_keyBy;
 
@@ -163,7 +163,7 @@ export const keyBy: typeof esToolkit_keyBy = esToolkit_keyBy;
  * // result will be:
  * // Set(3) { 2, 4, 6 }
  *
- * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const map: typeof esToolkit_map = esToolkit_map;
 
@@ -192,7 +192,7 @@ export const map: typeof esToolkit_map = esToolkit_map;
  * const result = reduce(set, (acc, value) => acc + value);
  * // result will be: 30 (starts with first value 10)
  *
- * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const reduce: typeof esToolkit_reduce = esToolkit_reduce;
 
@@ -216,6 +216,6 @@ export const reduce: typeof esToolkit_reduce = esToolkit_reduce;
  * const result2 = some(set, (value) => value > 5);
  * // result2 will be: false
  *
- * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by `es-toolkit` (MIT License): https://github.com/toss/es-toolkit
  */
 export const some: typeof esToolkit_some = esToolkit_some;
