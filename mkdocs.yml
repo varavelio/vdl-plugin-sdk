@@ -16,10 +16,12 @@ nav:
           - Functions: api/utils/functions.md
           - Maps: api/utils/maps.md
           - Math: api/utils/math.md
-          - Misc: api/utils/misc.md
           - Objects: api/utils/objects.md
-          - Predicates: api/utils/predicates.md
           - Sets: api/utils/sets.md
+          - Paths: api/utils/paths.md
+          - Crypto: api/utils/crypto.md
+          - Predicates: api/utils/predicates.md
+          - Misc: api/utils/misc.md
       - Testing: api/testing.md
   - LLMs:
       - llms.txt ↗: llms.txt
