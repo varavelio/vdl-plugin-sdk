@@ -54,7 +54,7 @@ import {
  * // Will log 'called'.
  * afterFn()
  *
- * @copyright Provided by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
  */
 export const after: typeof esToolkit_after = esToolkit_after;
 
@@ -76,7 +76,7 @@ export const after: typeof esToolkit_after = esToolkit_after;
  * ary(fn, 2)(1, 2, 3) // [1, 2]
  * ary(fn, 3)(1, 2, 3) // [1, 2, 3]
  *
- * @copyright Provided by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
  */
 export const ary: typeof esToolkit_ary = esToolkit_ary;
 
@@ -108,7 +108,7 @@ export const ary: typeof esToolkit_ary = esToolkit_ary;
  * // Will not log anything.
  * beforeFn();
  *
- * @copyright Provided by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
  */
 export const before: typeof esToolkit_before = esToolkit_before;
 
@@ -126,7 +126,7 @@ export const before: typeof esToolkit_before = esToolkit_before;
  * const curriedNoArgFunc = curry(noArgFunc);
  * console.log(curriedNoArgFunc()); // 42
  *
- * @copyright Provided by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
  */
 export const curry: typeof esToolkit_curry = esToolkit_curry;
 
@@ -146,7 +146,7 @@ export const curry: typeof esToolkit_curry = esToolkit_curry;
  * const curriedNoArgFunc = curryRight(noArgFunc);
  * console.log(curriedNoArgFunc()); // 42
  *
- * @copyright Provided by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
  */
 export const curryRight: typeof esToolkit_curryRight = esToolkit_curryRight;
 
@@ -166,7 +166,7 @@ export const curryRight: typeof esToolkit_curryRight = esToolkit_curryRight;
  * const combined = flow(noArgFunc);
  * console.log(combined()); // 42
  *
- * @copyright Provided by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
  */
 export const flow: typeof esToolkit_flow = esToolkit_flow;
 
@@ -187,7 +187,7 @@ export const flow: typeof esToolkit_flow = esToolkit_flow;
  * const combined = flowRight(noArgFunc);
  * console.log(combined()); // 42
  *
- * @copyright Provided by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
  */
 export const flowRight: typeof esToolkit_flowRight = esToolkit_flowRight;
 
@@ -210,7 +210,7 @@ export const flowRight: typeof esToolkit_flowRight = esToolkit_flowRight;
  * // Returns { key: 'value' }
  * identity({ key: 'value' });
  *
- * @copyright Provided by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
  */
 export const identity: typeof esToolkit_identity = esToolkit_identity;
 
@@ -286,7 +286,7 @@ export const identity: typeof esToolkit_identity = esToolkit_identity;
  * console.log(memoizedSumWithCustomCache([1, 2])); // 3 (cached result)
  * console.log(memoizedAddWithCustomCache.cache.size); // 1
  *
- * @copyright Provided by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
  */
 export const memoize: typeof esToolkit_memoize = esToolkit_memoize;
 
@@ -303,7 +303,7 @@ export const memoize: typeof esToolkit_memoize = esToolkit_memoize;
  * const result = array.filter(negate(isEven));
  * // result will be [1, 3, 5]
  *
- * @copyright Provided by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
  */
 export const negate: typeof esToolkit_negate = esToolkit_negate;
 
@@ -316,7 +316,7 @@ export const negate: typeof esToolkit_negate = esToolkit_negate;
  *
  * @returns {void} This function does not return anything.
  *
- * @copyright Provided by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
  */
 export const noop: typeof esToolkit_noop = esToolkit_noop;
 
@@ -334,7 +334,7 @@ export const noop: typeof esToolkit_noop = esToolkit_noop;
  * initialize();
  * // => `createApplication` is invoked once
  *
- * @copyright Provided by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
  */
 export const once: typeof esToolkit_once = esToolkit_once;
 
@@ -356,7 +356,7 @@ export const once: typeof esToolkit_once = esToolkit_once;
  * const addOneToFive = partial(addOne, 5);
  * console.log(addOneToFive()); // => 6
  *
- * @copyright Provided by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
  */
 export const partial: typeof esToolkit_partial = esToolkit_partial;
 
@@ -375,7 +375,7 @@ export const partial: typeof esToolkit_partial = esToolkit_partial;
  * const getValueFunc = partialRight(getValue);
  * console.log(getValueFunc()); // => 42
  *
- * @copyright Provided by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
  */
 export const partialRight: typeof esToolkit_partialRight =
   esToolkit_partialRight;
@@ -410,7 +410,7 @@ export const partialRight: typeof esToolkit_partialRight =
  * // With fewer arguments than the start index
  * console.log(transformedFn(1)); // [1, undefined, []]
  *
- * @copyright Provided by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
  */
 export const rest: typeof esToolkit_rest = esToolkit_rest;
 
@@ -430,7 +430,7 @@ export const rest: typeof esToolkit_rest = esToolkit_rest;
  * const spreadAdd = spread(add);
  * console.log(spreadAdd([1, 2])); // Output: 3
  *
- * @copyright Provided by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
  */
 export const spread: typeof esToolkit_spread = esToolkit_spread;
 
@@ -448,6 +448,6 @@ export const spread: typeof esToolkit_spread = esToolkit_spread;
  *
  * unary(fn)(1, 2, 3); // [Arguments] { '0': 1 }
  *
- * @copyright Provided by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
+ * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).
  */
 export const unary: typeof esToolkit_unary = esToolkit_unary;

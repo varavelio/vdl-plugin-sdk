@@ -17,7 +17,7 @@ const generatedFileName = "es-toolkit.ts";
 const generatorPathLabel = "scripts/generate-es-toolkit-utils.mjs";
 const jsDocBlockPattern = /\/\*\*[\s\S]*?\*\//;
 const esToolkitAttributionLine =
-  " * @copyright Provided by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).";
+  " * @copyright Powered by [es-toolkit](https://github.com/toss/es-toolkit) (MIT License).";
 
 function symbol(symbolName, docsSourceName = symbolName) {
   return { docsSourceName, symbolName };
