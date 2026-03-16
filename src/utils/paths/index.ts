@@ -16,16 +16,16 @@ import { filename as patheFilename } from "pathe/utils";
  * This is a thin wrapper around `pathe.join`, which keeps behavior consistent
  * across platforms and normalizes path separators to `/`.
  *
- * Powered by `pathe` (MIT): https://github.com/unjs/pathe
- *
  * @param parts - Path segments to join.
  * @returns The normalized joined path.
  *
  * @example
  * ```ts
  * join("generated", "models", "user.ts");
- * // returns "generated/models/user.ts"
+ * // returns "generated/models/user.ts"z
  * ```
+ *
+ * @copyright Powered by `pathe` (MIT License): https://github.com/unjs/pathe
  */
 export function join(...parts: string[]): string {
   return patheJoin(...parts);
@@ -37,8 +37,6 @@ export function join(...parts: string[]): string {
  * This is useful when plugin code needs stable path resolution without relying
  * on platform-specific separators.
  *
- * Powered by `pathe` (MIT): https://github.com/unjs/pathe
- *
  * @param parts - Path segments to resolve.
  * @returns The resolved normalized path.
  *
@@ -47,6 +45,8 @@ export function join(...parts: string[]): string {
  * resolve("/workspace/plugin", "src", "../dist/index.js");
  * // returns "/workspace/plugin/dist/index.js"
  * ```
+ *
+ * @copyright Powered by `pathe` (MIT License): https://github.com/unjs/pathe
  */
 export function resolve(...parts: string[]): string {
   return patheResolve(...parts);
@@ -58,8 +58,6 @@ export function resolve(...parts: string[]): string {
  * This is helpful when plugin code receives mixed Windows and POSIX-style path
  * input and needs a single predictable format.
  *
- * Powered by `pathe` (MIT): https://github.com/unjs/pathe
- *
  * @param path - Path to normalize.
  * @returns The normalized path using `/` separators.
  *
@@ -68,6 +66,8 @@ export function resolve(...parts: string[]): string {
  * normalize("generated\\models/../types/user.ts");
  * // returns "generated/types/user.ts"
  * ```
+ *
+ * @copyright Powered by `pathe` (MIT License): https://github.com/unjs/pathe
  */
 export function normalize(path: string): string {
   return patheNormalize(path);
@@ -75,8 +75,6 @@ export function normalize(path: string): string {
 
 /**
  * Computes the relative path from one location to another.
- *
- * Powered by `pathe` (MIT): https://github.com/unjs/pathe
  *
  * @param from - Starting path.
  * @param to - Destination path.
@@ -87,6 +85,8 @@ export function normalize(path: string): string {
  * relative("generated/models", "generated/types/user.ts");
  * // returns "../types/user.ts"
  * ```
+ *
+ * @copyright Powered by `pathe` (MIT License): https://github.com/unjs/pathe
  */
 export function relative(from: string, to: string): string {
   return patheRelative(from, to);
@@ -94,8 +94,6 @@ export function relative(from: string, to: string): string {
 
 /**
  * Returns the parent directory portion of a path.
- *
- * Powered by `pathe` (MIT): https://github.com/unjs/pathe
  *
  * @param path - Path to inspect.
  * @returns The directory name portion of `path`.
@@ -105,6 +103,8 @@ export function relative(from: string, to: string): string {
  * dirname("generated/models/user.ts");
  * // returns "generated/models"
  * ```
+ *
+ * @copyright Powered by `pathe` (MIT License): https://github.com/unjs/pathe
  */
 export function dirname(path: string): string {
   return patheDirname(path);
@@ -112,8 +112,6 @@ export function dirname(path: string): string {
 
 /**
  * Returns the last path segment, optionally removing a known extension suffix.
- *
- * Powered by `pathe` (MIT): https://github.com/unjs/pathe
  *
  * @param path - Path to inspect.
  * @param extension - Optional extension suffix to remove from the result.
@@ -124,6 +122,8 @@ export function dirname(path: string): string {
  * basename("generated/models/user.ts");
  * // returns "user.ts"
  * ```
+ *
+ * @copyright Powered by `pathe` (MIT License): https://github.com/unjs/pathe
  */
 export function basename(path: string, extension?: string): string {
   return patheBasename(path, extension);
@@ -131,8 +131,6 @@ export function basename(path: string, extension?: string): string {
 
 /**
  * Returns the file extension of a path, including the leading dot.
- *
- * Powered by `pathe` (MIT): https://github.com/unjs/pathe
  *
  * @param path - Path to inspect.
  * @returns The extension portion of `path`, or an empty string when none exists.
@@ -142,6 +140,8 @@ export function basename(path: string, extension?: string): string {
  * extname("generated/models/user.ts");
  * // returns ".ts"
  * ```
+ *
+ * @copyright Powered by `pathe` (MIT License): https://github.com/unjs/pathe
  */
 export function extname(path: string): string {
   return patheExtname(path);
@@ -153,8 +153,6 @@ export function extname(path: string): string {
  * This is useful for deriving stable artifact names without manually stripping
  * directory segments or extensions.
  *
- * Powered by `pathe` (MIT): https://github.com/unjs/pathe
- *
  * @param path - Path to inspect.
  * @returns The filename without its extension, or `undefined` when it cannot be derived.
  *
@@ -163,6 +161,8 @@ export function extname(path: string): string {
  * filename("generated/models/user.ts");
  * // returns "user"
  * ```
+ *
+ * @copyright Powered by `pathe` (MIT License): https://github.com/unjs/pathe
  */
 export function filename(path: string): string | undefined {
   return patheFilename(path);
@@ -170,8 +170,6 @@ export function filename(path: string): string | undefined {
 
 /**
  * Checks whether a path is absolute.
- *
- * Powered by `pathe` (MIT): https://github.com/unjs/pathe
  *
  * @param path - Path to inspect.
  * @returns `true` when `path` is absolute, otherwise `false`.
@@ -181,6 +179,8 @@ export function filename(path: string): string | undefined {
  * isAbsolute("/generated/models/user.ts");
  * // returns true
  * ```
+ *
+ * @copyright Powered by `pathe` (MIT License): https://github.com/unjs/pathe
  */
 export function isAbsolute(path: string): boolean {
   return patheIsAbsolute(path);

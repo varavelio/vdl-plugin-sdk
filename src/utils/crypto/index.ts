@@ -9,8 +9,6 @@ import { hash as ohashHash } from "ohash";
  * This helper is not intended for password hashing or other security-sensitive
  * cryptographic workflows.
  *
- * Powered by `ohash` (MIT): https://github.com/unjs/ohash
- *
  * @param input - Any JavaScript value to hash.
  * @returns A stable hash string for the provided input.
  *
@@ -19,6 +17,8 @@ import { hash as ohashHash } from "ohash";
  * hash({ foo: "bar" });
  * // returns a deterministic hash string such as "g82Nh7Lh3CUR..."
  * ```
+ *
+ * @copyright Powered by `ohash` (MIT): https://github.com/unjs/ohash
  */
 export function hash(input: unknown): string {
   return ohashHash(input);

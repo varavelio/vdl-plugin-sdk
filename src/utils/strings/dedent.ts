@@ -7,20 +7,20 @@ import dedentLibrary from "dedent";
  * text fixtures inside plugins without carrying indentation from the source file
  * into the final output.
  *
- * Powered by `dedent` (MIT): https://github.com/dmnd/dedent
- *
  * @param input - Multi-line string to dedent.
  * @returns The same text with common indentation removed.
  *
  * @example
  * ```ts
  * dedent(`
- *   export interface User {
- *     id: string;
- *   }
+ *          export interface User {
+ *            id: string;
+ *          }
  * `);
  * // returns "export interface User {\n  id: string;\n}"
  * ```
+ *
+ * @copyright Powered by `dedent` (MIT License): https://github.com/dmnd/dedent
  */
 export function dedent(input: string): string {
   return dedentLibrary(input);
