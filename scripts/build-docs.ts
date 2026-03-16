@@ -22,11 +22,11 @@ const utilsNamespacesDirectoryPath = path.join(
   "namespaces",
 );
 
-function toPosixPath(filePath) {
+function toPosixPath(filePath: string) {
   return filePath.split(path.sep).join("/");
 }
 
-async function runCommand(command, args) {
+async function runCommand(command: string, args: string[]) {
   await new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       cwd: workspaceRootPath,
@@ -36,7 +36,7 @@ async function runCommand(command, args) {
     child.on("error", reject);
     child.on("exit", (exitCode) => {
       if (exitCode === 0) {
-        resolve();
+        resolve(1);
         return;
       }
 
@@ -45,7 +45,7 @@ async function runCommand(command, args) {
   });
 }
 
-async function listMarkdownFiles(directoryPath) {
+async function listMarkdownFiles(directoryPath: string): Promise<string[]> {
   const entries = await readdir(directoryPath, { withFileTypes: true });
   const nestedResults = await Promise.all(
     entries.map(async (entry) => {
@@ -62,7 +62,7 @@ async function listMarkdownFiles(directoryPath) {
   return nestedResults.flat().sort();
 }
 
-function getOutputPath(sourcePath) {
+function getOutputPath(sourcePath: string) {
   if (sourcePath === rootIndexPath || sourcePath === utilsIndexPath) {
     return null;
   }
@@ -74,7 +74,7 @@ function getOutputPath(sourcePath) {
   return sourcePath;
 }
 
-function splitMarkdownTarget(target) {
+function splitMarkdownTarget(target: string) {
   const hashIndex = target.indexOf("#");
 
   if (hashIndex === -1) {
@@ -91,10 +91,10 @@ function splitMarkdownTarget(target) {
 }
 
 function rewriteMarkdownLinks(
-  contents,
-  sourcePath,
-  outputPath,
-  outputPathBySourcePath,
+  contents: string,
+  sourcePath: string,
+  outputPath: string,
+  outputPathBySourcePath: Map<string, string | null>,
 ) {
   return contents.replace(
     /\[([^\]]+)\]\(([^)]+)\)/g,
@@ -125,7 +125,7 @@ function rewriteMarkdownLinks(
       const rewrittenTargetPath =
         outputPathBySourcePath.get(resolvedTargetPath);
 
-      if (rewrittenTargetPath === null) {
+      if (!rewrittenTargetPath) {
         return fullMatch;
       }
 
@@ -153,7 +153,7 @@ async function postProcessDocs() {
   for (const sourcePath of keptSourcePaths) {
     const outputPath = outputPathBySourcePath.get(sourcePath);
 
-    if (outputPath === null) {
+    if (!outputPath) {
       throw new Error(`unexpected null output path for ${sourcePath}`);
     }
 

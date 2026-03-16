@@ -1,3 +1,5 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: it's a utility script */
+
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -14,26 +16,26 @@ const esToolkitDistRootPath = path.join(
 );
 
 const generatedFileName = "es-toolkit.ts";
-const generatorPathLabel = "scripts/generate-es-toolkit-utils.mjs";
+const generatorPathLabel = "scripts/generate-es-toolkit-utils.ts";
 const jsDocBlockPattern = /\/\*\*[\s\S]*?\*\//;
 const esToolkitAttributionLine =
   " * @see Powered by `es-toolkit` (MIT License): [https://github.com/toss/es-toolkit](https://github.com/toss/es-toolkit)";
 
-function symbol(symbolName, docsSourceName = symbolName) {
+function symbol(symbolName: any, docsSourceName = symbolName) {
   return { docsSourceName, symbolName };
 }
 
 function category(
-  localCategoryName,
-  esToolkitCategoryName,
-  description,
-  symbols,
+  localCategoryName: any,
+  esToolkitCategoryName: any,
+  description: any,
+  symbols: any,
 ) {
   return {
     description,
     esToolkitCategoryName,
     localCategoryName,
-    symbols: symbols.map((entry) => {
+    symbols: symbols.map((entry: any) => {
       return typeof entry === "string" ? symbol(entry) : entry;
     }),
   };
@@ -220,15 +222,15 @@ const categories = [
   ),
 ];
 
-function toImportAlias(symbolName) {
+function toImportAlias(symbolName: string) {
   return `esToolkit_${symbolName}`;
 }
 
-function normalizeJsDocBlock(jsDocBlock) {
+function normalizeJsDocBlock(jsDocBlock: any) {
   const lines = jsDocBlock.split("\n");
 
   return lines
-    .map((line, index) => {
+    .map((line: string, index: number) => {
       if (index === 0) {
         return "/**";
       }
@@ -250,7 +252,7 @@ function normalizeJsDocBlock(jsDocBlock) {
     .join("\n");
 }
 
-function getFallbackJsDoc(symbolName) {
+function getFallbackJsDoc(symbolName: string) {
   return [
     "/**",
     ` * Re-exports \`${symbolName}\` from es-toolkit.`,
@@ -260,7 +262,7 @@ function getFallbackJsDoc(symbolName) {
   ].join("\n");
 }
 
-function decorateJsDoc(jsDocBlock, symbolName) {
+function decorateJsDoc(jsDocBlock: any, symbolName: string) {
   const lines = normalizeJsDocBlock(
     jsDocBlock ?? getFallbackJsDoc(symbolName),
   ).split("\n");
@@ -277,7 +279,7 @@ function decorateJsDoc(jsDocBlock, symbolName) {
   return [...lines, esToolkitAttributionLine, closingLine].join("\n");
 }
 
-function buildExportStatement(symbolName) {
+function buildExportStatement(symbolName: string) {
   const importAlias = toImportAlias(symbolName);
   const singleLineStatement = `export const ${symbolName}: typeof ${importAlias} = ${importAlias};`;
 
@@ -290,9 +292,9 @@ function buildExportStatement(symbolName) {
 }
 
 async function readSymbolJsDoc(
-  esToolkitCategoryName,
-  symbolName,
-  docsSourceName,
+  esToolkitCategoryName: string,
+  symbolName: string,
+  docsSourceName: string,
 ) {
   const definitionFilePath = path.join(
     esToolkitDistRootPath,
@@ -306,21 +308,31 @@ async function readSymbolJsDoc(
   return decorateJsDoc(jsDocBlock, symbolName);
 }
 
-async function buildCategorySource(categoryConfig) {
-  const importLines = categoryConfig.symbols.map(({ symbolName }) => {
-    return `  ${symbolName} as ${toImportAlias(symbolName)},`;
-  });
+async function buildCategorySource(categoryConfig: any) {
+  const importLines = categoryConfig.symbols.map(
+    ({ symbolName }: { symbolName: string }) => {
+      return `  ${symbolName} as ${toImportAlias(symbolName)},`;
+    },
+  );
 
   const exportBlocks = await Promise.all(
-    categoryConfig.symbols.map(async ({ docsSourceName, symbolName }) => {
-      const jsDocBlock = await readSymbolJsDoc(
-        categoryConfig.esToolkitCategoryName,
-        symbolName,
+    categoryConfig.symbols.map(
+      async ({
         docsSourceName,
-      );
+        symbolName,
+      }: {
+        docsSourceName: string;
+        symbolName: string;
+      }) => {
+        const jsDocBlock = await readSymbolJsDoc(
+          categoryConfig.esToolkitCategoryName,
+          symbolName,
+          docsSourceName,
+        );
 
-      return [jsDocBlock, buildExportStatement(symbolName)].join("\n");
-    }),
+        return [jsDocBlock, buildExportStatement(symbolName)].join("\n");
+      },
+    ),
   );
 
   return [
@@ -341,7 +353,7 @@ async function buildCategorySource(categoryConfig) {
   ].join("\n");
 }
 
-async function writeFileIfChanged(filePath, nextContents) {
+async function writeFileIfChanged(filePath: string, nextContents: string) {
   let currentContents = null;
 
   try {
@@ -358,7 +370,7 @@ async function writeFileIfChanged(filePath, nextContents) {
   return true;
 }
 
-async function generateCategoryFile(categoryConfig) {
+async function generateCategoryFile(categoryConfig: any) {
   const categoryDirectoryPath = path.join(
     utilsRootPath,
     categoryConfig.localCategoryName,

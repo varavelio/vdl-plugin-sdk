@@ -64,9 +64,9 @@
   ],
   "scripts": {
     "build": "npm run build:codegen && npm run build:docs && npm run build:bundle",
-    "build:codegen": "node ./scripts/generate-es-toolkit-utils.mjs",
+    "build:codegen": "node ./scripts/generate-es-toolkit-utils.ts",
     "build:bundle": "tsdown",
-    "build:docs": "node ./scripts/build-docs.mjs && mkdocs build",
+    "build:docs": "node ./scripts/build-docs.ts && mkdocs build",
     "format": "npm run format:dprint && npm run format:biome",
     "format:dprint": "dprint fmt --config ./dprint.json --log-level warn",
     "format:biome": "biome format --write --config-path ./biome.json --log-level warn --no-errors-on-unmatched .",
