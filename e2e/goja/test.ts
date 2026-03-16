@@ -15,6 +15,7 @@ import { irb } from "../../src/testing";
 import type { LiteralValue } from "../../src/types";
 import {
   arrays,
+  crypto,
   functions as functionUtils,
   ir,
   maps,
@@ -22,6 +23,7 @@ import {
   misc,
   objects,
   options,
+  paths,
   predicates,
   sets,
   strings,
@@ -279,6 +281,20 @@ function createStringSuites(): SmokeSuite[] {
               strings.lowerCase("userProfileName"),
               "user profile name",
               "lowerCase output",
+            );
+          },
+        },
+        {
+          name: "dedents multi-line template output",
+          run: () => {
+            assertEqual(
+              strings.dedent(`
+                export interface User {
+                  id: string;
+                }
+              `),
+              "export interface User {\n  id: string;\n}",
+              "dedent output",
             );
           },
         },
@@ -586,6 +602,123 @@ function createIrSuites(): SmokeSuite[] {
               null,
               "unwrapLiteral unknown kind fallback",
             );
+          },
+        },
+      ],
+    },
+  ];
+}
+
+/**
+ * Creates smoke-test suites for the path helpers backed by pathe.
+ */
+function createPathSuites(): SmokeSuite[] {
+  return [
+    {
+      name: "paths",
+      checks: [
+        {
+          name: "joins and normalizes forward-slash paths",
+          run: () => {
+            assertEqual(
+              paths.join("generated", "models", "user.ts"),
+              "generated/models/user.ts",
+              "paths.join output",
+            );
+            assertEqual(
+              paths.normalize("generated\\models/../types/user.ts"),
+              "generated/types/user.ts",
+              "paths.normalize output",
+            );
+          },
+        },
+        {
+          name: "resolves absolute paths deterministically",
+          run: () => {
+            assertEqual(
+              paths.resolve("/workspace/plugin", "src", "../dist/index.js"),
+              "/workspace/plugin/dist/index.js",
+              "paths.resolve output",
+            );
+            assertEqual(
+              paths.relative("generated/models", "generated/types/user.ts"),
+              "../types/user.ts",
+              "paths.relative output",
+            );
+          },
+        },
+        {
+          name: "extracts common path segments",
+          run: () => {
+            const path = "generated/models/user.test.ts";
+
+            assertEqual(
+              paths.dirname(path),
+              "generated/models",
+              "paths.dirname output",
+            );
+            assertEqual(
+              paths.basename(path),
+              "user.test.ts",
+              "paths.basename output",
+            );
+            assertEqual(
+              paths.basename(path, ".ts"),
+              "user.test",
+              "paths.basename with extension output",
+            );
+            assertEqual(paths.extname(path), ".ts", "paths.extname output");
+            assertEqual(
+              paths.filename(path),
+              "user.test",
+              "paths.filename output",
+            );
+            assertEqual(
+              paths.isAbsolute("/generated/models/user.ts"),
+              true,
+              "paths.isAbsolute absolute output",
+            );
+            assertEqual(
+              paths.isAbsolute("generated/models/user.ts"),
+              false,
+              "paths.isAbsolute relative output",
+            );
+          },
+        },
+      ],
+    },
+  ];
+}
+
+/**
+ * Creates smoke-test suites for deterministic hashing helpers.
+ */
+function createCryptoSuites(): SmokeSuite[] {
+  return [
+    {
+      name: "crypto",
+      checks: [
+        {
+          name: "hashes equal inputs deterministically",
+          run: () => {
+            const first = crypto.hash({ foo: "bar", nested: [1, 2, 3] });
+            const second = crypto.hash({ foo: "bar", nested: [1, 2, 3] });
+
+            assertEqual(first, second, "crypto.hash deterministic output");
+            assertEqual(
+              first,
+              "xQ6Bpf9NjDF4RYMq_fze2qhU7xCCP1vegvPcoUpwCvg",
+              "crypto.hash expected output",
+            );
+          },
+        },
+        {
+          name: "changes when input changes",
+          run: () => {
+            const left = crypto.hash({ foo: "bar" });
+            const right = crypto.hash({ foo: "baz" });
+
+            assert(left !== right, "crypto.hash distinct output");
           },
         },
       ],
@@ -2302,6 +2435,8 @@ function createSuites(): SmokeSuite[] {
     ...createStringSuites(),
     ...createOptionSuites(),
     ...createIrSuites(),
+    ...createPathSuites(),
+    ...createCryptoSuites(),
     ...createArraySuites(),
     ...createFunctionSuites(),
     ...createMapSuites(),
