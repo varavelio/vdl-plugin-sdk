@@ -1,5 +1,3 @@
-/// <reference types="node" />
-
 import { spawnSync } from "node:child_process";
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
