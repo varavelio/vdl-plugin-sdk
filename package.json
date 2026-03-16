@@ -75,7 +75,7 @@
     "lint:biome": "biome check --config-path ./biome.json --log-level warn --no-errors-on-unmatched .",
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "vitest run",
-    "test:e2e": "node ./e2e/goja/run.mjs",
+    "test:e2e": "node ./e2e/goja/run.ts",
     "ci": "npm run lint && npm run test && npm run build"
   },
   "dependencies": {

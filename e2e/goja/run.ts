@@ -1,3 +1,5 @@
+/// <reference types="node" />
+
 import { spawnSync } from "node:child_process";
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -44,7 +46,7 @@ async function bundleSmokeTest() {
  * the special `__goja_report_ok__()` callback. Any crash, timeout, or missing
  * success signal is treated as a failure.
  */
-function runBundledSmokeTest(bundledScript) {
+function runBundledSmokeTest(bundledScript: string) {
   const result = spawnSync("go", ["run", "."], {
     cwd: goRunnerDirectoryPath,
     input: bundledScript,
@@ -76,7 +78,7 @@ function runBundledSmokeTest(bundledScript) {
  * The file is gitignored and intentionally kept next to the smoke-test sources
  * so any Goja stack trace can be mapped back to the exact code that was run.
  */
-async function writeBundledSmokeTestFile(bundledScript) {
+async function writeBundledSmokeTestFile(bundledScript: string) {
   await writeFile(bundledTestFilePath, bundledScript, "utf8");
 }
 
