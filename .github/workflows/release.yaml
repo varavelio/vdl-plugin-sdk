@@ -15,35 +15,39 @@ jobs:
     timeout-minutes: 20
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-          registry-url: "https://registry.npmjs.org"
+      - name: Create mount directories
+        run: |
+          mkdir -p ~/.claude ~/.config/opencode ~/.local/share/opencode
 
       - name: Publish to npm
-        run: |
-          # Run lint, test and build script
-          npm install
-          npm run lint
-          npm run test
-          npm run build
+        uses: devcontainers/ci@v0.3
+        env:
+          VERSION: ${{ github.event.release.tag_name }}
+        with:
+          push: never
+          inheritEnv: true
+          runCmd: |
+            /bin/bash -lc '
+              set -euo pipefail
 
-          VERSION=${{ github.event.release.tag_name }}
-          echo "Publishing version: $VERSION"
+              npm ci
+              npm run lint
+              npm run test
+              npm run build
 
-          # Update package.json version (this automatically removes v prefix)
-          npm version $VERSION --no-git-tag-version --allow-same-version
+              echo "Publishing version: $VERSION"
 
-          if [[ "$VERSION" == *"-"* ]]; then
-            NPM_TAG="next"
-          else
-            NPM_TAG="latest"
-          fi
-          echo "Using npm tag: $NPM_TAG"
+              npm version "$VERSION" --no-git-tag-version --allow-same-version
 
-          # Publish to npm
-          npm publish --provenance --access public --tag $NPM_TAG
+              if [[ "$VERSION" == *"-"* ]]; then
+                NPM_TAG="next"
+              else
+                NPM_TAG="latest"
+              fi
+              echo "Using npm tag: $NPM_TAG"
+
+              npm publish --provenance --access public --tag "$NPM_TAG"
+            '
