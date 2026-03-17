@@ -32,6 +32,7 @@ theme:
   logo: https://raw.githubusercontent.com/varavelio/vdl/9cb8432f972f986ba91ffa1e4fe82220a8aa373f/assets/png/vdl.png
   favicon: https://raw.githubusercontent.com/varavelio/vdl/9cb8432f972f986ba91ffa1e4fe82220a8aa373f/assets/png/icon.png
   features:
+    - search.suggest
     - navigation.instant
     - navigation.tracking
     - navigation.sections
@@ -79,6 +80,7 @@ markdown_extensions:
   - md_in_html
 
 plugins:
+  - search
   - llmstxt:
       full_output: llms-full.txt
       sections:
