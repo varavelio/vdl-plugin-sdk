@@ -604,6 +604,46 @@ function createIrSuites(): SmokeSuite[] {
             );
           },
         },
+        {
+          name: "hoists anonymous object types into named top-level types",
+          run: () => {
+            const schema = irb.schema({
+              types: [
+                irb.typeDef(
+                  "Api",
+                  irb.objectType([
+                    irb.field(
+                      "request",
+                      irb.objectType([
+                        irb.field(
+                          "payload",
+                          irb.objectType([
+                            irb.field("id", irb.primitiveType("string")),
+                          ]),
+                        ),
+                      ]),
+                    ),
+                  ]),
+                ),
+              ],
+            });
+
+            const flatSchema = ir.hoistAnonymousTypes(schema);
+
+            assertDeepEqual(
+              flatSchema.types.map((typeDef) => typeDef.name),
+              ["Api", "ApiRequest", "ApiRequestPayload"],
+              "hoistAnonymousTypes generated names",
+            );
+            assertDeepEqual(
+              flatSchema.types[0]?.typeRef,
+              irb.objectType([
+                irb.field("request", irb.namedType("ApiRequest")),
+              ]),
+              "hoistAnonymousTypes rewritten root type",
+            );
+          },
+        },
       ],
     },
   ];
