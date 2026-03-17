@@ -1,4 +1,5 @@
-import { mkdir, readdir, rm, writeFile } from "node:fs/promises";
+import { spawn } from "node:child_process";
+import { copyFile, cp, mkdir, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import {
@@ -17,12 +18,26 @@ const currentFilePath = fileURLToPath(import.meta.url);
 const generateDocsDirectoryPath = path.dirname(currentFilePath);
 const scriptsDirectoryPath = path.resolve(generateDocsDirectoryPath, "..");
 const workspaceRootPath = path.resolve(scriptsDirectoryPath, "..");
+const docsDirectoryPath = path.join(workspaceRootPath, "docs");
 const docsApiDirectoryPath = path.join(workspaceRootPath, "docs", "api");
 const docsAssetsDirectoryPath = path.join(workspaceRootPath, "docs", "assets");
-const llmsDirectoryPath = path.join(docsAssetsDirectoryPath, "llms");
+const docsLlmsPlaceholderPath = path.join(docsDirectoryPath, "llms.txt");
+const docsLlmsFullPlaceholderPath = path.join(
+  docsDirectoryPath,
+  "llms-full.txt",
+);
+const legacyLlmsDirectoryPath = path.join(docsAssetsDirectoryPath, "llms");
+const legacyLlmsIndexPath = path.join(docsAssetsDirectoryPath, "llms.txt");
+const legacyLlmsFullIndexPath = path.join(
+  docsAssetsDirectoryPath,
+  "llms-full.txt",
+);
+const tempDirectoryPath = path.join(workspaceRootPath, "temp");
+const llmsDirectoryPath = path.join(tempDirectoryPath, "llms");
 const llmsApiDirectoryPath = path.join(llmsDirectoryPath, "api");
-const llmsIndexPath = path.join(docsAssetsDirectoryPath, "llms.txt");
-const llmsFullIndexPath = path.join(docsAssetsDirectoryPath, "llms-full.txt");
+const llmsIndexPath = path.join(tempDirectoryPath, "llms.txt");
+const llmsFullIndexPath = path.join(tempDirectoryPath, "llms-full.txt");
+const siteDirectoryPath = path.join(workspaceRootPath, "site");
 const llmsBaseUrl = "https://vdl-plugin-sdk.varavel.com/llms";
 const utilsSourceRootPath = path.join(workspaceRootPath, "src", "utils");
 const utilsDirectoryNames = [
@@ -154,6 +169,25 @@ async function writeMarkdownFile(filePath: string, contents: string) {
   await mkdir(path.dirname(filePath), { recursive: true });
   await writeFile(filePath, contents, "utf8");
   console.log(`generated ${path.relative(workspaceRootPath, filePath)}`);
+}
+
+async function runCommand(command: string, args: string[]) {
+  await new Promise<void>((resolve, reject) => {
+    const child = spawn(command, args, {
+      cwd: workspaceRootPath,
+      stdio: "inherit",
+    });
+
+    child.on("error", reject);
+    child.on("exit", (exitCode) => {
+      if (exitCode === 0) {
+        resolve();
+        return;
+      }
+
+      reject(new Error(`command failed with exit code ${exitCode ?? "null"}`));
+    });
+  });
 }
 
 function truncateText(text: string, maxLength: number): string {
@@ -362,13 +396,47 @@ async function writeLlmsDocs(
   );
 }
 
+async function copyLlmsOutputsToSite() {
+  await cp(llmsDirectoryPath, path.join(siteDirectoryPath, "llms"), {
+    recursive: true,
+  });
+  await copyFile(llmsIndexPath, path.join(siteDirectoryPath, "llms.txt"));
+  await copyFile(
+    llmsFullIndexPath,
+    path.join(siteDirectoryPath, "llms-full.txt"),
+  );
+}
+
+async function writeLlmsPlaceholders() {
+  await Promise.all([
+    writeFile(
+      docsLlmsPlaceholderPath,
+      "Generated during docs build.\n",
+      "utf8",
+    ),
+    writeFile(
+      docsLlmsFullPlaceholderPath,
+      "Generated during docs build.\n",
+      "utf8",
+    ),
+  ]);
+}
+
 /**
- * Generates the public API docs and the LLM-oriented docs from exported JSDoc
- * blocks. The generated folders are removed first so every run is a full reset.
+ * Regenerates the API sources, builds the MkDocs site, and then copies the LLM
+ * artifacts into the final `site/` output. Temporary files are created under
+ * `temp/` and removed at the end of a successful build.
  */
 export async function generateDocs() {
   await Promise.all([
     rm(docsApiDirectoryPath, { force: true, recursive: true }),
+    rm(siteDirectoryPath, { force: true, recursive: true }),
+    rm(tempDirectoryPath, { force: true, recursive: true }),
+    rm(legacyLlmsDirectoryPath, { force: true, recursive: true }),
+    rm(legacyLlmsIndexPath, { force: true }),
+    rm(legacyLlmsFullIndexPath, { force: true }),
+    rm(docsLlmsPlaceholderPath, { force: true }),
+    rm(docsLlmsFullPlaceholderPath, { force: true }),
     rm(llmsDirectoryPath, { force: true, recursive: true }),
     rm(llmsIndexPath, { force: true }),
     rm(llmsFullIndexPath, { force: true }),
@@ -382,6 +450,18 @@ export async function generateDocs() {
 
   await writeApiDocs(coreSections, testingSections, utilityCategories);
   await writeLlmsDocs(coreSections, testingSections, utilityCategories);
+
+  try {
+    await writeLlmsPlaceholders();
+    await runCommand("mkdocs", ["build"]);
+    await copyLlmsOutputsToSite();
+  } finally {
+    await Promise.all([
+      rm(tempDirectoryPath, { force: true, recursive: true }),
+      rm(docsLlmsPlaceholderPath, { force: true }),
+      rm(docsLlmsFullPlaceholderPath, { force: true }),
+    ]);
+  }
 }
 
 if (
