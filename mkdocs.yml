@@ -81,11 +81,6 @@ markdown_extensions:
 
 plugins:
   - search
-  - llmstxt:
-      full_output: llms-full.txt
-      sections:
-        "Documentation":
-          - "*.md"
 
 extra_javascript:
   - assets/js/llms-link.js
