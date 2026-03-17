@@ -3,10 +3,14 @@ import { type Block, parse } from "comment-parser";
 
 const JSDOC_BLOCK_RE = /\/\*\*[\s\S]*?\*\//g;
 const EXPORT_RE =
-  /export\s+(?:const|function|class|type|interface|enum)\s+([A-Za-z0-9_]+)/;
+  /export\s+(?:(?:default|async|abstract)\s+)*(?:const|let|var|function|class|type|interface|enum)\s+([A-Za-z_$][\w$]*)/;
+const EXPORT_NAMED_RE =
+  /export\s*\{\s*([A-Za-z_$][\w$]*)\s*(?:,|\s+as\s+[A-Za-z_$][\w$]*\s*|\})/;
 const DECLARATION_RE =
-  /(?:const|function|class|type|interface|enum)\s+([A-Za-z0-9_]+)/;
-const OBJECT_METHOD_RE = /^([A-Za-z0-9_]+)\s*\(/;
+  /(?:(?:async|abstract)\s+)*(?:const|let|var|function|class|type|interface|enum)\s+([A-Za-z_$][\w$]*)/;
+const OBJECT_METHOD_RE = /^([A-Za-z_$][\w$]*)\s*\(/;
+const MAX_LOOKAHEAD_CHARACTERS = 500;
+const MAX_LOOKAHEAD_RELEVANT_LINES = 8;
 
 export type JsDocEntry = {
   block: Block;
@@ -41,19 +45,52 @@ function collectJsDocMatches(fileContents: string): JsDocMatch[] {
 }
 
 function getNextRelevantLine(sourceAfterBlock: string): string | null {
-  for (const line of sourceAfterBlock.split("\n")) {
-    const trimmedLine = line.trim();
+  const lookahead = sourceAfterBlock.slice(0, MAX_LOOKAHEAD_CHARACTERS);
+  let insideBlockComment = false;
+  let relevantLineCount = 0;
+  let pendingLine = "";
+
+  for (const rawLine of lookahead.split("\n")) {
+    const trimmedLine = rawLine.trim();
+
+    if (insideBlockComment) {
+      if (trimmedLine.includes("*/")) {
+        insideBlockComment = false;
+      }
+
+      continue;
+    }
+
+    if (trimmedLine.startsWith("/*")) {
+      if (!trimmedLine.includes("*/")) {
+        insideBlockComment = true;
+      }
+
+      continue;
+    }
 
     if (
       trimmedLine === "" ||
       trimmedLine === "{" ||
       trimmedLine === "}" ||
-      trimmedLine === "},"
+      trimmedLine === "}," ||
+      trimmedLine.startsWith("//") ||
+      trimmedLine.startsWith("@")
     ) {
       continue;
     }
 
-    return trimmedLine;
+    relevantLineCount += 1;
+    pendingLine = pendingLine ? `${pendingLine} ${trimmedLine}` : trimmedLine;
+
+    if (
+      /^(?:export(?:\s+(?:default|async|abstract))*)$/.test(pendingLine) &&
+      relevantLineCount < MAX_LOOKAHEAD_RELEVANT_LINES
+    ) {
+      continue;
+    }
+
+    return pendingLine;
   }
 
   return null;
@@ -73,6 +110,12 @@ function inferEntryTitle(
 
   if (exportMatch) {
     return exportMatch[1];
+  }
+
+  const exportNamedMatch = nextLine.match(EXPORT_NAMED_RE);
+
+  if (exportNamedMatch) {
+    return exportNamedMatch[1];
   }
 
   if (!options.includeUnexportedDeclarations) {

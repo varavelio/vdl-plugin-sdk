@@ -10,6 +10,7 @@ import {
 import { llmsTemplate } from "./llms-template.ts";
 import {
   getBlockDescription,
+  type MarkdownRenderOptions,
   type MarkdownSection,
   renderMarkdownEntryPage,
   renderMarkdownPage,
@@ -40,6 +41,8 @@ const llmsIndexPath = path.join(tempDirectoryPath, "llms.txt");
 const llmsFullIndexPath = path.join(tempDirectoryPath, "llms-full.txt");
 const siteDirectoryPath = path.join(workspaceRootPath, "site");
 const llmsBaseUrl = "https://vdl-plugin-sdk.varavel.com/llms";
+const repositorySourceBaseUrl =
+  "https://github.com/varavelio/vdl-plugin-sdk/blob/main";
 const utilsSourceRootPath = path.join(workspaceRootPath, "src", "utils");
 const utilsDirectoryNames = [
   "ir",
@@ -89,6 +92,11 @@ type UtilityCategory = {
   directoryName: UtilityCategoryName;
   entries: JsDocEntry[];
   pageTitle: string;
+};
+
+const markdownRenderOptions: MarkdownRenderOptions = {
+  sourceBaseUrl: repositorySourceBaseUrl,
+  workspaceRootPath,
 };
 
 function titleCase(value: string): string {
@@ -298,13 +306,17 @@ function buildLlmsFull(
     "",
     'Usage: `import { definePlugin } from "@varavel/vdl-plugin-sdk";`',
     "",
-    removeLeadingTitle(renderMarkdownPage("Core", coreSections)),
+    removeLeadingTitle(
+      renderMarkdownPage("Core", coreSections, markdownRenderOptions),
+    ),
     "",
     "## Testing",
     "",
     'Usage: `import { irb } from "@varavel/vdl-plugin-sdk/testing";`',
     "",
-    removeLeadingTitle(renderMarkdownPage("Testing", testingSections)),
+    removeLeadingTitle(
+      renderMarkdownPage("Testing", testingSections, markdownRenderOptions),
+    ),
     "",
     "## Utils",
     "",
@@ -323,7 +335,9 @@ function buildLlmsFull(
         "",
         `#### ${entry.title}`,
         "",
-        removeLeadingTitle(renderMarkdownEntryPage(entry)),
+        removeLeadingTitle(
+          renderMarkdownEntryPage(entry, markdownRenderOptions),
+        ),
       );
     }
   }
@@ -339,17 +353,21 @@ async function writeApiDocs(
 ) {
   await writeMarkdownFile(
     path.join(docsApiDirectoryPath, "core.md"),
-    renderMarkdownPage("Core", coreSections),
+    renderMarkdownPage("Core", coreSections, markdownRenderOptions),
   );
   await writeMarkdownFile(
     path.join(docsApiDirectoryPath, "testing.md"),
-    renderMarkdownPage("Testing", testingSections),
+    renderMarkdownPage("Testing", testingSections, markdownRenderOptions),
   );
 
   for (const category of utilityCategories) {
     await writeMarkdownFile(
       path.join(docsApiDirectoryPath, "utils", `${category.directoryName}.md`),
-      renderMarkdownPage(category.pageTitle, [{ entries: category.entries }]),
+      renderMarkdownPage(
+        category.pageTitle,
+        [{ entries: category.entries }],
+        markdownRenderOptions,
+      ),
     );
   }
 }
@@ -361,11 +379,11 @@ async function writeLlmsDocs(
 ) {
   await writeMarkdownFile(
     path.join(llmsApiDirectoryPath, "core.md"),
-    renderMarkdownPage("Core", coreSections),
+    renderMarkdownPage("Core", coreSections, markdownRenderOptions),
   );
   await writeMarkdownFile(
     path.join(llmsApiDirectoryPath, "testing.md"),
-    renderMarkdownPage("Testing", testingSections),
+    renderMarkdownPage("Testing", testingSections, markdownRenderOptions),
   );
 
   for (const category of utilityCategories) {
@@ -377,7 +395,7 @@ async function writeLlmsDocs(
           category.directoryName,
           `${entry.title}.md`,
         ),
-        renderMarkdownEntryPage(entry),
+        renderMarkdownEntryPage(entry, markdownRenderOptions),
       );
     }
   }

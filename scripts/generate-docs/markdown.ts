@@ -1,9 +1,15 @@
+import path from "node:path";
 import type { Block, Spec } from "comment-parser";
 import type { JsDocEntry } from "./extract.ts";
 
 export type MarkdownSection = {
   entries: JsDocEntry[];
   title?: string;
+};
+
+export type MarkdownRenderOptions = {
+  sourceBaseUrl?: string;
+  workspaceRootPath?: string;
 };
 
 function toHeading(level: number, title: string): string {
@@ -98,6 +104,10 @@ function stripCommentPrefix(line: string): string {
  * simple Markdown paragraphs and lists.
  */
 export function getBlockDescription(block: Block): string {
+  if (block.description.trim()) {
+    return renderTextLines(block.description.split("\n"));
+  }
+
   const descriptionLines: string[] = [];
 
   for (const line of block.source.slice(1, -1)) {
@@ -170,6 +180,22 @@ function appendSection(sections: string[], content: string) {
   sections.push(content);
 }
 
+function getSourceLink(
+  entry: JsDocEntry,
+  options: MarkdownRenderOptions,
+): string {
+  if (!options.sourceBaseUrl || !options.workspaceRootPath) {
+    return "";
+  }
+
+  const relativeFilePath = path
+    .relative(options.workspaceRootPath, entry.filePath)
+    .split(path.sep)
+    .join("/");
+
+  return `> Source: [${relativeFilePath}](${options.sourceBaseUrl}/${relativeFilePath})`;
+}
+
 function renderTag(tag: Spec): string {
   const tagName = tag.tag.replace(/^@/, "");
 
@@ -195,7 +221,10 @@ function renderTag(tag: Spec): string {
   ].join("\n");
 }
 
-function renderEntryBody(entry: JsDocEntry): string {
+function renderEntryBody(
+  entry: JsDocEntry,
+  options: MarkdownRenderOptions,
+): string {
   const sections: string[] = [];
   const description = getBlockDescription(entry.block);
 
@@ -207,22 +236,36 @@ function renderEntryBody(entry: JsDocEntry): string {
     appendSection(sections, renderedTag);
   }
 
+  appendSection(sections, getSourceLink(entry, options));
+
   return sections.join("\n");
 }
 
-function renderEntry(entry: JsDocEntry, headingLevel: number): string {
+function renderEntry(
+  entry: JsDocEntry,
+  headingLevel: number,
+  options: MarkdownRenderOptions,
+): string {
   return [
     toHeading(headingLevel, entry.title),
     "",
-    renderEntryBody(entry),
+    renderEntryBody(entry, options),
   ].join("\n");
 }
 
 /**
  * Renders a single parsed JSDoc entry as a standalone Markdown page.
  */
-export function renderMarkdownEntryPage(entry: JsDocEntry): string {
-  return [toHeading(1, entry.title), "", renderEntryBody(entry), ""].join("\n");
+export function renderMarkdownEntryPage(
+  entry: JsDocEntry,
+  options: MarkdownRenderOptions = {},
+): string {
+  return [
+    toHeading(1, entry.title),
+    "",
+    renderEntryBody(entry, options),
+    "",
+  ].join("\n");
 }
 
 /**
@@ -232,6 +275,7 @@ export function renderMarkdownEntryPage(entry: JsDocEntry): string {
 export function renderMarkdownPage(
   pageTitle: string,
   sections: MarkdownSection[],
+  options: MarkdownRenderOptions = {},
 ): string {
   const parts = [toHeading(1, pageTitle)];
   const multiSection =
@@ -249,7 +293,7 @@ export function renderMarkdownPage(
     const entryHeadingLevel = multiSection || section.title ? 3 : 2;
 
     for (const entry of section.entries) {
-      parts.push("", renderEntry(entry, entryHeadingLevel));
+      parts.push("", renderEntry(entry, entryHeadingLevel, options));
     }
   }
 
