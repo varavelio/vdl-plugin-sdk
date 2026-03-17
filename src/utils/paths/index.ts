@@ -22,7 +22,7 @@ import { filename as patheFilename } from "pathe/utils";
  * @example
  * ```ts
  * join("generated", "models", "user.ts");
- * // returns "generated/models/user.ts"z
+ * // returns "generated/models/user.ts"
  * ```
  *
  * @see Powered by `pathe` (MIT License): [https://github.com/unjs/pathe](https://github.com/unjs/pathe)
