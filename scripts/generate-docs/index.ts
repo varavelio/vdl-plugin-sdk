@@ -7,6 +7,7 @@ import {
   extractTypeScriptJsDocs,
   type JsDocEntry,
 } from "./extract.ts";
+import { llmsTemplate } from "./llms-template.ts";
 import {
   getBlockDescription,
   type MarkdownSection,
@@ -237,11 +238,7 @@ function getUtilityEntryLlmsUrl(category: UtilityCategory, entry: JsDocEntry) {
  */
 function buildLlmsIndex(utilityCategories: UtilityCategory[]): string {
   const parts = [
-    "# VDL Plugin SDK",
-    "",
-    "> SDK to build plugins for VDL using TypeScript",
-    "",
-    "This index contains EVERYTHING this library offers. Analyze what you need and then download and read the documentation only for what you need at the corresponding link.",
+    llmsTemplate,
     "",
     "## Core",
     "",
@@ -295,11 +292,7 @@ function buildLlmsFull(
   utilityCategories: UtilityCategory[],
 ): string {
   const parts = [
-    "# VDL Plugin SDK",
-    "",
-    "> SDK to build plugins for VDL using TypeScript",
-    "",
-    "This index contains EVERYTHING this library offers. Analyze what you need and then read the embedded documentation directly in this file.",
+    llmsTemplate,
     "",
     "## Core",
     "",
