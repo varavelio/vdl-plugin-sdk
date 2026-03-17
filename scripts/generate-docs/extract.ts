@@ -15,6 +15,7 @@ const MAX_LOOKAHEAD_RELEVANT_LINES = 8;
 export type JsDocEntry = {
   block: Block;
   filePath: string;
+  lineNumber: number;
   title: string;
 };
 
@@ -25,7 +26,20 @@ export type ExtractTypeScriptJsDocsOptions = {
 type JsDocMatch = {
   comment: string;
   end: number;
+  lineNumber: number;
 };
+
+function getLineNumber(text: string, index: number): number {
+  let lineNumber = 1;
+
+  for (let currentIndex = 0; currentIndex < index; currentIndex += 1) {
+    if (text[currentIndex] === "\n") {
+      lineNumber += 1;
+    }
+  }
+
+  return lineNumber;
+}
 
 function collectJsDocMatches(fileContents: string): JsDocMatch[] {
   const matches: JsDocMatch[] = [];
@@ -38,6 +52,7 @@ function collectJsDocMatches(fileContents: string): JsDocMatch[] {
     matches.push({
       comment: match[0],
       end: match.index + match[0].length,
+      lineNumber: getLineNumber(fileContents, match.index),
     });
   }
 
@@ -166,6 +181,7 @@ export async function extractTypeScriptJsDocs(
       {
         block,
         filePath,
+        lineNumber: match.lineNumber,
         title,
       },
     ];

@@ -192,8 +192,9 @@ function getSourceLink(
     .relative(options.workspaceRootPath, entry.filePath)
     .split(path.sep)
     .join("/");
+  const lineSuffix = entry.lineNumber > 0 ? `#L${entry.lineNumber}` : "";
 
-  return `> Source: [${relativeFilePath}](${options.sourceBaseUrl}/${relativeFilePath})`;
+  return `> Source: [${relativeFilePath}:${entry.lineNumber}](${options.sourceBaseUrl}/${relativeFilePath}${lineSuffix})`;
 }
 
 function renderTag(tag: Spec): string {
