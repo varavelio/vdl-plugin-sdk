@@ -135,7 +135,6 @@ export function validateAnnotation(input: unknown, path = "Annotation"): string 
 /**
  * ConstantDef Fully resolved constant definition.
  * 
- * `typeRef` is explicit or inferred by analysis.
  * `value` contains the fully resolved literal payload.
  */
 export type ConstantDef = {
@@ -143,7 +142,6 @@ export type ConstantDef = {
   name: string
   doc?: string
   annotations: Annotation[]
-  typeRef: TypeRef
   value: LiteralValue
 }
 
@@ -152,14 +150,12 @@ export function hydrateConstantDef(input: ConstantDef): ConstantDef {
   const hydratedName = input.name
   const hydratedDoc = input.doc ? input.doc : input.doc
   const hydratedAnnotations = input.annotations.map(el => hydrateAnnotation(el))
-  const hydratedTypeRef = hydrateTypeRef(input.typeRef)
   const hydratedValue = hydrateLiteralValue(input.value)
   return {
     position: hydratedPosition,
     name: hydratedName,
     doc: hydratedDoc,
     annotations: hydratedAnnotations,
-    typeRef: hydratedTypeRef,
     value: hydratedValue,
   }
 }
@@ -190,13 +186,6 @@ export function validateConstantDef(input: unknown, path = "ConstantDef"): strin
         if (err !== null) return err;
       }
     }
-  }
-  if (obj.typeRef === undefined || obj.typeRef === null) {
-    return `${path}.typeRef: required field is missing`;
-  }
-  {
-    const err = validateTypeRef(obj.typeRef, `${path}.typeRef`);
-    if (err !== null) return err;
   }
   if (obj.value === undefined || obj.value === null) {
     return `${path}.value: required field is missing`;
@@ -940,7 +929,7 @@ export function validateTypeDef(input: unknown, path = "TypeDef"): string | null
 }
 
 /**
- * TypeRef Normalized type reference used by fields and constants.
+ * TypeRef Normalized type reference used by fields.
  * 
  * `kind` selects which payload fields are meaningful. Generators should inspect
  * `kind` first, then read the related payload fields.
