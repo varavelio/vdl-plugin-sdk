@@ -467,31 +467,26 @@ export const irb = {
   },
 
   /**
-   * Creates a `ConstantDef` with the given name, type, and literal value.
+   * Creates a `ConstantDef` with the given name and literal value.
    *
    * Pass `overrides` to set `annotations` or `doc`.
    *
    * @param name - Constant name.
-   * @param typeRef - Constant type reference.
    * @param value - Constant literal value.
    * @param overrides - Optional constant overrides.
    * @returns A `ConstantDef` with defaults applied.
    *
    * @example
    * ```ts
-   * irb.constantDef("ApiVersion", irb.primitiveType("string"), irb.stringLiteral("v1"));
+   * irb.constantDef("ApiVersion", irb.stringLiteral("v1"));
    * // returns a constant definition named "ApiVersion"
    * ```
    */
   constantDef(
     name: string,
-    typeRef: TypeRef,
     value: LiteralValue,
     overrides: Partial<
-      Omit<
-        ConstantDef,
-        "position" | "name" | "typeRef" | "value" | "annotations"
-      >
+      Omit<ConstantDef, "position" | "name" | "value" | "annotations">
     > & {
       annotations?: Annotation[];
     } = {},
@@ -501,7 +496,6 @@ export const irb = {
       name,
       doc: overrides.doc,
       annotations: overrides.annotations ?? [],
-      typeRef,
       value,
     };
   },
