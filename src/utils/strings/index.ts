@@ -7,6 +7,7 @@ export * from "./pad";
 export * from "./pad-left";
 export * from "./pad-right";
 export * from "./pascal-case";
+export * from "./pluralize";
 export * from "./snake_case";
 export * from "./trim";
 export * from "./trim-end";

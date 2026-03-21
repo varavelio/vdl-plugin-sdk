@@ -92,6 +92,7 @@
     "es-toolkit": "1.45.1",
     "ohash": "2.0.11",
     "pathe": "2.0.3",
+    "pluralize": "8.0.0",
     "tsdown": "0.21.0",
     "vitest": "4.0.18"
   }

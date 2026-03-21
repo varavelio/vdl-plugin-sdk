@@ -420,6 +420,41 @@ function createStringSuites(): SmokeSuite[] {
         },
       ],
     },
+    {
+      name: "strings.pluralize",
+      checks: [
+        {
+          name: "pluralizes and singularizes based on count",
+          run: () => {
+            assertEqual(
+              strings.pluralize("test"),
+              "tests",
+              "pluralize singular input",
+            );
+            assertEqual(
+              strings.pluralize("test", 1),
+              "test",
+              "pluralize count 1",
+            );
+            assertEqual(
+              strings.pluralize("test", 5),
+              "tests",
+              "pluralize count 5",
+            );
+            assertEqual(
+              strings.pluralize("test", 5, true),
+              "5 tests",
+              "pluralize inclusive",
+            );
+            assertEqual(
+              strings.pluralize("person", 2),
+              "people",
+              "pluralize irregular",
+            );
+          },
+        },
+      ],
+    },
   ];
 }
 
