@@ -25,12 +25,13 @@ const cache = new Map<number, RegExp>();
  * // "a\nb"
  */
 export function limitBlankLines(str: string, maxConsecutive = 0): string {
-  let regex = cache.get(maxConsecutive);
+  const limit = Math.max(0, maxConsecutive);
+  let regex = cache.get(limit);
 
   if (!regex) {
-    regex = new RegExp(`(\\n\\s*){${maxConsecutive + 2},}`, "g");
-    cache.set(maxConsecutive, regex);
+    regex = new RegExp(`(\\r?\\n\\s*){${limit + 2},}`, "g");
+    cache.set(limit, regex);
   }
 
-  return str.replace(regex, "\n".repeat(maxConsecutive + 1));
+  return str.replace(regex, "\n".repeat(limit + 1));
 }

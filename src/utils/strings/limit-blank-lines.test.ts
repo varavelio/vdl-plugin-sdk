@@ -34,4 +34,13 @@ describe("limitBlankLines", () => {
     expect(limitBlankLines("\n\nline1", 0)).toBe("\nline1");
     expect(limitBlankLines("line1\n\n", 0)).toBe("line1\n");
   });
+
+  it("should handle windows-style line endings", () => {
+    expect(limitBlankLines("line1\r\n\r\nline2", 0)).toBe("line1\nline2");
+    expect(limitBlankLines("line1\r\n\r\n\r\nline2", 1)).toBe("line1\n\nline2");
+  });
+
+  it("should treat negative maxConsecutive as 0", () => {
+    expect(limitBlankLines("line1\n\nline2", -1)).toBe("line1\nline2");
+  });
 });
