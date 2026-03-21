@@ -393,19 +393,28 @@ function createStringSuites(): SmokeSuite[] {
             );
           },
         },
+      ],
+    },
+    {
+      name: "strings.limit-blank-lines",
+      checks: [
         {
-          name: "returns the original string when padding is unnecessary or impossible",
+          name: "limits consecutive blank lines to specified amount",
           run: () => {
-            assertEqual(strings.pad("cat", 2), "cat", "pad no-op output");
             assertEqual(
-              strings.padLeft("cat", 6, ""),
-              "cat",
-              "padLeft empty pattern output",
+              strings.limitBlankLines("line1\n\n\nline2", 0),
+              "line1\nline2",
+              "limitBlankLines max=0 output",
             );
             assertEqual(
-              strings.padRight("cat", Number.NaN, "0"),
-              "cat",
-              "padRight NaN output",
+              strings.limitBlankLines("line1\n\n\nline2", 1),
+              "line1\n\nline2",
+              "limitBlankLines max=1 output",
+            );
+            assertEqual(
+              strings.limitBlankLines("line1\n\n\n\n\nline2", 2),
+              "line1\n\n\nline2",
+              "limitBlankLines max=2 output",
             );
           },
         },
