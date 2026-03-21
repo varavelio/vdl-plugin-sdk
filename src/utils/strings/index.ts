@@ -1,6 +1,7 @@
 export * from "./camel-case";
 export * from "./dedent";
 export * from "./kebab-case";
+export * from "./limit-blank-lines";
 export * from "./lower-case";
 export * from "./pad";
 export * from "./pad-left";
