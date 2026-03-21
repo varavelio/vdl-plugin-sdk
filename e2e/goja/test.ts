@@ -455,6 +455,36 @@ function createStringSuites(): SmokeSuite[] {
         },
       ],
     },
+    {
+      name: "strings.ensure",
+      checks: [
+        {
+          name: "ensures prefix and suffix correctly",
+          run: () => {
+            assertEqual(
+              strings.ensurePrefix("User", "I"),
+              "IUser",
+              "ensurePrefix add",
+            );
+            assertEqual(
+              strings.ensurePrefix("IUser", "I"),
+              "IUser",
+              "ensurePrefix exists",
+            );
+            assertEqual(
+              strings.ensureSuffix("User", "Error"),
+              "UserError",
+              "ensureSuffix add",
+            );
+            assertEqual(
+              strings.ensureSuffix("UserError", "Error"),
+              "UserError",
+              "ensureSuffix exists",
+            );
+          },
+        },
+      ],
+    },
   ];
 }
 
