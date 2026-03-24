@@ -1,0 +1,20 @@
+/*************************************************************\
+* VDL Configuration File                                      *
+*                                                             *
+* Star the repo at https://github.com/varavelio/vdl           *
+* See all available options at https://vdl.varavel.com/config *
+*                                                             *
+* Tweak this file and run "vdl generate"                      *
+\*************************************************************/
+
+const config = {
+  version 1
+
+  plugins [
+    {
+      src "varavelio/vdl-plugin-ts@v0.1.0"
+      schema "./schemas/plugin.vdl"
+      outDir "./src/types"
+    }
+  ]
+}
