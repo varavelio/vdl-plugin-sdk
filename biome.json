@@ -20,7 +20,6 @@
       "!**/temp",
       "!**/site",
       "!**/es-toolkit.ts",
-      "!src/types",
       "!docs/api"
     ]
   },
