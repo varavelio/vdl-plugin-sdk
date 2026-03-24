@@ -12,7 +12,7 @@ const config = {
 
   plugins [
     {
-      src "varavelio/vdl-plugin-ts@v0.1.0"
+      src "varavelio/vdl-plugin-ts@v0.1.1"
       schema "./schemas/plugin.vdl"
       outDir "./src/types"
     }
