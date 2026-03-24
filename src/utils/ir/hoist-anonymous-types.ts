@@ -1,5 +1,5 @@
-import type { Field, IrSchema, Position, TypeDef, TypeRef } from "../../types";
-import { hydrateIrSchema } from "../../types";
+import type { Field, Position, TypeDef, TypeRef } from "../../types";
+import { IrSchema } from "../../types";
 import { pascalCase } from "../strings/pascal-case";
 
 /**
@@ -170,7 +170,7 @@ export function hoistAnonymousTypes(
   schema: IrSchema,
   nameFn?: (context: HoistNameContext) => string,
 ): IrSchema {
-  const output = hydrateIrSchema(schema);
+  const output = IrSchema.hydrate(schema);
   const usedNames = new Set(output.types.map((typeDef) => typeDef.name));
   const flatTypes: TypeDef[] = [];
 
