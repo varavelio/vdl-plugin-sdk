@@ -2,6 +2,7 @@ export * from "./camel-case";
 export * from "./dedent";
 export * from "./ensure-prefix";
 export * from "./ensure-suffix";
+export * from "./fuzzy-search";
 export * from "./kebab-case";
 export * from "./limit-blank-lines";
 export * from "./lower-case";
