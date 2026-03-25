@@ -483,6 +483,38 @@ function createStringSuites(): SmokeSuite[] {
             );
           },
         },
+        {
+          name: "runs fuzzy search with structural ranking and deterministic fuzz coverage",
+          run: () => {
+            const rankedResult = strings.fuzzySearch(
+              ["MyUserHelper", "SuperUser", "UserService", "User", "Usr"],
+              "User",
+            );
+
+            assertDeepEqual(
+              rankedResult,
+              {
+                matches: ["User", "UserService", "SuperUser"],
+                exactMatchFound: true,
+              },
+              "fuzzySearch ranking output",
+            );
+
+            const normalizedResult = strings.fuzzySearch(
+              ["cafe", "café", "CAFÉ", "Cafe"],
+              "cafe",
+            );
+
+            assertDeepEqual(
+              normalizedResult,
+              {
+                matches: ["cafe", "café", "CAFÉ"],
+                exactMatchFound: true,
+              },
+              "fuzzySearch normalization output",
+            );
+          },
+        },
       ],
     },
   ];
