@@ -13,21 +13,19 @@
 
 import { irb } from "../../src/testing";
 import type { LiteralValue } from "../../src/types";
-import {
-  arrays,
-  crypto,
-  functions as functionUtils,
-  ir,
-  maps,
-  math,
-  misc,
-  objects,
-  options,
-  paths,
-  predicates,
-  sets,
-  strings,
-} from "../../src/utils";
+import * as arrays from "../../src/utils/arrays";
+import * as crypto from "../../src/utils/crypto";
+import * as functionUtils from "../../src/utils/functions";
+import * as ir from "../../src/utils/ir";
+import * as maps from "../../src/utils/maps";
+import * as math from "../../src/utils/math";
+import * as misc from "../../src/utils/misc";
+import * as objects from "../../src/utils/objects";
+import * as options from "../../src/utils/options";
+import * as paths from "../../src/utils/paths";
+import * as predicates from "../../src/utils/predicates";
+import * as sets from "../../src/utils/sets";
+import * as strings from "../../src/utils/strings";
 
 /**
  * Global callback injected by the Go runner.
