@@ -38,11 +38,11 @@
       "require": "./dist/index.cjs",
       "default": "./dist/index.js"
     },
-    "./utils": {
-      "types": "./dist/utils/index.d.ts",
-      "import": "./dist/utils/index.js",
-      "require": "./dist/utils/index.cjs",
-      "default": "./dist/utils/index.js"
+    "./utils/*": {
+      "types": "./dist/utils/*/index.d.ts",
+      "import": "./dist/utils/*/index.js",
+      "require": "./dist/utils/*/index.cjs",
+      "default": "./dist/utils/*/index.js"
     },
     "./testing": {
       "types": "./dist/testing/index.d.ts",
