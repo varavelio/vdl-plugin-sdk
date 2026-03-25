@@ -95,7 +95,7 @@ If you want the full API surface while you read, the reference docs live at [vdl
 Think of the SDK as four pieces that work together:
 
 - The main package for authoring a plugin handler and working with the typed VDL IR.
-- A separate `utils` entry point for reusable helper namespaces used in plugin logic.
+- Tree-shakeable utility subpaths for reusable helper functions used in plugin logic.
 - A separate `testing` entry point for building realistic IR fixtures in unit tests.
 - A small CLI plus shared `tsconfig` presets for the normal plugin build workflow.
 
@@ -103,11 +103,11 @@ The README focuses on how these surfaces fit together. A fuller API reference li
 
 ## Entry Points
 
-| Import                            | Use for                                                                                            |
-| --------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `@varavel/vdl-plugin-sdk`         | Main plugin authoring surface: define your plugin, receive typed input, and return generated files |
-| `@varavel/vdl-plugin-sdk/utils`   | Helper namespaces for deterministic transformations and VDL-specific utility work                  |
-| `@varavel/vdl-plugin-sdk/testing` | Test-only builders for creating plugin input and IR fixtures quickly                               |
+| Import                                     | Use for                                                                                            |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `@varavel/vdl-plugin-sdk`                  | Main plugin authoring surface: define your plugin, receive typed input, and return generated files |
+| `@varavel/vdl-plugin-sdk/utils/<category>` | Tree-shakeable named helper imports for one utility category                                       |
+| `@varavel/vdl-plugin-sdk/testing`          | Test-only builders for creating plugin input and IR fixtures quickly                               |
 
 ### `@varavel/vdl-plugin-sdk`
 
@@ -115,11 +115,14 @@ Use `@varavel/vdl-plugin-sdk` in your plugin runtime code. This is the package s
 
 It is the home for the plugin definition flow and the generated VDL types that describe the input your plugin receives.
 
-### `@varavel/vdl-plugin-sdk/utils`
+### `@varavel/vdl-plugin-sdk/utils/<category>`
 
-Use `@varavel/vdl-plugin-sdk/utils` when your plugin code needs reusable transformations, string and object helpers, option helpers, or IR-oriented convenience functions.
+Use utility subpaths when your plugin code needs reusable transformations, string helpers, option helpers, or IR-oriented convenience functions.
 
-The utilities are organized into namespaces such as `arrays`, `functions`, `maps`, `math`, `misc`, `objects`, `options`, `predicates`, `sets`, `strings`, and `ir`, so plugin code can stay explicit without pulling everything from the main SDK entry point.
+```ts
+import { words, pascalCase } from "@varavel/vdl-plugin-sdk/utils/strings";
+import { chunk } from "@varavel/vdl-plugin-sdk/utils/arrays";
+```
 
 ### `@varavel/vdl-plugin-sdk/testing`
 
@@ -130,7 +133,7 @@ This keeps test helpers separate from runtime imports and makes unit tests easie
 ## Recommended Mental Model
 
 - Reach for `@varavel/vdl-plugin-sdk` when you are writing the plugin itself.
-- Reach for `@varavel/vdl-plugin-sdk/utils` when your plugin logic needs shared helper functions.
+- Reach for `@varavel/vdl-plugin-sdk/utils/<category>` when your plugin logic needs shared helper functions.
 - Reach for `@varavel/vdl-plugin-sdk/testing` when you are constructing test fixtures.
 - Treat the CLI and `tsconfig` presets as project scaffolding around those imports, not as part of your runtime code.
 
@@ -153,7 +156,7 @@ For a fuller walkthrough, use this page together with the hosted documentation: 
 Most plugins follow the same path:
 
 1. Author the plugin in `src/index.ts` with the main SDK entry point.
-2. Use `@varavel/vdl-plugin-sdk/utils` only where helper namespaces make the implementation clearer.
+2. Use `@varavel/vdl-plugin-sdk/utils/<category>` for helper imports.
 3. Add unit tests with `@varavel/vdl-plugin-sdk/testing` when you need realistic IR input.
 4. Run `vdl-plugin check` during development.
 5. Run `vdl-plugin build` to produce `dist/index.js` for release.
