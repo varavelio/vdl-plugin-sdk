@@ -67,7 +67,7 @@
     "build": "npm run build:codegen && npm run build:docs && npm run build:bundle",
     "build:codegen": "node ./scripts/generate-es-toolkit-utils.ts",
     "build:bundle": "tsdown",
-    "build:docs": "node ./scripts/generate-docs/index.ts",
+    "build:docs": "rm -rf ./docs/api/ && typedoc",
     "format": "npm run format:dprint && npm run format:biome",
     "format:dprint": "dprint fmt --config ./dprint.json --log-level warn",
     "format:biome": "biome format --write --config-path ./biome.json --log-level warn --no-errors-on-unmatched .",
@@ -87,7 +87,6 @@
     "@biomejs/biome": "2.4.6",
     "@types/node": "25.5.0",
     "@varavel/vdl": "0.5.0-alpha.5",
-    "comment-parser": "1.4.5",
     "dedent": "1.7.2",
     "dprint": "0.52.0",
     "es-toolkit": "1.45.1",
@@ -95,6 +94,8 @@
     "pathe": "2.0.3",
     "pluralize": "8.0.0",
     "tsdown": "0.21.0",
+    "typedoc": "0.28.18",
+    "typedoc-plugin-markdown": "4.11.0",
     "vitest": "4.0.18"
   }
 }
