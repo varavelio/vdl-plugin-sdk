@@ -227,7 +227,9 @@ function toImportAlias(symbolName: string) {
 }
 
 function normalizeJsDocBlock(jsDocBlock: any) {
-  const lines = jsDocBlock.split("\n");
+  const lines = jsDocBlock
+    .replace(/(^\s*\*\s*)@note\b/gm, "$1@remarks")
+    .split("\n");
 
   return lines
     .map((line: string, index: number) => {
@@ -354,7 +356,7 @@ async function buildCategorySource(categoryConfig: any) {
 }
 
 async function writeFileIfChanged(filePath: string, nextContents: string) {
-  let currentContents = null;
+  let currentContents: string | null = null;
 
   try {
     currentContents = await readFile(filePath, "utf8");

@@ -57,7 +57,7 @@ export const assert: typeof esToolkit_assert = esToolkit_assert;
  * const [error, names] = attempt<string[]>(() => ['Alice', 'Bob']);
  * // [null, ['Alice', 'Bob']]
  *
- * @note
+ * @remarks
  * Important: This function is not suitable for async functions (functions that return a `Promise`).
  * When passing an async function, it will return `[null, Promise<Result>]`, but won't catch any
  * errors if the Promise is rejected later.
