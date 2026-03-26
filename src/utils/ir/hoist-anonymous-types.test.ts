@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { irb } from "../../testing";
+import * as irb from "../../testing";
 import { hoistAnonymousTypes } from "./hoist-anonymous-types";
 
 describe("hoistAnonymousTypes", () => {

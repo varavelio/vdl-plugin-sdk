@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { irb } from "../../testing";
+import * as irb from "../../testing";
 import { getAnnotation } from "./get-annotation";
 
 describe("getAnnotation", () => {

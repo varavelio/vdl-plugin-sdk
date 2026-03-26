@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { irb } from "../../testing";
+import * as irb from "../../testing";
 import type { LiteralValue } from "../../types";
 import { getAnnotationArg } from "./get-annotation-arg";
 import { unwrapLiteral } from "./unwrap-literal";
