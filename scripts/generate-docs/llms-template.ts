@@ -1,5 +1,5 @@
 /**
- * This constant contains the fixed template headere for the llms.txt and llms-full.txt files.
+ * This constant contains the fixed template header for the llms.txt and llms-full.txt files.
  */
 export const llmsTemplate = `
 
@@ -63,25 +63,25 @@ npx vdl-plugin build
 Think of the SDK as four pieces that work together:
 
 - The main package for authoring a plugin handler and working with the typed VDL IR.
-- A separate \`utils\` entry point for reusable helper namespaces used in plugin logic.
+- Tree-shakeable utility subpaths for reusable helper functions used in plugin logic.
 - A separate \`testing\` entry point for building realistic IR fixtures in unit tests.
 - A small CLI plus shared \`tsconfig\` presets for the normal plugin build workflow.
 
 ### Entry Points
 
-| Import                              | Use for                                                                                            |
-| ----------------------------------- | -------------------------------------------------------------------------------------------------- |
-| \`@varavel/vdl-plugin-sdk\`         | Main plugin authoring surface: define your plugin, receive typed input, and return generated files |
-| \`@varavel/vdl-plugin-sdk/utils\`   | Helper namespaces for deterministic transformations and VDL-specific utility work                  |
-| \`@varavel/vdl-plugin-sdk/testing\` | Test-only builders for creating plugin input and IR fixtures quickly                               |
+| Import                                       | Use for                                                                                            |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| \`@varavel/vdl-plugin-sdk\`                  | Main plugin authoring surface: define your plugin, receive typed input, and return generated files |
+| \`@varavel/vdl-plugin-sdk/utils/<category>\` | Tree-shakeable utility imports for one helper category                                             |
+| \`@varavel/vdl-plugin-sdk/testing\`          | Test-only builders for creating plugin input and IR fixtures quickly                               |
 
 #### \`@varavel/vdl-plugin-sdk\`
 
 Use \`@varavel/vdl-plugin-sdk\` in your plugin runtime code. This is the package surface you start from when writing \`src/index.ts\`.
 
-#### \`@varavel/vdl-plugin-sdk/utils\`
+#### \`@varavel/vdl-plugin-sdk/utils/<category>\`
 
-Use \`@varavel/vdl-plugin-sdk/utils\` when your plugin code needs reusable transformations, string and object helpers, option helpers, or IR-oriented convenience functions.
+Use utility subpaths when your plugin code needs reusable transformations, string helpers, option helpers, or IR-oriented convenience functions.
 
 #### \`@varavel/vdl-plugin-sdk/testing\`
 
@@ -90,7 +90,7 @@ Use \`@varavel/vdl-plugin-sdk/testing\` only in tests. It exposes \`irb\`, a com
 ### Mental Model
 
 - Reach for \`@varavel/vdl-plugin-sdk\` when you are writing the plugin itself.
-- Reach for \`@varavel/vdl-plugin-sdk/utils\` when your plugin logic needs shared helper functions.
+- Reach for \`@varavel/vdl-plugin-sdk/utils/<category>\` when your plugin logic needs shared helper functions.
 - Reach for \`@varavel/vdl-plugin-sdk/testing\` when you are constructing test fixtures.
 - Treat the CLI and \`tsconfig\` presets as project scaffolding around those imports, not as part of your runtime code.
 

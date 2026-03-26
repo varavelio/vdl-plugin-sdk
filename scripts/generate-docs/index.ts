@@ -1,50 +1,66 @@
-import { spawn } from "node:child_process";
-import { copyFile, cp, mkdir, readdir, rm, writeFile } from "node:fs/promises";
+/// <reference types="node" />
+
+import { execFileSync } from "node:child_process";
+import {
+  copyFile,
+  mkdir,
+  readdir,
+  readFile,
+  rename,
+  rm,
+  writeFile,
+} from "node:fs/promises";
+import { createRequire } from "node:module";
 import path from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
-import {
-  type ExtractTypeScriptJsDocsOptions,
-  extractTypeScriptJsDocs,
-  type JsDocEntry,
-} from "./extract.ts";
+import { fileURLToPath } from "node:url";
 import { llmsTemplate } from "./llms-template.ts";
-import {
-  getBlockDescription,
-  type MarkdownRenderOptions,
-  type MarkdownSection,
-  renderMarkdownEntryPage,
-  renderMarkdownPage,
-} from "./markdown.ts";
+
+type DocsSection = "core" | "testing" | "utilities";
+
+type ModuleDefinition = {
+  description: string;
+  directoryPath: string;
+  importPath: string;
+  section: DocsSection;
+  sortOrder: number;
+  title: string;
+  usage: string;
+};
+
+type MemberPage = {
+  content: string;
+  groupKey: string;
+  groupTitle: string;
+  relativePath: string;
+  summary: string;
+  title: string;
+};
+
+type BuiltModule = ModuleDefinition & {
+  memberPages: MemberPage[];
+  overviewContent: string;
+  overviewPath: string;
+};
+
+const require = createRequire(import.meta.url);
 
 const currentFilePath = fileURLToPath(import.meta.url);
-const generateDocsDirectoryPath = path.dirname(currentFilePath);
-const scriptsDirectoryPath = path.resolve(generateDocsDirectoryPath, "..");
-const workspaceRootPath = path.resolve(scriptsDirectoryPath, "..");
+const scriptsDirectoryPath = path.dirname(currentFilePath);
+const workspaceRootPath = path.resolve(scriptsDirectoryPath, "../..");
 const docsDirectoryPath = path.join(workspaceRootPath, "docs");
-const docsApiDirectoryPath = path.join(workspaceRootPath, "docs", "api");
-const docsAssetsDirectoryPath = path.join(workspaceRootPath, "docs", "assets");
-const docsLlmsPlaceholderPath = path.join(docsDirectoryPath, "llms.txt");
-const docsLlmsFullPlaceholderPath = path.join(
-  docsDirectoryPath,
-  "llms-full.txt",
-);
-const legacyLlmsDirectoryPath = path.join(docsAssetsDirectoryPath, "llms");
-const legacyLlmsIndexPath = path.join(docsAssetsDirectoryPath, "llms.txt");
-const legacyLlmsFullIndexPath = path.join(
-  docsAssetsDirectoryPath,
-  "llms-full.txt",
-);
-const tempDirectoryPath = path.join(workspaceRootPath, "temp");
-const llmsDirectoryPath = path.join(tempDirectoryPath, "llms");
-const llmsApiDirectoryPath = path.join(llmsDirectoryPath, "api");
-const llmsIndexPath = path.join(tempDirectoryPath, "llms.txt");
-const llmsFullIndexPath = path.join(tempDirectoryPath, "llms-full.txt");
+const docsApiDirectoryPath = path.join(docsDirectoryPath, "api");
+const docsLlmsIndexPath = path.join(docsDirectoryPath, "llms.txt");
+const docsLlmsFullPath = path.join(docsDirectoryPath, "llms-full.txt");
+const mkdocsConfigPath = path.join(workspaceRootPath, "mkdocs.yml");
 const siteDirectoryPath = path.join(workspaceRootPath, "site");
-const llmsBaseUrl = "https://vdl-plugin-sdk.varavel.com/llms";
-const repositorySourceBaseUrl =
-  "https://github.com/varavelio/vdl-plugin-sdk/blob/main";
-const utilsSourceRootPath = path.join(workspaceRootPath, "src", "utils");
-const utilsDirectoryNames = [
+const siteLlmsApiDirectoryPath = path.join(siteDirectoryPath, "llms", "api");
+const typedocConfigPath = path.join(workspaceRootPath, "typedoc.json");
+
+const llmsBaseUrl = "https://vdl-plugin-sdk.varavel.com/llms/api";
+const mkdocsNavStartMarker = "      # AUTO-GENERATED API NAV START";
+const mkdocsNavEndMarker = "      # AUTO-GENERATED API NAV END";
+
+const utilityOrder = [
   "ir",
   "options",
   "strings",
@@ -59,425 +75,819 @@ const utilsDirectoryNames = [
   "predicates",
   "misc",
 ] as const;
-const coreSectionConfigs = [
-  {
-    title: "Core function",
-    filePaths: [path.join(workspaceRootPath, "src", "define-plugin.ts")],
-  },
-  {
-    title: "Core types",
-    filePaths: [path.join(workspaceRootPath, "src", "types", "types.ts")],
-  },
-] as const;
-const testingSectionConfigs = [
-  {
-    extractOptions: {
-      includeUnexportedDeclarations: true,
-    },
-    filePaths: [
-      path.join(workspaceRootPath, "src", "testing", "ir-builders.ts"),
-    ],
-  },
+
+const groupOrder = [
+  "functions",
+  "variables",
+  "type-aliases",
+  "enumerations",
+  "interfaces",
+  "classes",
+  "documents",
 ] as const;
 
-type SectionConfig = {
-  extractOptions?: ExtractTypeScriptJsDocsOptions;
-  filePaths: readonly string[];
-  title?: string;
-};
+const utilityDescriptions = new Map<string, string>([
+  [
+    "ir",
+    "IR helpers for annotation lookup, literal unwrapping, and anonymous-type hoisting.",
+  ],
+  [
+    "options",
+    "Helpers for reading and normalizing plugin options from `vdl.config.vdl`.",
+  ],
+  [
+    "strings",
+    "String helpers for casing, padding, trimming, dedenting, and fuzzy matching.",
+  ],
+  ["arrays", "Deterministic array helpers re-exported from `es-toolkit`."],
+  ["functions", "Synchronous function helpers re-exported from `es-toolkit`."],
+  ["maps", "Map helpers re-exported from `es-toolkit`."],
+  ["math", "Deterministic math helpers re-exported from `es-toolkit`."],
+  ["objects", "Object helpers re-exported from `es-toolkit`."],
+  ["sets", "Set helpers re-exported from `es-toolkit`."],
+  [
+    "paths",
+    "Portable path helpers used for generated file locations and path manipulation.",
+  ],
+  [
+    "crypto",
+    "Deterministic hashing helpers for stable cache keys and generated output fingerprints.",
+  ],
+  ["predicates", "Predicate helpers re-exported from `es-toolkit`."],
+  ["misc", "Small synchronous miscellaneous helpers."],
+]);
 
-type UtilityCategoryName = (typeof utilsDirectoryNames)[number];
+const groupOrderIndex = new Map<string, number>(
+  groupOrder.map((groupName, index) => [groupName, index]),
+);
 
-type UtilityCategory = {
-  directoryName: UtilityCategoryName;
-  entries: JsDocEntry[];
-  pageTitle: string;
-};
-
-const markdownRenderOptions: MarkdownRenderOptions = {
-  sourceBaseUrl: repositorySourceBaseUrl,
-  workspaceRootPath,
-};
-
-function titleCase(value: string): string {
+function titleCase(value: string) {
   if (value === "ir") {
     return "IR";
   }
 
   return value
-    .split(/[-_]/g)
+    .split(/[/_-]/g)
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
 }
 
-async function listTypeScriptFiles(directoryPath: string): Promise<string[]> {
-  const entries = await readdir(directoryPath, { withFileTypes: true });
-  const nestedFilePaths = await Promise.all(
-    entries.map(async (entry) => {
-      const entryPath = path.join(directoryPath, entry.name);
-
-      if (entry.isDirectory()) {
-        return listTypeScriptFiles(entryPath);
-      }
-
-      return entry.name.endsWith(".ts") ? [entryPath] : [];
-    }),
-  );
-
-  return nestedFilePaths.flat().sort();
+function getGroupTitle(groupKey: string) {
+  return titleCase(groupKey);
 }
 
-async function collectEntriesFromFilePaths(
-  filePaths: readonly string[],
-  extractOptions: ExtractTypeScriptJsDocsOptions = {},
-): Promise<JsDocEntry[]> {
-  const nestedEntries = await Promise.all(
-    filePaths.map((filePath) =>
-      extractTypeScriptJsDocs(filePath, extractOptions),
-    ),
-  );
+function getModuleDefinitions(): ModuleDefinition[] {
+  const modules: ModuleDefinition[] = [
+    {
+      description:
+        "Define plugins and use the typed VDL IR surface exported by the main SDK entry point.",
+      directoryPath: "core",
+      importPath: "@varavel/vdl-plugin-sdk",
+      section: "core",
+      sortOrder: 0,
+      title: "Core",
+      usage: 'Usage: `import { definePlugin } from "@varavel/vdl-plugin-sdk";`',
+    },
+    {
+      description:
+        "Build realistic plugin input and IR fixtures for tests with the `irb` helpers.",
+      directoryPath: "testing",
+      importPath: "@varavel/vdl-plugin-sdk/testing",
+      section: "testing",
+      sortOrder: 0,
+      title: "Testing",
+      usage: 'Usage: `import { irb } from "@varavel/vdl-plugin-sdk/testing";`',
+    },
+  ];
 
-  return nestedEntries.flat();
-}
-
-async function collectSections(
-  sectionConfigs: readonly SectionConfig[],
-): Promise<MarkdownSection[]> {
-  return Promise.all(
-    sectionConfigs.map(async (sectionConfig) => ({
-      entries: await collectEntriesFromFilePaths(
-        sectionConfig.filePaths,
-        sectionConfig.extractOptions,
-      ),
-      title: sectionConfig.title,
-    })),
-  );
-}
-
-/**
- * Collects every exported helper JSDoc from the configured utility categories.
- */
-async function collectUtilityCategories(): Promise<UtilityCategory[]> {
-  return Promise.all(
-    utilsDirectoryNames.map(async (directoryName) => {
-      const filePaths = await listTypeScriptFiles(
-        path.join(utilsSourceRootPath, directoryName),
-      );
-
-      return {
-        directoryName,
-        entries: await collectEntriesFromFilePaths(filePaths),
-        pageTitle: titleCase(directoryName),
-      };
-    }),
-  );
-}
-
-async function writeMarkdownFile(filePath: string, contents: string) {
-  await mkdir(path.dirname(filePath), { recursive: true });
-  await writeFile(filePath, contents, "utf8");
-  console.log(`generated ${path.relative(workspaceRootPath, filePath)}`);
-}
-
-async function runCommand(command: string, args: string[]) {
-  await new Promise<void>((resolve, reject) => {
-    const child = spawn(command, args, {
-      cwd: workspaceRootPath,
-      stdio: "inherit",
+  for (const [index, utilityName] of utilityOrder.entries()) {
+    modules.push({
+      description:
+        utilityDescriptions.get(utilityName) ??
+        `API reference for \`@varavel/vdl-plugin-sdk/utils/${utilityName}\`.`,
+      directoryPath: `utils/${utilityName}`,
+      importPath: `@varavel/vdl-plugin-sdk/utils/${utilityName}`,
+      section: "utilities",
+      sortOrder: index,
+      title: titleCase(utilityName),
+      usage: `Usage: \`import { ... } from "@varavel/vdl-plugin-sdk/utils/${utilityName}";\``,
     });
-
-    child.on("error", reject);
-    child.on("exit", (exitCode) => {
-      if (exitCode === 0) {
-        resolve();
-        return;
-      }
-
-      reject(new Error(`command failed with exit code ${exitCode ?? "null"}`));
-    });
-  });
-}
-
-function truncateText(text: string, maxLength: number): string {
-  const normalizedText = text.replace(/\s+/g, " ").trim();
-
-  if (normalizedText === "") {
-    return "No description available.";
   }
 
-  if (normalizedText.length <= maxLength) {
-    return normalizedText;
-  }
-
-  return `${normalizedText.slice(0, maxLength).trimEnd()}...`;
+  return modules;
 }
 
-function removeLeadingTitle(markdown: string): string {
+function normalizeWhitespace(value: string) {
+  return value.replace(/\s+/g, " ").trim();
+}
+
+function truncateText(value: string, maxLength: number) {
+  const normalized = normalizeWhitespace(value);
+
+  if (normalized.length <= maxLength) {
+    return normalized;
+  }
+
+  return `${normalized.slice(0, maxLength).trimEnd()}...`;
+}
+
+function extractFirstHeading(markdown: string) {
+  const lines = markdown.split("\n");
+  return lines.find((line) => line.startsWith("# ")) ?? "# Untitled";
+}
+
+function stripLeadingHeading(markdown: string) {
   const lines = markdown.split("\n");
 
   if (!lines[0]?.startsWith("# ")) {
     return markdown.trim();
   }
 
-  let contentStartIndex = 1;
+  let index = 1;
 
-  while (lines[contentStartIndex]?.trim() === "") {
-    contentStartIndex += 1;
+  while (lines[index]?.trim() === "") {
+    index += 1;
   }
 
-  return lines.slice(contentStartIndex).join("\n").trim();
+  return lines.slice(index).join("\n").trim();
 }
 
-function getCoreLlmsUrl() {
-  return `${llmsBaseUrl}/api/core.md`;
+function cleanMemberTitle(rawHeading: string) {
+  return rawHeading
+    .replace(/^#\s+/, "")
+    .replace(
+      /^(Function|Variable|Type Alias|Enumeration|Interface|Class):\s+/,
+      "",
+    )
+    .replace(/\(\)$/, "")
+    .trim();
 }
 
-function getTestingLlmsUrl() {
-  return `${llmsBaseUrl}/api/testing.md`;
-}
+function extractSummaryFromMarkdown(markdown: string) {
+  const lines = markdown.split("\n");
+  let index = 0;
 
-function getUtilityEntryLlmsUrl(category: UtilityCategory, entry: JsDocEntry) {
-  return `${llmsBaseUrl}/api/utils/${category.directoryName}/${entry.title}.md`;
-}
+  if (lines[index]?.startsWith("# ")) {
+    index += 1;
+  }
 
-/**
- * Builds the lightweight LLM index that links to the generated per-topic files.
- */
-function buildLlmsIndex(utilityCategories: UtilityCategory[]): string {
-  const parts = [
-    llmsTemplate,
-    "",
-    "## Core",
-    "",
-    'Usage: `import { definePlugin } from "@varavel/vdl-plugin-sdk";`',
-    "",
-    `Read more: ${getCoreLlmsUrl()}`,
-    "",
-    "## Testing",
-    "",
-    'Usage: `import { irb } from "@varavel/vdl-plugin-sdk/testing";`',
-    "",
-    `Read more: ${getTestingLlmsUrl()}`,
-    "",
-    "## Utils",
-    "",
-    'Usage: `import { strings, arrays, ... } from "@varavel/vdl-plugin-sdk/utils";`',
-  ];
+  while (lines[index]?.trim() === "") {
+    index += 1;
+  }
 
-  for (const category of utilityCategories) {
-    if (category.entries.length === 0) {
+  if (lines[index]?.startsWith("_Import from `")) {
+    index += 1;
+
+    while (lines[index]?.trim() === "") {
+      index += 1;
+    }
+  }
+
+  if (lines[index]?.startsWith("```")) {
+    index += 1;
+
+    while (index < lines.length && !lines[index]?.startsWith("```")) {
+      index += 1;
+    }
+
+    if (index < lines.length) {
+      index += 1;
+    }
+
+    while (lines[index]?.trim() === "") {
+      index += 1;
+    }
+  }
+
+  if (lines[index]?.startsWith("Defined in:")) {
+    index += 1;
+
+    while (lines[index]?.trim() === "") {
+      index += 1;
+    }
+  }
+
+  const paragraphLines: string[] = [];
+
+  while (index < lines.length) {
+    const line = lines[index] ?? "";
+
+    if (line.startsWith("## ")) {
+      break;
+    }
+
+    if (line.trim() === "") {
+      if (paragraphLines.length > 0) {
+        break;
+      }
+
+      index += 1;
       continue;
     }
 
-    parts.push("", `### ${category.pageTitle}`);
-
-    for (const entry of category.entries) {
-      const description = truncateText(getBlockDescription(entry.block), 100);
-
-      parts.push(
-        "",
-        `#### ${entry.title}`,
-        "",
-        description,
-        "",
-        `Read more: ${getUtilityEntryLlmsUrl(category, entry)}`,
-      );
-    }
+    paragraphLines.push(line.trim());
+    index += 1;
   }
 
-  parts.push("");
-  return parts.join("\n");
+  return normalizeWhitespace(paragraphLines.join(" "));
 }
 
-/**
- * Builds a single text file that keeps the same index structure as llms.txt
- * but inlines the full generated Markdown content for every topic.
- */
-function buildLlmsFull(
-  coreSections: MarkdownSection[],
-  testingSections: MarkdownSection[],
-  utilityCategories: UtilityCategory[],
-): string {
-  const parts = [
-    llmsTemplate,
-    "",
-    "## Core",
-    "",
-    'Usage: `import { definePlugin } from "@varavel/vdl-plugin-sdk";`',
-    "",
-    removeLeadingTitle(
-      renderMarkdownPage("Core", coreSections, markdownRenderOptions),
-    ),
-    "",
-    "## Testing",
-    "",
-    'Usage: `import { irb } from "@varavel/vdl-plugin-sdk/testing";`',
-    "",
-    removeLeadingTitle(
-      renderMarkdownPage("Testing", testingSections, markdownRenderOptions),
-    ),
-    "",
-    "## Utils",
-    "",
-    'Usage: `import { strings, arrays, ... } from "@varavel/vdl-plugin-sdk/utils";`',
-  ];
+async function listMarkdownFiles(directoryPath: string): Promise<string[]> {
+  const entries = await readdir(directoryPath, { withFileTypes: true });
+  const nestedFilePaths = await Promise.all(
+    entries.map(async (entry) => {
+      const entryPath = path.join(directoryPath, entry.name);
 
-  for (const category of utilityCategories) {
-    if (category.entries.length === 0) {
-      continue;
-    }
+      if (entry.isDirectory()) {
+        return listMarkdownFiles(entryPath);
+      }
 
-    parts.push("", `### ${category.pageTitle}`);
+      return entry.name.endsWith(".md") ? [entryPath] : [];
+    }),
+  );
 
-    for (const entry of category.entries) {
-      parts.push(
-        "",
-        `#### ${entry.title}`,
-        "",
-        removeLeadingTitle(
-          renderMarkdownEntryPage(entry, markdownRenderOptions),
-        ),
-      );
-    }
-  }
-
-  parts.push("");
-  return parts.join("\n");
+  return nestedFilePaths.flat().sort();
 }
 
-async function writeApiDocs(
-  coreSections: MarkdownSection[],
-  testingSections: MarkdownSection[],
-  utilityCategories: UtilityCategory[],
+function rewriteMarkdownLinks(
+  markdown: string,
+  rewriter: (target: string) => string,
 ) {
-  await writeMarkdownFile(
-    path.join(docsApiDirectoryPath, "core.md"),
-    renderMarkdownPage("Core", coreSections, markdownRenderOptions),
-  );
-  await writeMarkdownFile(
-    path.join(docsApiDirectoryPath, "testing.md"),
-    renderMarkdownPage("Testing", testingSections, markdownRenderOptions),
-  );
-
-  for (const category of utilityCategories) {
-    await writeMarkdownFile(
-      path.join(docsApiDirectoryPath, "utils", `${category.directoryName}.md`),
-      renderMarkdownPage(
-        category.pageTitle,
-        [{ entries: category.entries }],
-        markdownRenderOptions,
-      ),
-    );
-  }
-}
-
-async function writeLlmsDocs(
-  coreSections: MarkdownSection[],
-  testingSections: MarkdownSection[],
-  utilityCategories: UtilityCategory[],
-) {
-  await writeMarkdownFile(
-    path.join(llmsApiDirectoryPath, "core.md"),
-    renderMarkdownPage("Core", coreSections, markdownRenderOptions),
-  );
-  await writeMarkdownFile(
-    path.join(llmsApiDirectoryPath, "testing.md"),
-    renderMarkdownPage("Testing", testingSections, markdownRenderOptions),
-  );
-
-  for (const category of utilityCategories) {
-    for (const entry of category.entries) {
-      await writeMarkdownFile(
-        path.join(
-          llmsApiDirectoryPath,
-          "utils",
-          category.directoryName,
-          `${entry.title}.md`,
-        ),
-        renderMarkdownEntryPage(entry, markdownRenderOptions),
-      );
-    }
-  }
-
-  await writeMarkdownFile(llmsIndexPath, buildLlmsIndex(utilityCategories));
-  await writeMarkdownFile(
-    llmsFullIndexPath,
-    buildLlmsFull(coreSections, testingSections, utilityCategories),
+  return markdown.replace(
+    /\[([^\]]+)\]\(([^)]+)\)/g,
+    (_match, label, target) => {
+      return `[${label}](${rewriter(target)})`;
+    },
   );
 }
 
-async function copyLlmsOutputsToSite() {
-  await cp(llmsDirectoryPath, path.join(siteDirectoryPath, "llms"), {
-    recursive: true,
+function rewriteCoreModuleTarget(target: string) {
+  if (target.startsWith("#") || /^https?:\/\//.test(target)) {
+    return target;
+  }
+
+  return target.replace(/(^|\/)index\//g, (_match, prefix: string) => {
+    return `${prefix}core/`;
   });
-  await copyFile(llmsIndexPath, path.join(siteDirectoryPath, "llms.txt"));
-  await copyFile(
-    llmsFullIndexPath,
-    path.join(siteDirectoryPath, "llms-full.txt"),
+}
+
+async function rewriteAllApiMarkdownLinksForCoreRename() {
+  const markdownFilePaths = await listMarkdownFiles(docsApiDirectoryPath);
+
+  await Promise.all(
+    markdownFilePaths.map(async (markdownFilePath) => {
+      const currentContents = await readFile(markdownFilePath, "utf8");
+      const nextContents = rewriteMarkdownLinks(
+        currentContents,
+        rewriteCoreModuleTarget,
+      );
+
+      if (nextContents !== currentContents) {
+        await writeFile(markdownFilePath, nextContents, "utf8");
+      }
+    }),
   );
 }
 
-async function writeLlmsPlaceholders() {
-  await Promise.all([
-    writeFile(
-      docsLlmsPlaceholderPath,
-      "Generated during docs build.\n",
-      "utf8",
-    ),
-    writeFile(
-      docsLlmsFullPlaceholderPath,
-      "Generated during docs build.\n",
-      "utf8",
-    ),
-  ]);
+async function renameCoreModuleDirectory() {
+  const typedocCoreDirectoryPath = path.join(docsApiDirectoryPath, "index");
+  const docsCoreDirectoryPath = path.join(docsApiDirectoryPath, "core");
+
+  await rename(typedocCoreDirectoryPath, docsCoreDirectoryPath);
+  await rewriteAllApiMarkdownLinksForCoreRename();
 }
 
-/**
- * Regenerates the API sources, builds the MkDocs site, and then copies the LLM
- * artifacts into the final `site/` output. Temporary files are created under
- * `temp/` and removed at the end of a successful build.
- */
-export async function generateDocs() {
-  await Promise.all([
-    rm(docsApiDirectoryPath, { force: true, recursive: true }),
-    rm(siteDirectoryPath, { force: true, recursive: true }),
-    rm(tempDirectoryPath, { force: true, recursive: true }),
-    rm(legacyLlmsDirectoryPath, { force: true, recursive: true }),
-    rm(legacyLlmsIndexPath, { force: true }),
-    rm(legacyLlmsFullIndexPath, { force: true }),
-    rm(docsLlmsPlaceholderPath, { force: true }),
-    rm(docsLlmsFullPlaceholderPath, { force: true }),
-    rm(llmsDirectoryPath, { force: true, recursive: true }),
-    rm(llmsIndexPath, { force: true }),
-    rm(llmsFullIndexPath, { force: true }),
-  ]);
+async function decorateModuleOverview(moduleDefinition: ModuleDefinition) {
+  const overviewPath = path.join(
+    docsApiDirectoryPath,
+    moduleDefinition.directoryPath,
+    "index.md",
+  );
+  const currentContents = await readFile(overviewPath, "utf8");
+  const body = stripLeadingHeading(currentContents);
+  const nextContents = [
+    `# ${moduleDefinition.title}`,
+    "",
+    `_Import from \`${moduleDefinition.importPath}\`._`,
+    "",
+    moduleDefinition.description,
+    "",
+    body,
+    "",
+  ].join("\n");
 
-  const [coreSections, testingSections, utilityCategories] = await Promise.all([
-    collectSections(coreSectionConfigs),
-    collectSections(testingSectionConfigs),
-    collectUtilityCategories(),
-  ]);
+  await writeFile(overviewPath, nextContents, "utf8");
+}
 
-  await writeApiDocs(coreSections, testingSections, utilityCategories);
-  await writeLlmsDocs(coreSections, testingSections, utilityCategories);
+async function decorateMemberPages(moduleDefinition: ModuleDefinition) {
+  const moduleDirectoryPath = path.join(
+    docsApiDirectoryPath,
+    moduleDefinition.directoryPath,
+  );
+  const markdownFilePaths = await listMarkdownFiles(moduleDirectoryPath);
+  const memberMarkdownFilePaths = markdownFilePaths.filter((filePath) => {
+    return path.basename(filePath) !== "index.md";
+  });
 
+  await Promise.all(
+    memberMarkdownFilePaths.map(async (memberMarkdownFilePath) => {
+      const currentContents = await readFile(memberMarkdownFilePath, "utf8");
+      const title = cleanMemberTitle(extractFirstHeading(currentContents));
+      const body = stripLeadingHeading(currentContents);
+      const nextContents = [
+        `# ${title}`,
+        "",
+        `_Import from \`${moduleDefinition.importPath}\`._`,
+        "",
+        body,
+        "",
+      ].join("\n");
+
+      await writeFile(memberMarkdownFilePath, nextContents, "utf8");
+    }),
+  );
+}
+
+async function buildModule(
+  moduleDefinition: ModuleDefinition,
+): Promise<BuiltModule> {
+  const moduleDirectoryPath = path.join(
+    docsApiDirectoryPath,
+    moduleDefinition.directoryPath,
+  );
+  const overviewPath = path.posix.join(
+    moduleDefinition.directoryPath,
+    "index.md",
+  );
+  const overviewContent = await readFile(
+    path.join(moduleDirectoryPath, "index.md"),
+    "utf8",
+  );
+  const markdownFilePaths = await listMarkdownFiles(moduleDirectoryPath);
+  const memberPages = await Promise.all(
+    markdownFilePaths
+      .filter((filePath) => path.basename(filePath) !== "index.md")
+      .map(async (filePath) => {
+        const relativePath = path.posix.join(
+          moduleDefinition.directoryPath,
+          path
+            .relative(moduleDirectoryPath, filePath)
+            .split(path.sep)
+            .join("/"),
+        );
+        const content = await readFile(filePath, "utf8");
+        const relativeDirectory = path.posix.dirname(
+          path.posix.relative(moduleDefinition.directoryPath, relativePath),
+        );
+        const groupKey = relativeDirectory.split("/")[0] ?? "documents";
+
+        return {
+          content,
+          groupKey,
+          groupTitle: getGroupTitle(groupKey),
+          relativePath,
+          summary: extractSummaryFromMarkdown(content),
+          title: cleanMemberTitle(extractFirstHeading(content)),
+        } satisfies MemberPage;
+      }),
+  );
+
+  memberPages.sort((left, right) => {
+    const leftGroupIndex =
+      groupOrderIndex.get(left.groupKey) ?? Number.POSITIVE_INFINITY;
+    const rightGroupIndex =
+      groupOrderIndex.get(right.groupKey) ?? Number.POSITIVE_INFINITY;
+
+    return (
+      leftGroupIndex - rightGroupIndex || left.title.localeCompare(right.title)
+    );
+  });
+
+  return {
+    ...moduleDefinition,
+    memberPages,
+    overviewContent,
+    overviewPath,
+  };
+}
+
+function sortModules(modules: BuiltModule[]) {
+  return [...modules].sort((left, right) => {
+    if (left.section !== right.section) {
+      return left.section.localeCompare(right.section);
+    }
+
+    return (
+      left.sortOrder - right.sortOrder || left.title.localeCompare(right.title)
+    );
+  });
+}
+
+async function writeApiOverview(modules: BuiltModule[]) {
+  const coreModules = modules.filter((module) => module.section === "core");
+  const utilityModules = modules.filter(
+    (module) => module.section === "utilities",
+  );
+  const testingModules = modules.filter(
+    (module) => module.section === "testing",
+  );
+  const lines = [
+    "# API Reference",
+    "",
+    "Generated from the public TypeScript surface with TypeDoc and organized by import path.",
+    "",
+  ];
+
+  if (coreModules.length > 0) {
+    lines.push("## Core", "");
+
+    for (const module of coreModules) {
+      lines.push(
+        `- [${module.title}](${module.overviewPath}) - \`${module.importPath}\``,
+        `  ${module.description}`,
+      );
+    }
+
+    lines.push("");
+  }
+
+  if (utilityModules.length > 0) {
+    lines.push("## Utilities", "");
+
+    for (const module of utilityModules) {
+      lines.push(
+        `- [${module.title}](${module.overviewPath}) - \`${module.importPath}\``,
+        `  ${module.description}`,
+      );
+    }
+
+    lines.push("");
+  }
+
+  if (testingModules.length > 0) {
+    lines.push("## Testing", "");
+
+    for (const module of testingModules) {
+      lines.push(
+        `- [${module.title}](${module.overviewPath}) - \`${module.importPath}\``,
+        `  ${module.description}`,
+      );
+    }
+
+    lines.push("");
+  }
+
+  await writeFile(
+    path.join(docsApiDirectoryPath, "index.md"),
+    `${lines.join("\n").trim()}\n`,
+    "utf8",
+  );
+}
+
+function getPagesForGroup(module: BuiltModule, groupKey: string) {
+  return module.memberPages.filter((page) => page.groupKey === groupKey);
+}
+
+function buildModuleNavLines(module: BuiltModule, indent: string) {
+  const lines = [
+    `${indent}- ${module.title}:`,
+    `${indent}    - Overview: api/${module.overviewPath}`,
+  ];
+
+  for (const groupKey of groupOrder) {
+    const pages = getPagesForGroup(module, groupKey);
+
+    if (pages.length === 0) {
+      continue;
+    }
+
+    lines.push(`${indent}    - ${getGroupTitle(groupKey)}:`);
+
+    for (const page of pages) {
+      lines.push(`${indent}        - ${page.title}: api/${page.relativePath}`);
+    }
+  }
+
+  return lines;
+}
+
+async function updateMkDocsNav(modules: BuiltModule[]) {
+  const mkdocsContents = await readFile(mkdocsConfigPath, "utf8");
+  const startMarkerIndex = mkdocsContents.indexOf(mkdocsNavStartMarker);
+  const endMarkerIndex = mkdocsContents.indexOf(mkdocsNavEndMarker);
+
+  if (
+    startMarkerIndex === -1 ||
+    endMarkerIndex === -1 ||
+    endMarkerIndex < startMarkerIndex
+  ) {
+    throw new Error("mkdocs.yml is missing the generated API nav markers");
+  }
+
+  const coreModules = modules.filter((module) => module.section === "core");
+  const utilityModules = modules.filter(
+    (module) => module.section === "utilities",
+  );
+  const testingModules = modules.filter(
+    (module) => module.section === "testing",
+  );
+  const generatedNavLines = ["      - Overview: api/index.md"];
+
+  for (const module of coreModules) {
+    generatedNavLines.push(...buildModuleNavLines(module, "      "));
+  }
+
+  if (utilityModules.length > 0) {
+    generatedNavLines.push("      - Utils:");
+
+    for (const module of utilityModules) {
+      generatedNavLines.push(...buildModuleNavLines(module, "          "));
+    }
+  }
+
+  for (const module of testingModules) {
+    generatedNavLines.push(...buildModuleNavLines(module, "      "));
+  }
+
+  const before = mkdocsContents.slice(
+    0,
+    startMarkerIndex + mkdocsNavStartMarker.length,
+  );
+  const after = mkdocsContents.slice(endMarkerIndex);
+  const nextContents = `${before}\n${generatedNavLines.join("\n")}\n${after}`;
+
+  await writeFile(mkdocsConfigPath, nextContents, "utf8");
+}
+
+function getLlmsUrl(relativePath: string) {
+  return `${llmsBaseUrl}/${relativePath}`;
+}
+
+function rewriteRelativeLinksForLlms(
+  markdown: string,
+  currentRelativePath: string,
+) {
+  return rewriteMarkdownLinks(markdown, (target) => {
+    if (target.startsWith("#") || /^https?:\/\//.test(target)) {
+      return target;
+    }
+
+    const [targetPath, hash = ""] = target.split("#");
+    const resolvedPath = path.posix.normalize(
+      path.posix.join(path.posix.dirname(currentRelativePath), targetPath),
+    );
+
+    if (!resolvedPath.endsWith(".md")) {
+      return target;
+    }
+
+    return hash.length > 0
+      ? `${getLlmsUrl(resolvedPath)}#${hash}`
+      : getLlmsUrl(resolvedPath);
+  });
+}
+
+function removeLeadingTitle(markdown: string) {
+  const lines = markdown.split("\n");
+
+  if (!lines[0]?.startsWith("# ")) {
+    return markdown.trim();
+  }
+
+  let index = 1;
+
+  while (lines[index]?.trim() === "") {
+    index += 1;
+  }
+
+  return lines.slice(index).join("\n").trim();
+}
+
+function buildModuleLlmsIndex(
+  module: BuiltModule,
+  titleLevel: number,
+  moduleHeadingLabel = module.title,
+) {
+  const moduleHeading = "#".repeat(titleLevel);
+  const groupHeading = "#".repeat(titleLevel + 1);
+  const memberHeading = "#".repeat(titleLevel + 2);
+  const parts = [
+    `${moduleHeading} ${moduleHeadingLabel}`,
+    "",
+    module.usage,
+    "",
+    module.description,
+    "",
+    `Read more: ${getLlmsUrl(module.overviewPath)}`,
+  ];
+
+  for (const groupKey of groupOrder) {
+    const pages = getPagesForGroup(module, groupKey);
+
+    if (pages.length === 0) {
+      continue;
+    }
+
+    parts.push("", `${groupHeading} ${getGroupTitle(groupKey)}`);
+
+    for (const page of pages) {
+      parts.push(
+        "",
+        `${memberHeading} ${page.title}`,
+        "",
+        truncateText(page.summary, 140),
+        "",
+        `Read more: ${getLlmsUrl(page.relativePath)}`,
+      );
+    }
+  }
+
+  return parts.join("\n");
+}
+
+function buildModuleLlmsFull(
+  module: BuiltModule,
+  titleLevel: number,
+  moduleHeadingLabel = module.title,
+) {
+  const moduleHeading = "#".repeat(titleLevel);
+  const groupHeading = "#".repeat(titleLevel + 1);
+  const memberHeading = "#".repeat(titleLevel + 2);
+  const parts = [
+    `${moduleHeading} ${moduleHeadingLabel}`,
+    "",
+    module.usage,
+    "",
+    `${groupHeading} Overview`,
+    "",
+    rewriteRelativeLinksForLlms(
+      removeLeadingTitle(module.overviewContent),
+      module.overviewPath,
+    ),
+  ];
+
+  for (const groupKey of groupOrder) {
+    const pages = getPagesForGroup(module, groupKey);
+
+    if (pages.length === 0) {
+      continue;
+    }
+
+    parts.push("", `${groupHeading} ${getGroupTitle(groupKey)}`);
+
+    for (const page of pages) {
+      parts.push(
+        "",
+        `${memberHeading} ${page.title}`,
+        "",
+        rewriteRelativeLinksForLlms(
+          removeLeadingTitle(page.content),
+          page.relativePath,
+        ),
+      );
+    }
+  }
+
+  return parts.join("\n");
+}
+
+async function writeLlmsFiles(modules: BuiltModule[]) {
+  const coreModules = modules.filter((module) => module.section === "core");
+  const utilityModules = modules.filter(
+    (module) => module.section === "utilities",
+  );
+  const testingModules = modules.filter(
+    (module) => module.section === "testing",
+  );
+  const llmsIndexParts = [llmsTemplate];
+  const llmsFullParts = [llmsTemplate];
+
+  if (coreModules.length > 0) {
+    llmsIndexParts.push("", "## Core");
+    llmsFullParts.push("", "## Core");
+
+    for (const module of coreModules) {
+      llmsIndexParts.push("", buildModuleLlmsIndex(module, 3, "Overview"));
+      llmsFullParts.push("", buildModuleLlmsFull(module, 3, "Overview"));
+    }
+  }
+
+  if (utilityModules.length > 0) {
+    llmsIndexParts.push("", "## Utilities");
+    llmsFullParts.push("", "## Utilities");
+
+    for (const module of utilityModules) {
+      llmsIndexParts.push("", buildModuleLlmsIndex(module, 3));
+      llmsFullParts.push("", buildModuleLlmsFull(module, 3));
+    }
+  }
+
+  if (testingModules.length > 0) {
+    llmsIndexParts.push("", "## Testing");
+    llmsFullParts.push("", "## Testing");
+
+    for (const module of testingModules) {
+      llmsIndexParts.push("", buildModuleLlmsIndex(module, 3, "Overview"));
+      llmsFullParts.push("", buildModuleLlmsFull(module, 3, "Overview"));
+    }
+  }
+
+  await writeFile(
+    docsLlmsIndexPath,
+    `${llmsIndexParts.join("\n").trim()}\n`,
+    "utf8",
+  );
+  await writeFile(
+    docsLlmsFullPath,
+    `${llmsFullParts.join("\n").trim()}\n`,
+    "utf8",
+  );
+}
+
+async function copyLlmsMarkdownMirror() {
+  await rm(siteLlmsApiDirectoryPath, { force: true, recursive: true });
+
+  const markdownFilePaths = await listMarkdownFiles(docsApiDirectoryPath);
+
+  await Promise.all(
+    markdownFilePaths.map(async (markdownFilePath) => {
+      const relativePath = path.relative(
+        docsApiDirectoryPath,
+        markdownFilePath,
+      );
+      const targetPath = path.join(siteLlmsApiDirectoryPath, relativePath);
+
+      await mkdir(path.dirname(targetPath), { recursive: true });
+      await copyFile(markdownFilePath, targetPath);
+    }),
+  );
+}
+
+function runTypeDoc() {
+  const typedocPackageJsonPath = require.resolve("typedoc/package.json");
+  const typedocCliPath = path.join(
+    path.dirname(typedocPackageJsonPath),
+    "bin",
+    "typedoc",
+  );
+
+  execFileSync(
+    process.execPath,
+    [typedocCliPath, "--options", typedocConfigPath],
+    {
+      cwd: workspaceRootPath,
+      stdio: "inherit",
+    },
+  );
+}
+
+function runMkDocsBuild() {
   try {
-    await writeLlmsPlaceholders();
-    await runCommand("mkdocs", ["build"]);
-    await copyLlmsOutputsToSite();
-  } finally {
-    await Promise.all([
-      rm(tempDirectoryPath, { force: true, recursive: true }),
-      rm(docsLlmsPlaceholderPath, { force: true }),
-      rm(docsLlmsFullPlaceholderPath, { force: true }),
-    ]);
+    execFileSync("mkdocs", ["build", "--strict"], {
+      cwd: workspaceRootPath,
+      stdio: "inherit",
+    });
+  } catch (error) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      error.code === "ENOENT"
+    ) {
+      throw new Error(
+        "mkdocs is required to build the documentation site. Install MkDocs with Material before running `npm run build:docs`.",
+      );
+    }
+
+    throw error;
   }
 }
 
-if (
-  process.argv[1] &&
-  import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href
-) {
-  await generateDocs();
+async function main() {
+  await rm(docsApiDirectoryPath, { force: true, recursive: true });
+
+  runTypeDoc();
+  await renameCoreModuleDirectory();
+
+  const moduleDefinitions = getModuleDefinitions();
+
+  await Promise.all(
+    moduleDefinitions.map(async (moduleDefinition) => {
+      await decorateModuleOverview(moduleDefinition);
+      await decorateMemberPages(moduleDefinition);
+    }),
+  );
+
+  const builtModules = sortModules(
+    await Promise.all(moduleDefinitions.map(buildModule)),
+  );
+
+  await writeApiOverview(builtModules);
+  await updateMkDocsNav(builtModules);
+  await writeLlmsFiles(builtModules);
+  runMkDocsBuild();
+  await copyLlmsMarkdownMirror();
 }
+
+await main();
