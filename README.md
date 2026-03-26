@@ -126,7 +126,7 @@ import { chunk } from "@varavel/vdl-plugin-sdk/utils/arrays";
 
 ### `@varavel/vdl-plugin-sdk/testing`
 
-Use `@varavel/vdl-plugin-sdk/testing` only in tests. It exposes `irb`, a compact IR builder for creating realistic plugin input and schema fixtures without hand-writing large object graphs.
+Use `@varavel/vdl-plugin-sdk/testing` only in tests. It exposes independent IR builder functions for creating realistic plugin input and schema fixtures without hand-writing large object graphs.
 
 This keeps test helpers separate from runtime imports and makes unit tests easier to read.
 
@@ -189,27 +189,28 @@ You can extend the shared base config exported by the SDK in your `tsconfig.json
 
 ## Testing
 
-`irb` stands for IR builder. It is a small factory API for tests that need realistic VDL input without hand-writing the full IR shape every time.
-
-Import it from the dedicated testing entry point:
-
-```ts
-import { irb } from "@varavel/vdl-plugin-sdk/testing";
-```
+The testing entry point exposes independent builder functions so you can import only what each test needs.
 
 Example:
 
 ```ts
-import { irb } from "@varavel/vdl-plugin-sdk/testing";
+import {
+  field,
+  objectType,
+  pluginInput,
+  primitiveType,
+  schema,
+  typeDef,
+} from "@varavel/vdl-plugin-sdk/testing";
 
-const input = irb.pluginInput({
+const input = pluginInput({
   options: { prefix: "Api" },
-  ir: irb.schema({
+  ir: schema({
     types: [
-      irb.typeDef(
+      typeDef(
         "User",
-        irb.objectType([
-          irb.field("id", irb.primitiveType("string")),
+        objectType([
+          field("id", primitiveType("string")),
         ]),
       ),
     ],
@@ -219,7 +220,7 @@ const input = irb.pluginInput({
 
 Pass `input` to your plugin handler in a unit test and assert on the generated files or errors.
 
-Because `irb` lives under `@varavel/vdl-plugin-sdk/testing`, you can keep test helpers separate from your plugin runtime imports.
+Because these builders live under `@varavel/vdl-plugin-sdk/testing`, you can keep test helpers separate from your plugin runtime imports.
 
 To add tests to your plugin, install [Vitest](https://vitest.dev):
 
