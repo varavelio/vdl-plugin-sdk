@@ -222,10 +222,6 @@ const categories = [
   ),
 ];
 
-function toImportAlias(symbolName: string) {
-  return `esToolkit_${symbolName}`;
-}
-
 function normalizeJsDocBlock(jsDocBlock: any) {
   const lines = jsDocBlock
     .replace(/(^\s*\*\s*)@note\b/gm, "$1@remarks")
@@ -281,18 +277,6 @@ function decorateJsDoc(jsDocBlock: any, symbolName: string) {
   return [...lines, esToolkitAttributionLine, closingLine].join("\n");
 }
 
-function buildExportStatement(symbolName: string) {
-  const importAlias = toImportAlias(symbolName);
-  const singleLineStatement = `export const ${symbolName}: typeof ${importAlias} = ${importAlias};`;
-
-  return singleLineStatement.length <= 80
-    ? singleLineStatement
-    : [
-        `export const ${symbolName}: typeof ${importAlias} =`,
-        `  ${importAlias};`,
-      ].join("\n");
-}
-
 async function readSymbolJsDoc(
   esToolkitCategoryName: string,
   symbolName: string,
@@ -311,12 +295,6 @@ async function readSymbolJsDoc(
 }
 
 async function buildCategorySource(categoryConfig: any) {
-  const importLines = categoryConfig.symbols.map(
-    ({ symbolName }: { symbolName: string }) => {
-      return `  ${symbolName} as ${toImportAlias(symbolName)},`;
-    },
-  );
-
   const exportBlocks = await Promise.all(
     categoryConfig.symbols.map(
       async ({
@@ -332,7 +310,12 @@ async function buildCategorySource(categoryConfig: any) {
           docsSourceName,
         );
 
-        return [jsDocBlock, buildExportStatement(symbolName)].join("\n");
+        const indentedJsDoc = jsDocBlock
+          .split("\n")
+          .map((line: string) => `  ${line}`)
+          .join("\n");
+
+        return `${indentedJsDoc}\n  ${symbolName},`;
       },
     ),
   );
@@ -346,11 +329,9 @@ async function buildCategorySource(categoryConfig: any) {
     " * Licensed under the MIT License. https://github.com/toss/es-toolkit",
     " */",
     "",
-    "import {",
-    ...importLines,
-    `} from "es-toolkit/${categoryConfig.esToolkitCategoryName}";`,
-    "",
+    "export {",
     exportBlocks.join("\n\n"),
+    `} from "es-toolkit/${categoryConfig.esToolkitCategoryName}";`,
     "",
   ].join("\n");
 }
