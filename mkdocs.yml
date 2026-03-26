@@ -276,8 +276,28 @@ nav:
                   - invariant: api/utils/misc/variables/invariant.md
       - Testing:
           - Overview: api/testing/index.md
-          - Variables:
-              - irb: api/testing/variables/irb.md
+          - Functions:
+              - annotation: api/testing/functions/annotation.md
+              - arrayLiteral: api/testing/functions/arrayLiteral.md
+              - arrayType: api/testing/functions/arrayType.md
+              - boolLiteral: api/testing/functions/boolLiteral.md
+              - constantDef: api/testing/functions/constantDef.md
+              - enumDef: api/testing/functions/enumDef.md
+              - enumMember: api/testing/functions/enumMember.md
+              - enumType: api/testing/functions/enumType.md
+              - field: api/testing/functions/field.md
+              - floatLiteral: api/testing/functions/floatLiteral.md
+              - intLiteral: api/testing/functions/intLiteral.md
+              - mapType: api/testing/functions/mapType.md
+              - namedType: api/testing/functions/namedType.md
+              - objectLiteral: api/testing/functions/objectLiteral.md
+              - objectType: api/testing/functions/objectType.md
+              - pluginInput: api/testing/functions/pluginInput.md
+              - position: api/testing/functions/position.md
+              - primitiveType: api/testing/functions/primitiveType.md
+              - schema: api/testing/functions/schema.md
+              - stringLiteral: api/testing/functions/stringLiteral.md
+              - typeDef: api/testing/functions/typeDef.md
       # AUTO-GENERATED API NAV END
 
   - LLMs:
