@@ -24,7 +24,6 @@ type ModuleDefinition = {
   section: DocsSection;
   sortOrder: number;
   title: string;
-  usage: string;
 };
 
 type MemberPage = {
@@ -115,7 +114,6 @@ function getModuleDefinitions(): ModuleDefinition[] {
       section: "core",
       sortOrder: 0,
       title: "Core",
-      usage: 'Usage: `import { definePlugin } from "@varavel/vdl-plugin-sdk";`',
     },
     {
       description:
@@ -125,7 +123,6 @@ function getModuleDefinitions(): ModuleDefinition[] {
       section: "testing",
       sortOrder: 0,
       title: "Testing",
-      usage: 'Usage: `import { irb } from "@varavel/vdl-plugin-sdk/testing";`',
     },
   ];
 
@@ -136,7 +133,6 @@ function getModuleDefinitions(): ModuleDefinition[] {
       section: "utilities",
       sortOrder: index,
       title: titleCase(utilityName),
-      usage: `Usage: \`import { ... } from "@varavel/vdl-plugin-sdk/utils/${utilityName}";\``,
     });
   }
 
@@ -614,67 +610,73 @@ function removeLeadingTitle(markdown: string) {
   return lines.slice(index).join("\n").trim();
 }
 
-function buildModuleLlmsIndex(
+type LlmsModuleRenderOptions = {
+  groupHeadingLevel: number;
+  itemHeadingLevel: number;
+  moduleHeadingLevel?: number;
+};
+
+function buildLlmsModuleHeading(
   module: BuiltModule,
-  titleLevel: number,
-  moduleHeadingLabel = module.title,
+  options: LlmsModuleRenderOptions,
 ) {
-  const moduleHeading = "#".repeat(titleLevel);
-  const groupHeading = "#".repeat(titleLevel + 1);
-  const memberHeading = "#".repeat(titleLevel + 2);
-  const parts = [
-    `${moduleHeading} ${moduleHeadingLabel}`,
-    "",
-    module.usage,
-    ...(module.description !== undefined ? ["", module.description] : []),
-    "",
-    `Read more: ${getLlmsUrl(module.overviewPath)}`,
-  ];
-
-  for (const groupKey of groupOrder) {
-    const pages = getPagesForGroup(module, groupKey);
-
-    if (pages.length === 0) {
-      continue;
-    }
-
-    parts.push("", `${groupHeading} ${getGroupTitle(groupKey)}`);
-
-    for (const page of pages) {
-      parts.push(
-        "",
-        `${memberHeading} ${page.title}`,
-        "",
-        truncateText(page.summary, 140),
-        "",
-        `Read more: ${getLlmsUrl(page.relativePath)}`,
-      );
-    }
-  }
-
-  return parts.join("\n");
+  return options.moduleHeadingLevel !== undefined
+    ? `${"#".repeat(options.moduleHeadingLevel)} ${module.title}`
+    : undefined;
 }
 
-function buildModuleLlmsFull(
-  module: BuiltModule,
-  titleLevel: number,
-  moduleHeadingLabel = module.title,
-) {
-  const moduleHeading = "#".repeat(titleLevel);
-  const groupHeading = "#".repeat(titleLevel + 1);
-  const memberHeading = "#".repeat(titleLevel + 2);
-  const parts = [
-    `${moduleHeading} ${moduleHeadingLabel}`,
-    "",
-    module.usage,
-    "",
-    `${groupHeading} Overview`,
-    "",
+function buildLlmsIndexModuleBlock(module: BuiltModule) {
+  const lines = [`import: \`${module.importPath}\``];
+
+  if (module.description !== undefined) {
+    lines.push(module.description);
+  }
+
+  lines.push(getLlmsUrl(module.overviewPath));
+
+  return lines.join("\n");
+}
+
+function buildLlmsFullModuleBlocks(module: BuiltModule) {
+  return [
+    `import: \`${module.importPath}\``,
     rewriteRelativeLinksForLlms(
       removeLeadingTitle(module.overviewContent),
       module.overviewPath,
     ),
   ];
+}
+
+function buildLlmsIndexMemberBlock(page: MemberPage, memberHeading: string) {
+  return [
+    `${memberHeading} ${page.title}`,
+    truncateText(page.summary, 140),
+    getLlmsUrl(page.relativePath),
+  ].join("\n");
+}
+
+function buildLlmsFullMemberBlock(page: MemberPage, memberHeading: string) {
+  return [
+    `${memberHeading} ${page.title}`,
+    rewriteRelativeLinksForLlms(
+      removeLeadingTitle(page.content),
+      page.relativePath,
+    ),
+  ].join("\n");
+}
+
+function buildModuleLlmsIndex(
+  module: BuiltModule,
+  options: LlmsModuleRenderOptions,
+) {
+  const groupHeading = "#".repeat(options.groupHeadingLevel);
+  const memberHeading = "#".repeat(options.itemHeadingLevel);
+  const heading = buildLlmsModuleHeading(module, options);
+  const parts: string[] = [buildLlmsIndexModuleBlock(module)];
+
+  if (heading !== undefined) {
+    parts.unshift(heading);
+  }
 
   for (const groupKey of groupOrder) {
     const pages = getPagesForGroup(module, groupKey);
@@ -683,60 +685,115 @@ function buildModuleLlmsFull(
       continue;
     }
 
-    parts.push("", `${groupHeading} ${getGroupTitle(groupKey)}`);
+    parts.push(`${groupHeading} ${getGroupTitle(groupKey)}`);
 
     for (const page of pages) {
-      parts.push(
-        "",
-        `${memberHeading} ${page.title}`,
-        "",
-        rewriteRelativeLinksForLlms(
-          removeLeadingTitle(page.content),
-          page.relativePath,
-        ),
-      );
+      parts.push(buildLlmsIndexMemberBlock(page, memberHeading));
     }
   }
 
-  return parts.join("\n");
+  return parts.join("\n\n");
+}
+
+function buildModuleLlmsFull(
+  module: BuiltModule,
+  options: LlmsModuleRenderOptions,
+) {
+  const groupHeading = "#".repeat(options.groupHeadingLevel);
+  const memberHeading = "#".repeat(options.itemHeadingLevel);
+  const heading = buildLlmsModuleHeading(module, options);
+  const parts: string[] = [...buildLlmsFullModuleBlocks(module)];
+
+  if (heading !== undefined) {
+    parts.unshift(heading);
+  }
+
+  for (const groupKey of groupOrder) {
+    const pages = getPagesForGroup(module, groupKey);
+
+    if (pages.length === 0) {
+      continue;
+    }
+
+    parts.push(`${groupHeading} ${getGroupTitle(groupKey)}`);
+
+    for (const page of pages) {
+      parts.push(buildLlmsFullMemberBlock(page, memberHeading));
+    }
+  }
+
+  return parts.join("\n\n");
+}
+
+function appendLlmsSection(
+  parts: string[],
+  sectionTitle: string,
+  modules: BuiltModule[],
+  options: LlmsModuleRenderOptions,
+  full: boolean,
+) {
+  if (modules.length === 0) {
+    return;
+  }
+
+  parts.push("", `## ${sectionTitle}`);
+
+  for (const module of modules) {
+    parts.push(
+      "",
+      full
+        ? buildModuleLlmsFull(module, options)
+        : buildModuleLlmsIndex(module, options),
+    );
+  }
 }
 
 async function writeLlmsFiles(modules: BuiltModule[]) {
-  const coreModules = getModulesBySection(modules, "core");
-  const utilityModules = getModulesBySection(modules, "utilities");
-  const testingModules = getModulesBySection(modules, "testing");
   const llmsIndexParts = [llmsTemplate];
   const llmsFullParts = [llmsTemplate];
 
-  if (coreModules.length > 0) {
-    llmsIndexParts.push("", "## Core");
-    llmsFullParts.push("", "## Core");
-
-    for (const module of coreModules) {
-      llmsIndexParts.push("", buildModuleLlmsIndex(module, 3, "Overview"));
-      llmsFullParts.push("", buildModuleLlmsFull(module, 3, "Overview"));
-    }
-  }
-
-  if (utilityModules.length > 0) {
-    llmsIndexParts.push("", "## Utilities");
-    llmsFullParts.push("", "## Utilities");
-
-    for (const module of utilityModules) {
-      llmsIndexParts.push("", buildModuleLlmsIndex(module, 3));
-      llmsFullParts.push("", buildModuleLlmsFull(module, 3));
-    }
-  }
-
-  if (testingModules.length > 0) {
-    llmsIndexParts.push("", "## Testing");
-    llmsFullParts.push("", "## Testing");
-
-    for (const module of testingModules) {
-      llmsIndexParts.push("", buildModuleLlmsIndex(module, 3, "Overview"));
-      llmsFullParts.push("", buildModuleLlmsFull(module, 3, "Overview"));
-    }
-  }
+  appendLlmsSection(
+    llmsIndexParts,
+    "Core",
+    getModulesBySection(modules, "core"),
+    { groupHeadingLevel: 3, itemHeadingLevel: 4 },
+    false,
+  );
+  appendLlmsSection(
+    llmsFullParts,
+    "Core",
+    getModulesBySection(modules, "core"),
+    { groupHeadingLevel: 3, itemHeadingLevel: 4 },
+    true,
+  );
+  appendLlmsSection(
+    llmsIndexParts,
+    "Utilities",
+    getModulesBySection(modules, "utilities"),
+    { groupHeadingLevel: 4, itemHeadingLevel: 5, moduleHeadingLevel: 3 },
+    false,
+  );
+  appendLlmsSection(
+    llmsFullParts,
+    "Utilities",
+    getModulesBySection(modules, "utilities"),
+    { groupHeadingLevel: 4, itemHeadingLevel: 5, moduleHeadingLevel: 3 },
+    true,
+  );
+  appendLlmsSection(
+    llmsIndexParts,
+    "Testing",
+    getModulesBySection(modules, "testing"),
+    { groupHeadingLevel: 3, itemHeadingLevel: 4 },
+    false,
+  );
+  appendLlmsSection(
+    llmsFullParts,
+    "Testing",
+    getModulesBySection(modules, "testing"),
+    { groupHeadingLevel: 3, itemHeadingLevel: 4 },
+    true,
+  );
 
   await writeFile(
     docsLlmsIndexPath,
