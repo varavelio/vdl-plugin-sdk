@@ -67,7 +67,7 @@
     "build": "npm run build:codegen && npm run build:docs && npm run build:bundle",
     "build:codegen": "node ./scripts/generate-es-toolkit-utils.ts",
     "build:bundle": "tsdown",
-    "build:docs": "rm -rf ./docs/api/ && typedoc",
+    "build:docs": "node ./scripts/generate-docs/index.ts",
     "format": "npm run format:dprint && npm run format:biome",
     "format:dprint": "dprint fmt --config ./dprint.json --log-level warn",
     "format:biome": "biome format --write --config-path ./biome.json --log-level warn --no-errors-on-unmatched .",
