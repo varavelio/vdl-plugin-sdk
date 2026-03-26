@@ -85,7 +85,7 @@ Use utility subpaths when your plugin code needs reusable transformations, strin
 
 #### \`@varavel/vdl-plugin-sdk/testing\`
 
-Use \`@varavel/vdl-plugin-sdk/testing\` only in tests. It exposes \`irb\`, a compact IR builder for creating realistic plugin input and schema fixtures without hand-writing large object graphs.
+Use \`@varavel/vdl-plugin-sdk/testing\` only in tests. It exposes independent IR builder functions for creating realistic plugin input and schema fixtures without hand-writing large object graphs.
 
 ### Mental Model
 
