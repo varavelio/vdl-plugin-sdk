@@ -7,22 +7,279 @@ repo_name: varavelio/vdl-plugin-sdk
 nav:
   - Getting Started: index.md
   - API Reference:
-      - Core: api/core.md
+
+      # AUTO-GENERATED API NAV START
+      - Overview: api/index.md
+      - Core:
+          - Overview: api/core/index.md
+          - Functions:
+              - definePlugin: api/core/functions/definePlugin.md
+          - Variables:
+              - Annotation: api/core/variables/Annotation.md
+              - ConstantDef: api/core/variables/ConstantDef.md
+              - EnumDef: api/core/variables/EnumDef.md
+              - EnumMember: api/core/variables/EnumMember.md
+              - EnumValueType: api/core/variables/EnumValueType.md
+              - Field: api/core/variables/Field.md
+              - IrSchema: api/core/variables/IrSchema.md
+              - LiteralKind: api/core/variables/LiteralKind.md
+              - LiteralValue: api/core/variables/LiteralValue.md
+              - ObjectEntry: api/core/variables/ObjectEntry.md
+              - PluginInput: api/core/variables/PluginInput.md
+              - PluginOutput: api/core/variables/PluginOutput.md
+              - PluginOutputError: api/core/variables/PluginOutputError.md
+              - PluginOutputFile: api/core/variables/PluginOutputFile.md
+              - Position: api/core/variables/Position.md
+              - PrimitiveType: api/core/variables/PrimitiveType.md
+              - TopLevelDoc: api/core/variables/TopLevelDoc.md
+              - TypeDef: api/core/variables/TypeDef.md
+              - TypeKind: api/core/variables/TypeKind.md
+              - TypeRef: api/core/variables/TypeRef.md
+          - Type Aliases:
+              - Annotation: api/core/type-aliases/Annotation.md
+              - ConstantDef: api/core/type-aliases/ConstantDef.md
+              - EnumDef: api/core/type-aliases/EnumDef.md
+              - EnumMember: api/core/type-aliases/EnumMember.md
+              - EnumValueType: api/core/type-aliases/EnumValueType.md
+              - Field: api/core/type-aliases/Field.md
+              - IrSchema: api/core/type-aliases/IrSchema.md
+              - LiteralKind: api/core/type-aliases/LiteralKind.md
+              - LiteralValue: api/core/type-aliases/LiteralValue.md
+              - ObjectEntry: api/core/type-aliases/ObjectEntry.md
+              - PluginInput: api/core/type-aliases/PluginInput.md
+              - PluginOutput: api/core/type-aliases/PluginOutput.md
+              - PluginOutputError: api/core/type-aliases/PluginOutputError.md
+              - PluginOutputFile: api/core/type-aliases/PluginOutputFile.md
+              - Position: api/core/type-aliases/Position.md
+              - PrimitiveType: api/core/type-aliases/PrimitiveType.md
+              - TopLevelDoc: api/core/type-aliases/TopLevelDoc.md
+              - TypeDef: api/core/type-aliases/TypeDef.md
+              - TypeKind: api/core/type-aliases/TypeKind.md
+              - TypeRef: api/core/type-aliases/TypeRef.md
+              - VdlPluginHandler: api/core/type-aliases/VdlPluginHandler.md
       - Utils:
-          - IR: api/utils/ir.md
-          - Options: api/utils/options.md
-          - Strings: api/utils/strings.md
-          - Arrays: api/utils/arrays.md
-          - Functions: api/utils/functions.md
-          - Maps: api/utils/maps.md
-          - Math: api/utils/math.md
-          - Objects: api/utils/objects.md
-          - Sets: api/utils/sets.md
-          - Paths: api/utils/paths.md
-          - Crypto: api/utils/crypto.md
-          - Predicates: api/utils/predicates.md
-          - Misc: api/utils/misc.md
-      - Testing: api/testing.md
+          - IR:
+              - Overview: api/utils/ir/index.md
+              - Functions:
+                  - getAnnotation: api/utils/ir/functions/getAnnotation.md
+                  - getAnnotationArg: api/utils/ir/functions/getAnnotationArg.md
+                  - hoistAnonymousTypes: api/utils/ir/functions/hoistAnonymousTypes.md
+                  - unwrapLiteral: api/utils/ir/functions/unwrapLiteral.md
+              - Type Aliases:
+                  - HoistNameContext: api/utils/ir/type-aliases/HoistNameContext.md
+          - Options:
+              - Overview: api/utils/options/index.md
+              - Functions:
+                  - getOptionArray: api/utils/options/functions/getOptionArray.md
+                  - getOptionBool: api/utils/options/functions/getOptionBool.md
+                  - getOptionEnum: api/utils/options/functions/getOptionEnum.md
+                  - getOptionNumber: api/utils/options/functions/getOptionNumber.md
+                  - getOptionString: api/utils/options/functions/getOptionString.md
+          - Strings:
+              - Overview: api/utils/strings/index.md
+              - Functions:
+                  - camelCase: api/utils/strings/functions/camelCase.md
+                  - dedent: api/utils/strings/functions/dedent.md
+                  - ensurePrefix: api/utils/strings/functions/ensurePrefix.md
+                  - ensureSuffix: api/utils/strings/functions/ensureSuffix.md
+                  - fuzzySearch: api/utils/strings/functions/fuzzySearch.md
+                  - kebabCase: api/utils/strings/functions/kebabCase.md
+                  - limitBlankLines: api/utils/strings/functions/limitBlankLines.md
+                  - lowerCase: api/utils/strings/functions/lowerCase.md
+                  - pad: api/utils/strings/functions/pad.md
+                  - padLeft: api/utils/strings/functions/padLeft.md
+                  - padRight: api/utils/strings/functions/padRight.md
+                  - pascalCase: api/utils/strings/functions/pascalCase.md
+                  - pluralize: api/utils/strings/functions/pluralize.md
+                  - snakeCase: api/utils/strings/functions/snakeCase.md
+                  - trim: api/utils/strings/functions/trim.md
+                  - trimEnd: api/utils/strings/functions/trimEnd.md
+                  - trimStart: api/utils/strings/functions/trimStart.md
+                  - upperCase: api/utils/strings/functions/upperCase.md
+                  - words: api/utils/strings/functions/words.md
+              - Type Aliases:
+                  - FuzzySearchResult: api/utils/strings/type-aliases/FuzzySearchResult.md
+          - Arrays:
+              - Overview: api/utils/arrays/index.md
+              - Variables:
+                  - at: api/utils/arrays/variables/at.md
+                  - chunk: api/utils/arrays/variables/chunk.md
+                  - compact: api/utils/arrays/variables/compact.md
+                  - countBy: api/utils/arrays/variables/countBy.md
+                  - difference: api/utils/arrays/variables/difference.md
+                  - differenceBy: api/utils/arrays/variables/differenceBy.md
+                  - differenceWith: api/utils/arrays/variables/differenceWith.md
+                  - drop: api/utils/arrays/variables/drop.md
+                  - dropRight: api/utils/arrays/variables/dropRight.md
+                  - dropRightWhile: api/utils/arrays/variables/dropRightWhile.md
+                  - dropWhile: api/utils/arrays/variables/dropWhile.md
+                  - flatMap: api/utils/arrays/variables/flatMap.md
+                  - flatMapDeep: api/utils/arrays/variables/flatMapDeep.md
+                  - flatten: api/utils/arrays/variables/flatten.md
+                  - flattenDeep: api/utils/arrays/variables/flattenDeep.md
+                  - groupBy: api/utils/arrays/variables/groupBy.md
+                  - head: api/utils/arrays/variables/head.md
+                  - initial: api/utils/arrays/variables/initial.md
+                  - intersection: api/utils/arrays/variables/intersection.md
+                  - intersectionBy: api/utils/arrays/variables/intersectionBy.md
+                  - intersectionWith: api/utils/arrays/variables/intersectionWith.md
+                  - isSubset: api/utils/arrays/variables/isSubset.md
+                  - isSubsetWith: api/utils/arrays/variables/isSubsetWith.md
+                  - keyBy: api/utils/arrays/variables/keyBy.md
+                  - last: api/utils/arrays/variables/last.md
+                  - maxBy: api/utils/arrays/variables/maxBy.md
+                  - minBy: api/utils/arrays/variables/minBy.md
+                  - orderBy: api/utils/arrays/variables/orderBy.md
+                  - partition: api/utils/arrays/variables/partition.md
+                  - sortBy: api/utils/arrays/variables/sortBy.md
+                  - tail: api/utils/arrays/variables/tail.md
+                  - take: api/utils/arrays/variables/take.md
+                  - takeRight: api/utils/arrays/variables/takeRight.md
+                  - takeRightWhile: api/utils/arrays/variables/takeRightWhile.md
+                  - takeWhile: api/utils/arrays/variables/takeWhile.md
+                  - toFilled: api/utils/arrays/variables/toFilled.md
+                  - union: api/utils/arrays/variables/union.md
+                  - unionBy: api/utils/arrays/variables/unionBy.md
+                  - unionWith: api/utils/arrays/variables/unionWith.md
+                  - uniq: api/utils/arrays/variables/uniq.md
+                  - uniqBy: api/utils/arrays/variables/uniqBy.md
+                  - uniqWith: api/utils/arrays/variables/uniqWith.md
+                  - unzip: api/utils/arrays/variables/unzip.md
+                  - unzipWith: api/utils/arrays/variables/unzipWith.md
+                  - windowed: api/utils/arrays/variables/windowed.md
+                  - without: api/utils/arrays/variables/without.md
+                  - xor: api/utils/arrays/variables/xor.md
+                  - xorBy: api/utils/arrays/variables/xorBy.md
+                  - xorWith: api/utils/arrays/variables/xorWith.md
+                  - zip: api/utils/arrays/variables/zip.md
+                  - zipObject: api/utils/arrays/variables/zipObject.md
+                  - zipWith: api/utils/arrays/variables/zipWith.md
+          - Functions:
+              - Overview: api/utils/functions/index.md
+              - Variables:
+                  - after: api/utils/functions/variables/after.md
+                  - ary: api/utils/functions/variables/ary.md
+                  - before: api/utils/functions/variables/before.md
+                  - curry: api/utils/functions/variables/curry.md
+                  - curryRight: api/utils/functions/variables/curryRight.md
+                  - flow: api/utils/functions/variables/flow.md
+                  - flowRight: api/utils/functions/variables/flowRight.md
+                  - identity: api/utils/functions/variables/identity.md
+                  - memoize: api/utils/functions/variables/memoize.md
+                  - negate: api/utils/functions/variables/negate.md
+                  - noop: api/utils/functions/variables/noop.md
+                  - once: api/utils/functions/variables/once.md
+                  - partial: api/utils/functions/variables/partial.md
+                  - partialRight: api/utils/functions/variables/partialRight.md
+                  - rest: api/utils/functions/variables/rest.md
+                  - spread: api/utils/functions/variables/spread.md
+                  - unary: api/utils/functions/variables/unary.md
+          - Maps:
+              - Overview: api/utils/maps/index.md
+              - Variables:
+                  - every: api/utils/maps/variables/every.md
+                  - filter: api/utils/maps/variables/filter.md
+                  - findKey: api/utils/maps/variables/findKey.md
+                  - findValue: api/utils/maps/variables/findValue.md
+                  - hasValue: api/utils/maps/variables/hasValue.md
+                  - mapKeys: api/utils/maps/variables/mapKeys.md
+                  - mapValues: api/utils/maps/variables/mapValues.md
+                  - reduce: api/utils/maps/variables/reduce.md
+                  - some: api/utils/maps/variables/some.md
+          - Math:
+              - Overview: api/utils/math/index.md
+              - Variables:
+                  - clamp: api/utils/math/variables/clamp.md
+                  - inRange: api/utils/math/variables/inRange.md
+                  - mean: api/utils/math/variables/mean.md
+                  - meanBy: api/utils/math/variables/meanBy.md
+                  - median: api/utils/math/variables/median.md
+                  - medianBy: api/utils/math/variables/medianBy.md
+                  - range: api/utils/math/variables/range.md
+                  - rangeRight: api/utils/math/variables/rangeRight.md
+                  - round: api/utils/math/variables/round.md
+                  - sum: api/utils/math/variables/sum.md
+                  - sumBy: api/utils/math/variables/sumBy.md
+          - Objects:
+              - Overview: api/utils/objects/index.md
+              - Variables:
+                  - clone: api/utils/objects/variables/clone.md
+                  - cloneDeep: api/utils/objects/variables/cloneDeep.md
+                  - findKey: api/utils/objects/variables/findKey.md
+                  - flattenObject: api/utils/objects/variables/flattenObject.md
+                  - invert: api/utils/objects/variables/invert.md
+                  - mapKeys: api/utils/objects/variables/mapKeys.md
+                  - mapValues: api/utils/objects/variables/mapValues.md
+                  - merge: api/utils/objects/variables/merge.md
+                  - mergeWith: api/utils/objects/variables/mergeWith.md
+                  - omit: api/utils/objects/variables/omit.md
+                  - omitBy: api/utils/objects/variables/omitBy.md
+                  - pick: api/utils/objects/variables/pick.md
+                  - pickBy: api/utils/objects/variables/pickBy.md
+                  - toMerged: api/utils/objects/variables/toMerged.md
+          - Sets:
+              - Overview: api/utils/sets/index.md
+              - Variables:
+                  - countBy: api/utils/sets/variables/countBy.md
+                  - every: api/utils/sets/variables/every.md
+                  - filter: api/utils/sets/variables/filter.md
+                  - find: api/utils/sets/variables/find.md
+                  - keyBy: api/utils/sets/variables/keyBy.md
+                  - map: api/utils/sets/variables/map.md
+                  - reduce: api/utils/sets/variables/reduce.md
+                  - some: api/utils/sets/variables/some.md
+          - Paths:
+              - Overview: api/utils/paths/index.md
+              - Functions:
+                  - basename: api/utils/paths/functions/basename.md
+                  - dirname: api/utils/paths/functions/dirname.md
+                  - extname: api/utils/paths/functions/extname.md
+                  - filename: api/utils/paths/functions/filename.md
+                  - isAbsolute: api/utils/paths/functions/isAbsolute.md
+                  - join: api/utils/paths/functions/join.md
+                  - normalize: api/utils/paths/functions/normalize.md
+                  - relative: api/utils/paths/functions/relative.md
+                  - resolve: api/utils/paths/functions/resolve.md
+          - Crypto:
+              - Overview: api/utils/crypto/index.md
+              - Functions:
+                  - hash: api/utils/crypto/functions/hash.md
+          - Predicates:
+              - Overview: api/utils/predicates/index.md
+              - Variables:
+                  - isBoolean: api/utils/predicates/variables/isBoolean.md
+                  - isDate: api/utils/predicates/variables/isDate.md
+                  - isEmptyObject: api/utils/predicates/variables/isEmptyObject.md
+                  - isEqual: api/utils/predicates/variables/isEqual.md
+                  - isError: api/utils/predicates/variables/isError.md
+                  - isFunction: api/utils/predicates/variables/isFunction.md
+                  - isJSON: api/utils/predicates/variables/isJSON.md
+                  - isJSONArray: api/utils/predicates/variables/isJSONArray.md
+                  - isJSONObject: api/utils/predicates/variables/isJSONObject.md
+                  - isJSONValue: api/utils/predicates/variables/isJSONValue.md
+                  - isMap: api/utils/predicates/variables/isMap.md
+                  - isNil: api/utils/predicates/variables/isNil.md
+                  - isNotNil: api/utils/predicates/variables/isNotNil.md
+                  - isNull: api/utils/predicates/variables/isNull.md
+                  - isNumber: api/utils/predicates/variables/isNumber.md
+                  - isPlainObject: api/utils/predicates/variables/isPlainObject.md
+                  - isPrimitive: api/utils/predicates/variables/isPrimitive.md
+                  - isRegExp: api/utils/predicates/variables/isRegExp.md
+                  - isSet: api/utils/predicates/variables/isSet.md
+                  - isString: api/utils/predicates/variables/isString.md
+                  - isUndefined: api/utils/predicates/variables/isUndefined.md
+          - Misc:
+              - Overview: api/utils/misc/index.md
+              - Variables:
+                  - assert: api/utils/misc/variables/assert.md
+                  - attempt: api/utils/misc/variables/attempt.md
+                  - invariant: api/utils/misc/variables/invariant.md
+      - Testing:
+          - Overview: api/testing/index.md
+          - Variables:
+              - irb: api/testing/variables/irb.md
+      # AUTO-GENERATED API NAV END
+
   - LLMs:
       - llms.txt ↗: llms.txt
       - llms-full.txt ↗: llms-full.txt
