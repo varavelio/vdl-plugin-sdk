@@ -18,7 +18,7 @@ import { llmsTemplate } from "./llms-template.ts";
 type DocsSection = "core" | "testing" | "utilities";
 
 type ModuleDefinition = {
-  description: string;
+  description?: string;
   directoryPath: string;
   importPath: string;
   section: DocsSection;
@@ -30,7 +30,6 @@ type ModuleDefinition = {
 type MemberPage = {
   content: string;
   groupKey: string;
-  groupTitle: string;
   relativePath: string;
   summary: string;
   title: string;
@@ -86,37 +85,6 @@ const groupOrder = [
   "documents",
 ] as const;
 
-const utilityDescriptions = new Map<string, string>([
-  [
-    "ir",
-    "IR helpers for annotation lookup, literal unwrapping, and anonymous-type hoisting.",
-  ],
-  [
-    "options",
-    "Helpers for reading and normalizing plugin options from `vdl.config.vdl`.",
-  ],
-  [
-    "strings",
-    "String helpers for casing, padding, trimming, dedenting, and fuzzy matching.",
-  ],
-  ["arrays", "Deterministic array helpers re-exported from `es-toolkit`."],
-  ["functions", "Synchronous function helpers re-exported from `es-toolkit`."],
-  ["maps", "Map helpers re-exported from `es-toolkit`."],
-  ["math", "Deterministic math helpers re-exported from `es-toolkit`."],
-  ["objects", "Object helpers re-exported from `es-toolkit`."],
-  ["sets", "Set helpers re-exported from `es-toolkit`."],
-  [
-    "paths",
-    "Portable path helpers used for generated file locations and path manipulation.",
-  ],
-  [
-    "crypto",
-    "Deterministic hashing helpers for stable cache keys and generated output fingerprints.",
-  ],
-  ["predicates", "Predicate helpers re-exported from `es-toolkit`."],
-  ["misc", "Small synchronous miscellaneous helpers."],
-]);
-
 const groupOrderIndex = new Map<string, number>(
   groupOrder.map((groupName, index) => [groupName, index]),
 );
@@ -163,9 +131,6 @@ function getModuleDefinitions(): ModuleDefinition[] {
 
   for (const [index, utilityName] of utilityOrder.entries()) {
     modules.push({
-      description:
-        utilityDescriptions.get(utilityName) ??
-        `API reference for \`@varavel/vdl-plugin-sdk/utils/${utilityName}\`.`,
       directoryPath: `utils/${utilityName}`,
       importPath: `@varavel/vdl-plugin-sdk/utils/${utilityName}`,
       section: "utilities",
@@ -370,8 +335,9 @@ async function decorateModuleOverview(moduleDefinition: ModuleDefinition) {
     `# ${moduleDefinition.title}`,
     "",
     `_Import from \`${moduleDefinition.importPath}\`._`,
-    "",
-    moduleDefinition.description,
+    ...(moduleDefinition.description !== undefined
+      ? ["", moduleDefinition.description]
+      : []),
     "",
     body,
     "",
@@ -445,7 +411,6 @@ async function buildModule(
         return {
           content,
           groupKey,
-          groupTitle: getGroupTitle(groupKey),
           relativePath,
           summary: extractSummaryFromMarkdown(content),
           title: cleanMemberTitle(extractFirstHeading(content)),
@@ -484,14 +449,38 @@ function sortModules(modules: BuiltModule[]) {
   });
 }
 
+function getModulesBySection(modules: BuiltModule[], section: DocsSection) {
+  return modules.filter((module) => module.section === section);
+}
+
+function appendModuleReferenceList(
+  lines: string[],
+  heading: string,
+  modules: BuiltModule[],
+) {
+  if (modules.length === 0) {
+    return;
+  }
+
+  lines.push(`## ${heading}`, "");
+
+  for (const module of modules) {
+    lines.push(
+      `- [${module.title}](${module.overviewPath}) - \`${module.importPath}\``,
+    );
+
+    if (module.description !== undefined) {
+      lines.push(`  ${module.description}`);
+    }
+  }
+
+  lines.push("");
+}
+
 async function writeApiOverview(modules: BuiltModule[]) {
-  const coreModules = modules.filter((module) => module.section === "core");
-  const utilityModules = modules.filter(
-    (module) => module.section === "utilities",
-  );
-  const testingModules = modules.filter(
-    (module) => module.section === "testing",
-  );
+  const coreModules = getModulesBySection(modules, "core");
+  const utilityModules = getModulesBySection(modules, "utilities");
+  const testingModules = getModulesBySection(modules, "testing");
   const lines = [
     "# API Reference",
     "",
@@ -499,44 +488,9 @@ async function writeApiOverview(modules: BuiltModule[]) {
     "",
   ];
 
-  if (coreModules.length > 0) {
-    lines.push("## Core", "");
-
-    for (const module of coreModules) {
-      lines.push(
-        `- [${module.title}](${module.overviewPath}) - \`${module.importPath}\``,
-        `  ${module.description}`,
-      );
-    }
-
-    lines.push("");
-  }
-
-  if (utilityModules.length > 0) {
-    lines.push("## Utilities", "");
-
-    for (const module of utilityModules) {
-      lines.push(
-        `- [${module.title}](${module.overviewPath}) - \`${module.importPath}\``,
-        `  ${module.description}`,
-      );
-    }
-
-    lines.push("");
-  }
-
-  if (testingModules.length > 0) {
-    lines.push("## Testing", "");
-
-    for (const module of testingModules) {
-      lines.push(
-        `- [${module.title}](${module.overviewPath}) - \`${module.importPath}\``,
-        `  ${module.description}`,
-      );
-    }
-
-    lines.push("");
-  }
+  appendModuleReferenceList(lines, "Core", coreModules);
+  appendModuleReferenceList(lines, "Utilities", utilityModules);
+  appendModuleReferenceList(lines, "Testing", testingModules);
 
   await writeFile(
     path.join(docsApiDirectoryPath, "index.md"),
@@ -585,13 +539,9 @@ async function updateMkDocsNav(modules: BuiltModule[]) {
     throw new Error("mkdocs.yml is missing the generated API nav markers");
   }
 
-  const coreModules = modules.filter((module) => module.section === "core");
-  const utilityModules = modules.filter(
-    (module) => module.section === "utilities",
-  );
-  const testingModules = modules.filter(
-    (module) => module.section === "testing",
-  );
+  const coreModules = getModulesBySection(modules, "core");
+  const utilityModules = getModulesBySection(modules, "utilities");
+  const testingModules = getModulesBySection(modules, "testing");
   const generatedNavLines = ["      - Overview: api/index.md"];
 
   for (const module of coreModules) {
@@ -676,8 +626,7 @@ function buildModuleLlmsIndex(
     `${moduleHeading} ${moduleHeadingLabel}`,
     "",
     module.usage,
-    "",
-    module.description,
+    ...(module.description !== undefined ? ["", module.description] : []),
     "",
     `Read more: ${getLlmsUrl(module.overviewPath)}`,
   ];
@@ -753,13 +702,9 @@ function buildModuleLlmsFull(
 }
 
 async function writeLlmsFiles(modules: BuiltModule[]) {
-  const coreModules = modules.filter((module) => module.section === "core");
-  const utilityModules = modules.filter(
-    (module) => module.section === "utilities",
-  );
-  const testingModules = modules.filter(
-    (module) => module.section === "testing",
-  );
+  const coreModules = getModulesBySection(modules, "core");
+  const utilityModules = getModulesBySection(modules, "utilities");
+  const testingModules = getModulesBySection(modules, "testing");
   const llmsIndexParts = [llmsTemplate];
   const llmsFullParts = [llmsTemplate];
 
