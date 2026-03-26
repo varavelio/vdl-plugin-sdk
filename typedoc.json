@@ -1,5 +1,39 @@
 {
   "entryPoints": ["src/index.ts", "src/utils/**/index.ts", "src/testing/index.ts"],
+  "entryFileName": "index",
+  "enumMembersFormat": "table",
+  "excludeInternal": true,
+  "groupOrder": [
+    "Functions",
+    "Variables",
+    "Type Aliases",
+    "Enumerations",
+    "Interfaces",
+    "Classes",
+    "*"
+  ],
+  "hideBreadcrumbs": true,
+  "hidePageHeader": true,
+  "interfacePropertiesFormat": "table",
+  "navigation": {
+    "compactFolders": true,
+    "excludeReferences": true,
+    "includeCategories": false,
+    "includeFolders": true,
+    "includeGroups": false
+  },
   "out": "./docs/api",
-  "plugin": ["typedoc-plugin-markdown"]
+  "parametersFormat": "table",
+  "plugin": ["typedoc-plugin-markdown"],
+  "readme": "none",
+  "router": "member",
+  "sanitizeComments": true,
+  "sort": ["alphabetical"],
+  "tableColumnSettings": {
+    "hideSources": true,
+    "leftAlignHeaders": true
+  },
+  "typeAliasPropertiesFormat": "table",
+  "typeDeclarationFormat": "table",
+  "useCodeBlocks": true
 }
