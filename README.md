@@ -9,7 +9,7 @@
 <h1 align="center">VDL Plugin SDK</h1>
 
 <p align="center">
-  Build VDL plugins in TypeScript with a simple CLI, typed IR access, utility helpers, and test builders for plugin unit tests.
+  Build VDL plugins in TypeScript with a focused CLI, typed IR access, utility helpers, and test builders.
 </p>
 
 <p align="center">
@@ -38,13 +38,22 @@
   <a href="https://github.com/varavelio/vdl-plugin-template">Plugin Template</a>
 </p>
 
+## What You Get
+
+- A typed plugin authoring API (`definePlugin`) for `src/index.ts`.
+- Utility subpath imports (`utils/*`) that tree-shake cleanly.
+- A dedicated testing entry point with IR builders.
+- A small CLI (`vdl-plugin`) for `check` and `build`.
+- Shared TypeScript presets for plugin and test projects.
+
+If you want the full API surface while reading, see [vdl-plugin-sdk.varavel.com](https://vdl-plugin-sdk.varavel.com).
+
 ## Install
 
-In most cases you do not install this manually. The official
+Most projects should start from the official template:
 [`vdl-plugin-template`](https://github.com/varavelio/vdl-plugin-template)
-already includes the SDK and the recommended project setup.
 
-If you are setting up a plugin project from scratch:
+If you are setting up from scratch:
 
 ```bash
 npm install --save-dev --save-exact @varavel/vdl-plugin-sdk@latest
@@ -52,18 +61,14 @@ npm install --save-dev --save-exact @varavel/vdl-plugin-sdk@latest
 
 ## Quick Start
 
-A VDL plugin exports a `generate` handler created with `definePlugin(...)` from `src/index.ts`.
-
-Create `src/index.ts` in your plugin project:
+Create `src/index.ts`:
 
 ```ts
 import { definePlugin } from "@varavel/vdl-plugin-sdk";
 
 export const generate = definePlugin((input) => {
-  // Your plugin logic goes here
-
-  // Feel free to explore the plugin input
-  console.log(input.version); // The VDL version without the v prefix
+  // Useful input fields:
+  console.log(input.version); // VDL version (without the "v" prefix)
   console.log(input.options); // Plugin options from vdl.config.vdl
   console.log(input.ir); // Typed VDL intermediate representation
 
@@ -78,46 +83,31 @@ export const generate = definePlugin((input) => {
 });
 ```
 
-Then run:
+Run:
 
 ```bash
 npx vdl-plugin check
 npx vdl-plugin build
 ```
 
-- `check` validates your TypeScript during development.
-- `build` generates the release-ready plugin bundle at `dist/index.js`.
-
-If you want the full API surface while you read, the reference docs live at [vdl-plugin-sdk.varavel.com](https://vdl-plugin-sdk.varavel.com).
-
-## What This Package Includes
-
-Think of the SDK as four pieces that work together:
-
-- The main package for authoring a plugin handler and working with the typed VDL IR.
-- Tree-shakeable utility subpaths for reusable helper functions used in plugin logic.
-- A separate `testing` entry point for building realistic IR fixtures in unit tests.
-- A small CLI plus shared `tsconfig` presets for the normal plugin build workflow.
-
-The README focuses on how these surfaces fit together. A fuller API reference lives at [vdl-plugin-sdk.varavel.com](https://vdl-plugin-sdk.varavel.com).
+- `check`: type-checks plugin code (and tests if `tsconfig.vitest.json` exists).
+- `build`: bundles `src/index.ts` into `dist/index.js`.
 
 ## Entry Points
 
-| Import                                     | Use for                                                                                            |
-| ------------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| `@varavel/vdl-plugin-sdk`                  | Main plugin authoring surface: define your plugin, receive typed input, and return generated files |
-| `@varavel/vdl-plugin-sdk/utils/<category>` | Tree-shakeable named helper imports for one utility category                                       |
-| `@varavel/vdl-plugin-sdk/testing`          | Test-only builders for creating plugin input and IR fixtures quickly                               |
+| Import                                     | Use for                                                                        |
+| ------------------------------------------ | ------------------------------------------------------------------------------ |
+| `@varavel/vdl-plugin-sdk`                  | Runtime plugin authoring (`definePlugin`), typed input, generated files output |
+| `@varavel/vdl-plugin-sdk/utils/<category>` | Tree-shakeable helper imports by category                                      |
+| `@varavel/vdl-plugin-sdk/testing`          | Test-only builders for realistic plugin input and IR fixtures                  |
 
 ### `@varavel/vdl-plugin-sdk`
 
-Use `@varavel/vdl-plugin-sdk` in your plugin runtime code. This is the package surface you start from when writing `src/index.ts`.
-
-It is the home for the plugin definition flow and the generated VDL types that describe the input your plugin receives.
+Use this in runtime plugin code (usually `src/index.ts`).
 
 ### `@varavel/vdl-plugin-sdk/utils/<category>`
 
-Use utility subpaths when your plugin code needs reusable transformations, string helpers, option helpers, or IR-oriented convenience functions.
+Use this for reusable helpers in plugin logic:
 
 ```ts
 import { words, pascalCase } from "@varavel/vdl-plugin-sdk/utils/strings";
@@ -126,43 +116,30 @@ import { chunk } from "@varavel/vdl-plugin-sdk/utils/arrays";
 
 ### `@varavel/vdl-plugin-sdk/testing`
 
-Use `@varavel/vdl-plugin-sdk/testing` only in tests. It exposes independent IR builder functions for creating realistic plugin input and schema fixtures without hand-writing large object graphs.
-
-This keeps test helpers separate from runtime imports and makes unit tests easier to read.
-
-## Recommended Mental Model
-
-- Reach for `@varavel/vdl-plugin-sdk` when you are writing the plugin itself.
-- Reach for `@varavel/vdl-plugin-sdk/utils/<category>` when your plugin logic needs shared helper functions.
-- Reach for `@varavel/vdl-plugin-sdk/testing` when you are constructing test fixtures.
-- Treat the CLI and `tsconfig` presets as project scaffolding around those imports, not as part of your runtime code.
+Use this only in tests to build IR and plugin input fixtures without manually writing large object graphs.
 
 ## CLI
 
-Use the bundled binary in scripts or with `npx`:
+Use via `npx` or package scripts:
 
 ```bash
 npx vdl-plugin check
 npx vdl-plugin build
 ```
 
-- `check` runs TypeScript without emitting files. If a `tsconfig.vitest.json` is present, it also type-checks test code.
-- `build` bundles the required `src/index.ts` entry into `dist/index.js`.
+- `check` runs TypeScript with no emit. If `tsconfig.vitest.json` exists, test code is type-checked too.
+- `build` produces the release artifact at `dist/index.js` from `src/index.ts`.
 
-For a fuller walkthrough, use this page together with the hosted documentation: [vdl-plugin-sdk.varavel.com](https://vdl-plugin-sdk.varavel.com).
+## Typical Plugin Workflow
 
-## Plugin Workflow
+1. Implement your plugin in `src/index.ts` with `@varavel/vdl-plugin-sdk`.
+2. Use helpers from `@varavel/vdl-plugin-sdk/utils/<category>` as needed.
+3. Add unit tests using `@varavel/vdl-plugin-sdk/testing`.
+4. Run `vdl-plugin check` during development to ensure type safety.
+5. Run `vdl-plugin build` to produce `dist/index.js`.
+6. Commit `dist/index.js` and publish a new release tag.
 
-Most plugins follow the same path:
-
-1. Author the plugin in `src/index.ts` with the main SDK entry point.
-2. Use `@varavel/vdl-plugin-sdk/utils/<category>` for helper imports.
-3. Add unit tests with `@varavel/vdl-plugin-sdk/testing` when you need realistic IR input.
-4. Run `vdl-plugin check` during development.
-5. Run `vdl-plugin build` to produce `dist/index.js` for release.
-6. Commit `dist/index.js` to GitHub and create a new release (tag).
-
-When a plugin is published, VDL consumes the built `dist/index.js` artifact rather than the TypeScript source.
+VDL consumes the built `dist/index.js` artifact, not your TypeScript source.
 
 Example `package.json` scripts:
 
@@ -177,7 +154,7 @@ Example `package.json` scripts:
 
 ## TypeScript Setup
 
-You can extend the shared base config exported by the SDK in your `tsconfig.json` file:
+Use the shared base config in your `tsconfig.json`:
 
 ```json
 {
@@ -189,9 +166,7 @@ You can extend the shared base config exported by the SDK in your `tsconfig.json
 
 ## Testing
 
-The testing entry point exposes independent builder functions so you can import only what each test needs.
-
-Example:
+The testing entry point exposes independent builders, so each test imports only what it needs.
 
 ```ts
 import {
@@ -218,17 +193,15 @@ const input = pluginInput({
 });
 ```
 
-Pass `input` to your plugin handler in a unit test and assert on the generated files or errors.
+Pass `input` to your plugin handler in unit tests and assert generated files or errors.
 
-Because these builders live under `@varavel/vdl-plugin-sdk/testing`, you can keep test helpers separate from your plugin runtime imports.
-
-To add tests to your plugin, install [Vitest](https://vitest.dev):
+To add tests, install [Vitest](https://vitest.dev):
 
 ```bash
 npm install --save-dev vitest
 ```
 
-Then create a `tsconfig.vitest.json` in the root of your project:
+Create `tsconfig.vitest.json` in your plugin root:
 
 ```json
 {
@@ -242,9 +215,9 @@ Then create a `tsconfig.vitest.json` in the root of your project:
 }
 ```
 
-This config extends the base provided by the SDK and includes Node.js types exclusively for test files, keeping them out of your main plugin compilation.
+This includes Node.js types for test files only, so test types do not leak into your main plugin compilation.
 
-Once the file is in place, `vdl-plugin check` will automatically type-check your test code as well.
+Once that file exists, `vdl-plugin check` automatically type-checks test code as well.
 
 ## License
 
