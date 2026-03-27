@@ -3,6 +3,7 @@
   "entryFileName": "index",
   "enumMembersFormat": "table",
   "excludeInternal": true,
+  "disableSources": true,
   "groupOrder": [
     "Functions",
     "Variables",
