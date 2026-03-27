@@ -19,7 +19,6 @@
       "!**/tmp",
       "!**/temp",
       "!**/site",
-      "!**/es-toolkit.ts",
       "!docs/api"
     ]
   },
