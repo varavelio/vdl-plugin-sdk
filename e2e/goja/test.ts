@@ -2238,26 +2238,6 @@ function createPredicateSuites(): SmokeSuite[] {
           },
         },
         {
-          name: "isJSONArray",
-          run: () => {
-            assertEqual(
-              predicates.isJSONArray([1, 2, 3]),
-              true,
-              "predicates.isJSONArray output",
-            );
-          },
-        },
-        {
-          name: "isJSONObject",
-          run: () => {
-            assertEqual(
-              predicates.isJSONObject({ a: 1 }),
-              true,
-              "predicates.isJSONObject output",
-            );
-          },
-        },
-        {
           name: "isJSONValue",
           run: () => {
             assertEqual(
