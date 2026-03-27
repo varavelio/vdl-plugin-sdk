@@ -21,7 +21,7 @@ function getUtilityCategoryEntries() {
 
 export default defineConfig({
   entry: [
-    "./src/index.ts",
+    "./src/core/index.ts",
     "./src/testing/index.ts",
     ...getUtilityCategoryEntries(),
   ],

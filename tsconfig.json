@@ -3,7 +3,7 @@
   "compilerOptions": {
     "types": [],
     "paths": {
-      "@varavel/vdl-plugin-sdk": ["./src/index.ts"],
+      "@varavel/vdl-plugin-sdk": ["./src/core/index.ts"],
       "@varavel/vdl-plugin-sdk/testing": ["./src/testing/index.ts"],
       "@varavel/vdl-plugin-sdk/utils/*": ["./src/utils/*/index.ts"]
     }
