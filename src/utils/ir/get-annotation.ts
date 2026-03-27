@@ -1,4 +1,4 @@
-import type { Annotation } from "../../types";
+import type { Annotation } from "../../core/types";
 
 /**
  * Returns the first annotation that matches the provided name.

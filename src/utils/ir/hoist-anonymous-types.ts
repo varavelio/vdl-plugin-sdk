@@ -1,5 +1,5 @@
-import type { Field, Position, TypeDef, TypeRef } from "../../types";
-import { IrSchema } from "../../types";
+import type { Field, Position, TypeDef, TypeRef } from "../../core/types";
+import { IrSchema } from "../../core/types";
 import { pascalCase } from "../strings/pascal-case";
 
 /**

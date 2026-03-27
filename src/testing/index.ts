@@ -11,7 +11,7 @@ import type {
   PrimitiveType,
   TypeDef,
   TypeRef,
-} from "../types";
+} from "../core/types";
 
 /**
  * Creates a `Position` with sensible defaults.

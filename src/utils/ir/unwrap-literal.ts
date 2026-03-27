@@ -1,4 +1,4 @@
-import type { LiteralValue } from "../../types";
+import type { LiteralValue } from "../../core/types";
 
 /**
  * Resolves a `LiteralValue` into its native JavaScript representation.

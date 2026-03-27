@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, it } from "vitest";
+import type { LiteralValue } from "../../core/types";
 import * as irb from "../../testing";
-import type { LiteralValue } from "../../types";
 import { unwrapLiteral } from "./unwrap-literal";
 
 describe("unwrapLiteral", () => {

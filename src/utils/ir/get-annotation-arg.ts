@@ -1,4 +1,4 @@
-import type { Annotation, LiteralValue } from "../../types";
+import type { Annotation, LiteralValue } from "../../core/types";
 import { getAnnotation } from "./get-annotation";
 
 /**
