@@ -5,9 +5,17 @@ export const llmsTemplate = `
 
 # VDL Plugin SDK
 
-Build VDL plugins in TypeScript with a simple CLI, typed IR access, utility helpers, and test builders for plugin unit tests.
+Build VDL plugins in TypeScript with a focused CLI, typed IR access, utility helpers, and test builders.
 
-This document contains EVERYTHING this library offers. Analyze what you need, download and read the documentation only for what you need at the corresponding link.
+This document is an AI-oriented entry layer for the SDK.
+
+Use it to quickly determine:
+
+1. What the package does.
+2. Which import path matches the current task.
+3. Which documentation links to read next.
+
+Read only the sections and links relevant to your task.
 
 ## About the project
 
@@ -22,6 +30,21 @@ VDL is the open-source cross-language definition engine for modern stacks. Defin
 
 VDL Plugin SDK is a TypeScript library for building VDL plugins (plugins are code generators).
 
+## How to use this document
+
+- Treat this file as a routing layer, not the full API reference.
+- Identify the exact job first (runtime plugin code, helper utilities, or tests).
+- Select the matching entry point.
+- Follow linked docs only for the selected surface.
+- Avoid broad assumptions across unrelated modules.
+
+## Task to entry-point map
+
+- Write or update plugin runtime logic in \`src/index.ts\` -> \`@varavel/vdl-plugin-sdk\`
+- Reuse helper utilities in plugin logic -> \`@varavel/vdl-plugin-sdk/utils/<category>\`
+- Build test fixtures and synthetic IR in tests -> \`@varavel/vdl-plugin-sdk/testing\`
+- Type-check and bundle plugin output -> \`vdl-plugin\` CLI (\`check\`, \`build\`)
+
 ## Quick Start
 
 A VDL plugin exports a \`generate\` handler created with \`definePlugin(...)\` from \`src/index.ts\`.
@@ -32,7 +55,7 @@ import { definePlugin } from "@varavel/vdl-plugin-sdk";
 export const generate = definePlugin((input) => {
   // Your plugin logic goes here
 
-  // Feel free to explore the plugin input
+  // Explore plugin input as needed
   console.log(input.version); // The VDL version without the v prefix
   console.log(input.options); // Plugin options from vdl.config.vdl
   console.log(input.ir); // Typed VDL intermediate representation
@@ -43,7 +66,7 @@ export const generate = definePlugin((input) => {
         path: "hello.txt",
         content: "Hello from VDL Plugin SDK",
       },
-    ]
+    ],
   };
 });
 \`\`\`
@@ -57,6 +80,11 @@ npx vdl-plugin build
 
 - \`check\` validates your TypeScript during development.
 - \`build\` generates the release-ready plugin bundle at \`dist/index.js\`.
+
+Output contract reminder:
+
+- A plugin returns generated files.
+- VDL consumes the built artifact at \`dist/index.js\`.
 
 ## What This Package Includes
 
@@ -83,9 +111,13 @@ Use \`@varavel/vdl-plugin-sdk\` in your plugin runtime code. This is the package
 
 Use utility subpaths when your plugin code needs reusable transformations, string helpers, option helpers, or IR-oriented convenience functions.
 
+Prefer specific imports for clarity and better tree-shaking.
+
 #### \`@varavel/vdl-plugin-sdk/testing\`
 
 Use \`@varavel/vdl-plugin-sdk/testing\` only in tests. It exposes independent IR builder functions for creating realistic plugin input and schema fixtures without hand-writing large object graphs.
+
+Do not import this entry point in production plugin runtime code.
 
 ### Mental Model
 
@@ -105,5 +137,13 @@ npx vdl-plugin build
 
 - \`check\` runs TypeScript without emitting files. If a \`tsconfig.vitest.json\` is present, it also type-checks test code.
 - \`build\` bundles the required \`src/index.ts\` entry into \`dist/index.js\`.
+
+## Agent checklist
+
+Before writing code or answering SDK usage questions, verify:
+
+1. Correct entry point selected for the task.
+2. Runtime and test imports are not mixed.
+3. Workflow commands follow \`check\` then \`build\`.
 
 `.trim();

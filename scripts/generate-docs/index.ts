@@ -757,9 +757,38 @@ function appendLlmsSection(
   }
 }
 
+function removeLlmsSection(markdown: string, heading: string) {
+  const lines = markdown.split("\n");
+  const headingLine = `## ${heading}`;
+  const startIndex = lines.findIndex((line) => line.trim() === headingLine);
+
+  if (startIndex === -1) {
+    return markdown;
+  }
+
+  let endIndex = startIndex + 1;
+
+  while (endIndex < lines.length) {
+    const line = lines[endIndex]?.trim() ?? "";
+
+    if (line.startsWith("## ")) {
+      break;
+    }
+
+    endIndex += 1;
+  }
+
+  return [...lines.slice(0, startIndex), ...lines.slice(endIndex)]
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 async function writeLlmsFiles(modules: BuiltModule[]) {
   const llmsIndexParts = [llmsTemplate];
-  const llmsFullParts = [llmsTemplate];
+  const llmsFullParts = [
+    removeLlmsSection(llmsTemplate, "How to use this document"),
+  ];
 
   appendLlmsSection(
     llmsIndexParts,
