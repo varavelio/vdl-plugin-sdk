@@ -101,133 +101,133 @@ nav:
                   - FuzzySearchResult: api/utils/strings/type-aliases/FuzzySearchResult.md
           - Arrays:
               - Overview: api/utils/arrays/index.md
-              - Variables:
-                  - at: api/utils/arrays/variables/at.md
-                  - chunk: api/utils/arrays/variables/chunk.md
-                  - compact: api/utils/arrays/variables/compact.md
-                  - countBy: api/utils/arrays/variables/countBy.md
-                  - difference: api/utils/arrays/variables/difference.md
-                  - differenceBy: api/utils/arrays/variables/differenceBy.md
-                  - differenceWith: api/utils/arrays/variables/differenceWith.md
-                  - drop: api/utils/arrays/variables/drop.md
-                  - dropRight: api/utils/arrays/variables/dropRight.md
-                  - dropRightWhile: api/utils/arrays/variables/dropRightWhile.md
-                  - dropWhile: api/utils/arrays/variables/dropWhile.md
-                  - flatMap: api/utils/arrays/variables/flatMap.md
-                  - flatMapDeep: api/utils/arrays/variables/flatMapDeep.md
-                  - flatten: api/utils/arrays/variables/flatten.md
-                  - flattenDeep: api/utils/arrays/variables/flattenDeep.md
-                  - groupBy: api/utils/arrays/variables/groupBy.md
-                  - head: api/utils/arrays/variables/head.md
-                  - initial: api/utils/arrays/variables/initial.md
-                  - intersection: api/utils/arrays/variables/intersection.md
-                  - intersectionBy: api/utils/arrays/variables/intersectionBy.md
-                  - intersectionWith: api/utils/arrays/variables/intersectionWith.md
-                  - isSubset: api/utils/arrays/variables/isSubset.md
-                  - isSubsetWith: api/utils/arrays/variables/isSubsetWith.md
-                  - keyBy: api/utils/arrays/variables/keyBy.md
-                  - last: api/utils/arrays/variables/last.md
-                  - maxBy: api/utils/arrays/variables/maxBy.md
-                  - minBy: api/utils/arrays/variables/minBy.md
-                  - orderBy: api/utils/arrays/variables/orderBy.md
-                  - partition: api/utils/arrays/variables/partition.md
-                  - sortBy: api/utils/arrays/variables/sortBy.md
-                  - tail: api/utils/arrays/variables/tail.md
-                  - take: api/utils/arrays/variables/take.md
-                  - takeRight: api/utils/arrays/variables/takeRight.md
-                  - takeRightWhile: api/utils/arrays/variables/takeRightWhile.md
-                  - takeWhile: api/utils/arrays/variables/takeWhile.md
-                  - toFilled: api/utils/arrays/variables/toFilled.md
-                  - union: api/utils/arrays/variables/union.md
-                  - unionBy: api/utils/arrays/variables/unionBy.md
-                  - unionWith: api/utils/arrays/variables/unionWith.md
-                  - uniq: api/utils/arrays/variables/uniq.md
-                  - uniqBy: api/utils/arrays/variables/uniqBy.md
-                  - uniqWith: api/utils/arrays/variables/uniqWith.md
-                  - unzip: api/utils/arrays/variables/unzip.md
-                  - unzipWith: api/utils/arrays/variables/unzipWith.md
-                  - windowed: api/utils/arrays/variables/windowed.md
-                  - without: api/utils/arrays/variables/without.md
-                  - xor: api/utils/arrays/variables/xor.md
-                  - xorBy: api/utils/arrays/variables/xorBy.md
-                  - xorWith: api/utils/arrays/variables/xorWith.md
-                  - zip: api/utils/arrays/variables/zip.md
-                  - zipObject: api/utils/arrays/variables/zipObject.md
-                  - zipWith: api/utils/arrays/variables/zipWith.md
+              - Functions:
+                  - at: api/utils/arrays/functions/at.md
+                  - chunk: api/utils/arrays/functions/chunk.md
+                  - compact: api/utils/arrays/functions/compact.md
+                  - countBy: api/utils/arrays/functions/countBy.md
+                  - difference: api/utils/arrays/functions/difference.md
+                  - differenceBy: api/utils/arrays/functions/differenceBy.md
+                  - differenceWith: api/utils/arrays/functions/differenceWith.md
+                  - drop: api/utils/arrays/functions/drop.md
+                  - dropRight: api/utils/arrays/functions/dropRight.md
+                  - dropRightWhile: api/utils/arrays/functions/dropRightWhile.md
+                  - dropWhile: api/utils/arrays/functions/dropWhile.md
+                  - flatMap: api/utils/arrays/functions/flatMap.md
+                  - flatMapDeep: api/utils/arrays/functions/flatMapDeep.md
+                  - flatten: api/utils/arrays/functions/flatten.md
+                  - flattenDeep: api/utils/arrays/functions/flattenDeep.md
+                  - groupBy: api/utils/arrays/functions/groupBy.md
+                  - head: api/utils/arrays/functions/head.md
+                  - initial: api/utils/arrays/functions/initial.md
+                  - intersection: api/utils/arrays/functions/intersection.md
+                  - intersectionBy: api/utils/arrays/functions/intersectionBy.md
+                  - intersectionWith: api/utils/arrays/functions/intersectionWith.md
+                  - isSubset: api/utils/arrays/functions/isSubset.md
+                  - isSubsetWith: api/utils/arrays/functions/isSubsetWith.md
+                  - keyBy: api/utils/arrays/functions/keyBy.md
+                  - last: api/utils/arrays/functions/last.md
+                  - maxBy: api/utils/arrays/functions/maxBy.md
+                  - minBy: api/utils/arrays/functions/minBy.md
+                  - orderBy: api/utils/arrays/functions/orderBy.md
+                  - partition: api/utils/arrays/functions/partition.md
+                  - sortBy: api/utils/arrays/functions/sortBy.md
+                  - tail: api/utils/arrays/functions/tail.md
+                  - take: api/utils/arrays/functions/take.md
+                  - takeRight: api/utils/arrays/functions/takeRight.md
+                  - takeRightWhile: api/utils/arrays/functions/takeRightWhile.md
+                  - takeWhile: api/utils/arrays/functions/takeWhile.md
+                  - toFilled: api/utils/arrays/functions/toFilled.md
+                  - union: api/utils/arrays/functions/union.md
+                  - unionBy: api/utils/arrays/functions/unionBy.md
+                  - unionWith: api/utils/arrays/functions/unionWith.md
+                  - uniq: api/utils/arrays/functions/uniq.md
+                  - uniqBy: api/utils/arrays/functions/uniqBy.md
+                  - uniqWith: api/utils/arrays/functions/uniqWith.md
+                  - unzip: api/utils/arrays/functions/unzip.md
+                  - unzipWith: api/utils/arrays/functions/unzipWith.md
+                  - windowed: api/utils/arrays/functions/windowed.md
+                  - without: api/utils/arrays/functions/without.md
+                  - xor: api/utils/arrays/functions/xor.md
+                  - xorBy: api/utils/arrays/functions/xorBy.md
+                  - xorWith: api/utils/arrays/functions/xorWith.md
+                  - zip: api/utils/arrays/functions/zip.md
+                  - zipObject: api/utils/arrays/functions/zipObject.md
+                  - zipWith: api/utils/arrays/functions/zipWith.md
           - Functions:
               - Overview: api/utils/functions/index.md
-              - Variables:
-                  - after: api/utils/functions/variables/after.md
-                  - ary: api/utils/functions/variables/ary.md
-                  - before: api/utils/functions/variables/before.md
-                  - curry: api/utils/functions/variables/curry.md
-                  - curryRight: api/utils/functions/variables/curryRight.md
-                  - flow: api/utils/functions/variables/flow.md
-                  - flowRight: api/utils/functions/variables/flowRight.md
-                  - identity: api/utils/functions/variables/identity.md
-                  - memoize: api/utils/functions/variables/memoize.md
-                  - negate: api/utils/functions/variables/negate.md
-                  - noop: api/utils/functions/variables/noop.md
-                  - once: api/utils/functions/variables/once.md
-                  - partial: api/utils/functions/variables/partial.md
-                  - partialRight: api/utils/functions/variables/partialRight.md
-                  - rest: api/utils/functions/variables/rest.md
-                  - spread: api/utils/functions/variables/spread.md
-                  - unary: api/utils/functions/variables/unary.md
+              - Functions:
+                  - after: api/utils/functions/functions/after.md
+                  - ary: api/utils/functions/functions/ary.md
+                  - before: api/utils/functions/functions/before.md
+                  - curry: api/utils/functions/functions/curry.md
+                  - curryRight: api/utils/functions/functions/curryRight.md
+                  - flow: api/utils/functions/functions/flow.md
+                  - flowRight: api/utils/functions/functions/flowRight.md
+                  - identity: api/utils/functions/functions/identity.md
+                  - memoize: api/utils/functions/functions/memoize.md
+                  - negate: api/utils/functions/functions/negate.md
+                  - noop: api/utils/functions/functions/noop.md
+                  - once: api/utils/functions/functions/once.md
+                  - partial: api/utils/functions/functions/partial.md
+                  - partialRight: api/utils/functions/functions/partialRight.md
+                  - rest: api/utils/functions/functions/rest.md
+                  - spread: api/utils/functions/functions/spread.md
+                  - unary: api/utils/functions/functions/unary.md
           - Maps:
               - Overview: api/utils/maps/index.md
-              - Variables:
-                  - every: api/utils/maps/variables/every.md
-                  - filter: api/utils/maps/variables/filter.md
-                  - findKey: api/utils/maps/variables/findKey.md
-                  - findValue: api/utils/maps/variables/findValue.md
-                  - hasValue: api/utils/maps/variables/hasValue.md
-                  - mapKeys: api/utils/maps/variables/mapKeys.md
-                  - mapValues: api/utils/maps/variables/mapValues.md
-                  - reduce: api/utils/maps/variables/reduce.md
-                  - some: api/utils/maps/variables/some.md
+              - Functions:
+                  - every: api/utils/maps/functions/every.md
+                  - filter: api/utils/maps/functions/filter.md
+                  - findKey: api/utils/maps/functions/findKey.md
+                  - findValue: api/utils/maps/functions/findValue.md
+                  - hasValue: api/utils/maps/functions/hasValue.md
+                  - mapKeys: api/utils/maps/functions/mapKeys.md
+                  - mapValues: api/utils/maps/functions/mapValues.md
+                  - reduce: api/utils/maps/functions/reduce.md
+                  - some: api/utils/maps/functions/some.md
           - Math:
               - Overview: api/utils/math/index.md
-              - Variables:
-                  - clamp: api/utils/math/variables/clamp.md
-                  - inRange: api/utils/math/variables/inRange.md
-                  - mean: api/utils/math/variables/mean.md
-                  - meanBy: api/utils/math/variables/meanBy.md
-                  - median: api/utils/math/variables/median.md
-                  - medianBy: api/utils/math/variables/medianBy.md
-                  - range: api/utils/math/variables/range.md
-                  - rangeRight: api/utils/math/variables/rangeRight.md
-                  - round: api/utils/math/variables/round.md
-                  - sum: api/utils/math/variables/sum.md
-                  - sumBy: api/utils/math/variables/sumBy.md
+              - Functions:
+                  - clamp: api/utils/math/functions/clamp.md
+                  - inRange: api/utils/math/functions/inRange.md
+                  - mean: api/utils/math/functions/mean.md
+                  - meanBy: api/utils/math/functions/meanBy.md
+                  - median: api/utils/math/functions/median.md
+                  - medianBy: api/utils/math/functions/medianBy.md
+                  - range: api/utils/math/functions/range.md
+                  - rangeRight: api/utils/math/functions/rangeRight.md
+                  - round: api/utils/math/functions/round.md
+                  - sum: api/utils/math/functions/sum.md
+                  - sumBy: api/utils/math/functions/sumBy.md
           - Objects:
               - Overview: api/utils/objects/index.md
-              - Variables:
-                  - clone: api/utils/objects/variables/clone.md
-                  - cloneDeep: api/utils/objects/variables/cloneDeep.md
-                  - findKey: api/utils/objects/variables/findKey.md
-                  - flattenObject: api/utils/objects/variables/flattenObject.md
-                  - invert: api/utils/objects/variables/invert.md
-                  - mapKeys: api/utils/objects/variables/mapKeys.md
-                  - mapValues: api/utils/objects/variables/mapValues.md
-                  - merge: api/utils/objects/variables/merge.md
-                  - mergeWith: api/utils/objects/variables/mergeWith.md
-                  - omit: api/utils/objects/variables/omit.md
-                  - omitBy: api/utils/objects/variables/omitBy.md
-                  - pick: api/utils/objects/variables/pick.md
-                  - pickBy: api/utils/objects/variables/pickBy.md
-                  - toMerged: api/utils/objects/variables/toMerged.md
+              - Functions:
+                  - clone: api/utils/objects/functions/clone.md
+                  - cloneDeep: api/utils/objects/functions/cloneDeep.md
+                  - findKey: api/utils/objects/functions/findKey.md
+                  - flattenObject: api/utils/objects/functions/flattenObject.md
+                  - invert: api/utils/objects/functions/invert.md
+                  - mapKeys: api/utils/objects/functions/mapKeys.md
+                  - mapValues: api/utils/objects/functions/mapValues.md
+                  - merge: api/utils/objects/functions/merge.md
+                  - mergeWith: api/utils/objects/functions/mergeWith.md
+                  - omit: api/utils/objects/functions/omit.md
+                  - omitBy: api/utils/objects/functions/omitBy.md
+                  - pick: api/utils/objects/functions/pick.md
+                  - pickBy: api/utils/objects/functions/pickBy.md
+                  - toMerged: api/utils/objects/functions/toMerged.md
           - Sets:
               - Overview: api/utils/sets/index.md
-              - Variables:
-                  - countBy: api/utils/sets/variables/countBy.md
-                  - every: api/utils/sets/variables/every.md
-                  - filter: api/utils/sets/variables/filter.md
-                  - find: api/utils/sets/variables/find.md
-                  - keyBy: api/utils/sets/variables/keyBy.md
-                  - map: api/utils/sets/variables/map.md
-                  - reduce: api/utils/sets/variables/reduce.md
-                  - some: api/utils/sets/variables/some.md
+              - Functions:
+                  - countBy: api/utils/sets/functions/countBy.md
+                  - every: api/utils/sets/functions/every.md
+                  - filter: api/utils/sets/functions/filter.md
+                  - find: api/utils/sets/functions/find.md
+                  - keyBy: api/utils/sets/functions/keyBy.md
+                  - map: api/utils/sets/functions/map.md
+                  - reduce: api/utils/sets/functions/reduce.md
+                  - some: api/utils/sets/functions/some.md
           - Paths:
               - Overview: api/utils/paths/index.md
               - Functions:
@@ -246,34 +246,32 @@ nav:
                   - hash: api/utils/crypto/functions/hash.md
           - Predicates:
               - Overview: api/utils/predicates/index.md
-              - Variables:
-                  - isBoolean: api/utils/predicates/variables/isBoolean.md
-                  - isDate: api/utils/predicates/variables/isDate.md
-                  - isEmptyObject: api/utils/predicates/variables/isEmptyObject.md
-                  - isEqual: api/utils/predicates/variables/isEqual.md
-                  - isError: api/utils/predicates/variables/isError.md
-                  - isFunction: api/utils/predicates/variables/isFunction.md
-                  - isJSON: api/utils/predicates/variables/isJSON.md
-                  - isJSONArray: api/utils/predicates/variables/isJSONArray.md
-                  - isJSONObject: api/utils/predicates/variables/isJSONObject.md
-                  - isJSONValue: api/utils/predicates/variables/isJSONValue.md
-                  - isMap: api/utils/predicates/variables/isMap.md
-                  - isNil: api/utils/predicates/variables/isNil.md
-                  - isNotNil: api/utils/predicates/variables/isNotNil.md
-                  - isNull: api/utils/predicates/variables/isNull.md
-                  - isNumber: api/utils/predicates/variables/isNumber.md
-                  - isPlainObject: api/utils/predicates/variables/isPlainObject.md
-                  - isPrimitive: api/utils/predicates/variables/isPrimitive.md
-                  - isRegExp: api/utils/predicates/variables/isRegExp.md
-                  - isSet: api/utils/predicates/variables/isSet.md
-                  - isString: api/utils/predicates/variables/isString.md
-                  - isUndefined: api/utils/predicates/variables/isUndefined.md
+              - Functions:
+                  - isBoolean: api/utils/predicates/functions/isBoolean.md
+                  - isDate: api/utils/predicates/functions/isDate.md
+                  - isEmptyObject: api/utils/predicates/functions/isEmptyObject.md
+                  - isEqual: api/utils/predicates/functions/isEqual.md
+                  - isError: api/utils/predicates/functions/isError.md
+                  - isFunction: api/utils/predicates/functions/isFunction.md
+                  - isJSON: api/utils/predicates/functions/isJSON.md
+                  - isJSONValue: api/utils/predicates/functions/isJSONValue.md
+                  - isMap: api/utils/predicates/functions/isMap.md
+                  - isNil: api/utils/predicates/functions/isNil.md
+                  - isNotNil: api/utils/predicates/functions/isNotNil.md
+                  - isNull: api/utils/predicates/functions/isNull.md
+                  - isNumber: api/utils/predicates/functions/isNumber.md
+                  - isPlainObject: api/utils/predicates/functions/isPlainObject.md
+                  - isPrimitive: api/utils/predicates/functions/isPrimitive.md
+                  - isRegExp: api/utils/predicates/functions/isRegExp.md
+                  - isSet: api/utils/predicates/functions/isSet.md
+                  - isString: api/utils/predicates/functions/isString.md
+                  - isUndefined: api/utils/predicates/functions/isUndefined.md
           - Misc:
               - Overview: api/utils/misc/index.md
-              - Variables:
-                  - assert: api/utils/misc/variables/assert.md
-                  - attempt: api/utils/misc/variables/attempt.md
-                  - invariant: api/utils/misc/variables/invariant.md
+              - Functions:
+                  - assert: api/utils/misc/functions/assert.md
+                  - attempt: api/utils/misc/functions/attempt.md
+                  - invariant: api/utils/misc/functions/invariant.md
       - Testing:
           - Overview: api/testing/index.md
           - Functions:
