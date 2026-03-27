@@ -5,13 +5,13 @@
  * minimal `console` global during type-checking without depending on a browser
  * or full Node.js runtime type environment.
  */
-export {};
+export type RuntimeConsole = {
+  log(...args: unknown[]): void;
+  info(...args: unknown[]): void;
+  warn(...args: unknown[]): void;
+  error(...args: unknown[]): void;
+};
 
 declare global {
-  const console: {
-    log(...args: unknown[]): void;
-    info(...args: unknown[]): void;
-    warn(...args: unknown[]): void;
-    error(...args: unknown[]): void;
-  };
+  const console: RuntimeConsole;
 }
