@@ -11,8 +11,8 @@
  * behavior.
  */
 
+import type { LiteralValue } from "../../src/core/types";
 import * as irb from "../../src/testing";
-import type { LiteralValue } from "../../src/types";
 import * as arrays from "../../src/utils/arrays";
 import * as crypto from "../../src/utils/crypto";
 import * as functionUtils from "../../src/utils/functions";
