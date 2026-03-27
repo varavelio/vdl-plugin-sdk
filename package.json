@@ -64,8 +64,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "npm run build:codegen && npm run build:docs && npm run build:bundle",
-    "build:codegen": "node ./scripts/generate-es-toolkit-utils.ts",
+    "build": "npm run build:docs && npm run build:bundle",
     "build:bundle": "tsdown",
     "build:docs": "node ./scripts/generate-docs/index.ts",
     "format": "npm run format:dprint && npm run format:biome",
