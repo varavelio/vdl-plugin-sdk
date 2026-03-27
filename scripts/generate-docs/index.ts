@@ -315,7 +315,16 @@ async function renameCoreModuleDirectory() {
   const typedocCoreDirectoryPath = path.join(docsApiDirectoryPath, "index");
   const docsCoreDirectoryPath = path.join(docsApiDirectoryPath, "core");
 
-  await rename(typedocCoreDirectoryPath, docsCoreDirectoryPath);
+  try {
+    await rename(typedocCoreDirectoryPath, docsCoreDirectoryPath);
+  } catch (error) {
+    const errorCode = (error as NodeJS.ErrnoException).code;
+
+    if (errorCode !== "ENOENT") {
+      throw error;
+    }
+  }
+
   await rewriteAllApiMarkdownLinksForCoreRename();
 }
 
