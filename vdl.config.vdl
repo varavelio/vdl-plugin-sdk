@@ -12,7 +12,7 @@ const config = {
 
   hooks {
     postGenerate [
-      "npx biome format --write --config-path ./biome.json --log-level warn ./src/types"
+      "npx biome format --write --config-path ./biome.json --log-level warn ./src/core/types"
     ]
   }
 
@@ -20,7 +20,7 @@ const config = {
     {
       src "varavelio/vdl-plugin-ts@v0.1.2"
       schema "./schemas/plugin.vdl"
-      outDir "./src/types"
+      outDir "./src/core/types"
     }
   ]
 }
