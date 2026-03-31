@@ -60,6 +60,7 @@ const mkdocsNavEndMarker = "      # AUTO-GENERATED API NAV END";
 
 const utilityOrder = [
   "ir",
+  "rpc",
   "options",
   "strings",
   "arrays",
@@ -91,6 +92,10 @@ const groupOrderIndex = new Map<string, number>(
 function titleCase(value: string) {
   if (value === "ir") {
     return "IR";
+  }
+
+  if (value === "rpc") {
+    return "RPC";
   }
 
   return value
