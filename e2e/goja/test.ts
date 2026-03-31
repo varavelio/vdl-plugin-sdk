@@ -24,6 +24,7 @@ import * as objects from "../../src/utils/objects";
 import * as options from "../../src/utils/options";
 import * as paths from "../../src/utils/paths";
 import * as predicates from "../../src/utils/predicates";
+import * as rpc from "../../src/utils/rpc";
 import * as sets from "../../src/utils/sets";
 import * as strings from "../../src/utils/strings";
 
@@ -293,6 +294,21 @@ function createStringSuites(): SmokeSuite[] {
               `),
               "export interface User {\n  id: string;\n}",
               "dedent output",
+            );
+          },
+        },
+        {
+          name: "indents non-blank lines with configurable prefixes",
+          run: () => {
+            assertEqual(
+              strings.indent("id: string;\nname: string;"),
+              "  id: string;\n  name: string;",
+              "indent default prefix output",
+            );
+            assertEqual(
+              strings.indent("field string\n\nfield int", "\t"),
+              "\tfield string\n\n\tfield int",
+              "indent custom prefix output",
             );
           },
         },
@@ -745,6 +761,102 @@ function createIrSuites(): SmokeSuite[] {
                 irb.field("request", irb.namedType("ApiRequest")),
               ]),
               "hoistAnonymousTypes rewritten root type",
+            );
+          },
+        },
+      ],
+    },
+  ];
+}
+
+/**
+ * Creates smoke-test suites for RPC-specific IR validation helpers.
+ */
+function createRpcSuites(): SmokeSuite[] {
+  return [
+    {
+      name: "rpc",
+      checks: [
+        {
+          name: "returns undefined when there are no @rpc types",
+          run: () => {
+            const validation = rpc.validateIrForRpc(
+              irb.schema({
+                types: [
+                  irb.typeDef(
+                    "User",
+                    irb.objectType([
+                      irb.field("id", irb.primitiveType("string")),
+                    ]),
+                  ),
+                ],
+              }),
+            );
+
+            assertUndefined(
+              validation,
+              "validateIrForRpc no-rpc schema output",
+            );
+          },
+        },
+        {
+          name: "returns plugin-compatible diagnostics for invalid RPC schemas",
+          run: () => {
+            const badType = irb.typeDef(
+              "BrokenService",
+              irb.primitiveType("string"),
+              {
+                annotations: [irb.annotation("rpc")],
+              },
+            );
+
+            const dualOperation = irb.field("sync", irb.objectType([]), {
+              annotations: [irb.annotation("proc"), irb.annotation("stream")],
+            });
+            const invalidInput = irb.field(
+              "input",
+              irb.primitiveType("string"),
+            );
+            const badOperation = irb.field(
+              "getUser",
+              irb.objectType([invalidInput]),
+              {
+                annotations: [irb.annotation("proc")],
+              },
+            );
+
+            const service = irb.typeDef(
+              "UserService",
+              irb.objectType([dualOperation, badOperation]),
+              {
+                annotations: [irb.annotation("rpc")],
+              },
+            );
+
+            const validation = rpc.validateIrForRpc(
+              irb.schema({ types: [badType, service] }),
+            );
+
+            assertDeepEqual(
+              validation,
+              [
+                {
+                  message:
+                    'Type "BrokenService" is annotated with @rpc and must be an object type.',
+                  position: badType.position,
+                },
+                {
+                  message:
+                    'Field "UserService.sync" cannot be annotated with both @proc and @stream.',
+                  position: dualOperation.position,
+                },
+                {
+                  message:
+                    'Field "input" in operation "UserService.getUser" must be an object type when present.',
+                  position: invalidInput.position,
+                },
+              ],
+              "validateIrForRpc diagnostics output",
             );
           },
         },
@@ -2559,6 +2671,7 @@ function createSuites(): SmokeSuite[] {
     ...createStringSuites(),
     ...createOptionSuites(),
     ...createIrSuites(),
+    ...createRpcSuites(),
     ...createPathSuites(),
     ...createCryptoSuites(),
     ...createArraySuites(),
