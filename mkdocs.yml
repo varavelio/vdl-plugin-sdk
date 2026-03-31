@@ -68,6 +68,10 @@ nav:
                   - unwrapLiteral: api/utils/ir/functions/unwrapLiteral.md
               - Type Aliases:
                   - HoistNameContext: api/utils/ir/type-aliases/HoistNameContext.md
+          - RPC:
+              - Overview: api/utils/rpc/index.md
+              - Functions:
+                  - validateIrForRpc: api/utils/rpc/functions/validateIrForRpc.md
           - Options:
               - Overview: api/utils/options/index.md
               - Functions:
@@ -84,6 +88,7 @@ nav:
                   - ensurePrefix: api/utils/strings/functions/ensurePrefix.md
                   - ensureSuffix: api/utils/strings/functions/ensureSuffix.md
                   - fuzzySearch: api/utils/strings/functions/fuzzySearch.md
+                  - indent: api/utils/strings/functions/indent.md
                   - kebabCase: api/utils/strings/functions/kebabCase.md
                   - limitBlankLines: api/utils/strings/functions/limitBlankLines.md
                   - lowerCase: api/utils/strings/functions/lowerCase.md
