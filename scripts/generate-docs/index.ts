@@ -72,7 +72,6 @@ const utilityOrder = [
   "paths",
   "crypto",
   "predicates",
-  "misc",
 ] as const;
 
 const groupOrder = [

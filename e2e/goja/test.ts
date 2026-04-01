@@ -19,7 +19,6 @@ import * as functionUtils from "../../src/utils/functions";
 import * as ir from "../../src/utils/ir";
 import * as maps from "../../src/utils/maps";
 import * as math from "../../src/utils/math";
-import * as misc from "../../src/utils/misc";
 import * as objects from "../../src/utils/objects";
 import * as options from "../../src/utils/options";
 import * as paths from "../../src/utils/paths";
@@ -132,19 +131,6 @@ function assertUndefined(actual: unknown, message: string): void {
   if (actual !== undefined) {
     fail(`${message}: expected undefined, received ${formatValue(actual)}`);
   }
-}
-
-/**
- * Asserts that a function throws and returns the thrown error value.
- */
-function assertThrows(run: () => void, message: string): unknown {
-  try {
-    run();
-  } catch (error) {
-    return error;
-  }
-
-  fail(`${message}: expected function to throw`);
 }
 
 /**
@@ -2588,79 +2574,6 @@ function createSetSuites(): SmokeSuite[] {
 }
 
 /**
- * Creates smoke-test suites for small synchronous utilities re-exported from
- * es-toolkit.
- */
-function createMiscSuites(): SmokeSuite[] {
-  return [
-    {
-      name: "misc",
-      checks: [
-        {
-          name: "assert",
-          run: () => {
-            misc.assert(true, "misc.assert should not throw");
-
-            const error = assertThrows(() => {
-              misc.assert(false, "bad assertion");
-            }, "misc.assert throw path");
-
-            assertEqual(
-              error instanceof Error,
-              true,
-              "misc.assert error instance",
-            );
-            assertEqual(
-              (error as Error).message,
-              "bad assertion",
-              "misc.assert error message",
-            );
-          },
-        },
-        {
-          name: "attempt",
-          run: () => {
-            const success = misc.attempt(() => 42);
-            const failure = misc.attempt(() => {
-              throw new Error("boom");
-            });
-
-            assertDeepEqual(success, [null, 42], "misc.attempt success output");
-            assertEqual(
-              failure[0] instanceof Error,
-              true,
-              "misc.attempt error instance",
-            );
-            assertEqual(failure[1], null, "misc.attempt failure output");
-          },
-        },
-        {
-          name: "invariant",
-          run: () => {
-            misc.invariant(true, "misc.invariant should not throw");
-
-            const error = assertThrows(() => {
-              misc.invariant(false, "broken invariant");
-            }, "misc.invariant throw path");
-
-            assertEqual(
-              error instanceof Error,
-              true,
-              "misc.invariant error instance",
-            );
-            assertEqual(
-              (error as Error).message,
-              "broken invariant",
-              "misc.invariant error message",
-            );
-          },
-        },
-      ],
-    },
-  ];
-}
-
-/**
  * Creates the smoke-test suites executed inside Goja.
  *
  * Each suite focuses on a small public area of the SDK so runtime failures can
@@ -2681,7 +2594,6 @@ function createSuites(): SmokeSuite[] {
     ...createObjectSuites(),
     ...createPredicateSuites(),
     ...createSetSuites(),
-    ...createMiscSuites(),
   ];
 }
 
