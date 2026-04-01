@@ -13,7 +13,9 @@ nav:
       - Core:
           - Overview: api/core/index.md
           - Functions:
+              - assert: api/core/functions/assert.md
               - definePlugin: api/core/functions/definePlugin.md
+              - fail: api/core/functions/fail.md
           - Variables:
               - Annotation: api/core/variables/Annotation.md
               - ConstantDef: api/core/variables/ConstantDef.md
@@ -58,6 +60,8 @@ nav:
               - TypeKind: api/core/type-aliases/TypeKind.md
               - TypeRef: api/core/type-aliases/TypeRef.md
               - VdlPluginHandler: api/core/type-aliases/VdlPluginHandler.md
+          - Classes:
+              - PluginError: api/core/classes/PluginError.md
       - Utils:
           - IR:
               - Overview: api/utils/ir/index.md
