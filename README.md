@@ -41,6 +41,7 @@
 ## What You Get
 
 - A typed plugin authoring API (`definePlugin`) for `src/index.ts`.
+- Built-in error primitives (`PluginError`, `fail`, `assert`) for clear diagnostics.
 - Utility subpath imports (`utils/*`) that tree-shake cleanly.
 - A dedicated testing entry point with IR builders.
 - A small CLI (`vdl-plugin`) for `check` and `build`.
@@ -129,6 +130,32 @@ npx vdl-plugin build
 
 - `check` runs TypeScript with no emit. If `tsconfig.vitest.json` exists, test code is type-checked too.
 - `build` produces the release artifact at `dist/index.js` from `src/index.ts`.
+
+## Error Handling
+
+`definePlugin` wraps your handler in a safe global boundary.
+
+- Throw `PluginError` (or use `fail`) when you want to report a structured diagnostic.
+- Use `assert` to fail fast and keep TypeScript narrowing for validated values.
+- Any unexpected thrown value is converted into a safe `errors` response.
+
+```ts
+import { assert, definePlugin, fail } from "@varavel/vdl-plugin-sdk";
+
+export const generate = definePlugin((input) => {
+  const serviceType = input.ir.types.find((typeDef) => typeDef.name === "Service");
+
+  assert(serviceType, 'Missing required type "Service".', input.ir.position);
+
+  if (serviceType.type.kind !== "object") {
+    fail('Type "Service" must be an object.', serviceType.position);
+  }
+
+  return {
+    files: [{ path: "service.txt", content: "ok" }],
+  };
+});
+```
 
 ## Typical Plugin Workflow
 
