@@ -11,6 +11,11 @@
  * behavior.
  */
 
+import {
+  assert as assertPlugin,
+  fail as failPlugin,
+  PluginError,
+} from "../../src/core";
 import type { LiteralValue } from "../../src/core/types";
 import * as irb from "../../src/testing";
 import * as arrays from "../../src/utils/arrays";
@@ -2574,6 +2579,68 @@ function createSetSuites(): SmokeSuite[] {
 }
 
 /**
+ * Creates smoke-test suites for core runtime helpers.
+ */
+function createCoreSuites(): SmokeSuite[] {
+  return [
+    {
+      name: "core.error-helpers",
+      checks: [
+        {
+          name: "assert throws PluginError on falsy conditions",
+          run: () => {
+            const expectedPosition = irb.position({
+              file: "schema.vdl",
+              line: 3,
+              column: 5,
+            });
+
+            try {
+              assertPlugin(false, "invalid operation", expectedPosition);
+              fail("assertPlugin should throw for falsy values");
+            } catch (error) {
+              if (!(error instanceof PluginError)) {
+                fail("assertPlugin error type");
+              }
+
+              assertEqual(
+                error.message,
+                "invalid operation",
+                "assertPlugin message",
+              );
+              assertDeepEqual(
+                error.position,
+                expectedPosition,
+                "assertPlugin position",
+              );
+            }
+          },
+        },
+        {
+          name: "fail throws PluginError with provided message",
+          run: () => {
+            try {
+              failPlugin("generation failed");
+              fail("failPlugin should always throw");
+            } catch (error) {
+              if (!(error instanceof PluginError)) {
+                fail("failPlugin error type");
+              }
+
+              assertEqual(
+                error.message,
+                "generation failed",
+                "failPlugin message",
+              );
+            }
+          },
+        },
+      ],
+    },
+  ];
+}
+
+/**
  * Creates the smoke-test suites executed inside Goja.
  *
  * Each suite focuses on a small public area of the SDK so runtime failures can
@@ -2581,6 +2648,7 @@ function createSetSuites(): SmokeSuite[] {
  */
 function createSuites(): SmokeSuite[] {
   return [
+    ...createCoreSuites(),
     ...createStringSuites(),
     ...createOptionSuites(),
     ...createIrSuites(),
