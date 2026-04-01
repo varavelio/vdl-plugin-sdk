@@ -1,4 +1,5 @@
-import type { PluginInput, PluginOutput } from "./types";
+import { PluginError } from "./errors";
+import type { PluginInput, PluginOutput, PluginOutputError } from "./types";
 
 /**
  * Function signature implemented by every VDL plugin entry point.
@@ -23,12 +24,13 @@ export type VdlPluginHandler = (input: PluginInput) => PluginOutput;
 /**
  * Wraps a plugin handler so it can be exported as the canonical VDL entry point.
  *
- * `definePlugin` is intentionally minimal. It preserves the handler's type
- * information and gives plugin projects a single, explicit pattern for exporting
- * `generate` from `src/index.ts`.
+ * `definePlugin` wraps your implementation with a global safety net.
+ *
+ * Any thrown error is converted into the `PluginOutput` diagnostic contract,
+ * so VDL can report failures cleanly instead of crashing with a raw stack trace.
  *
  * @param handler - The plugin implementation to expose as the runtime entry point.
- * @returns The same handler function, unchanged.
+ * @returns A safe handler that always returns `PluginOutput`.
  *
  * @example
  * ```ts
@@ -47,5 +49,33 @@ export type VdlPluginHandler = (input: PluginInput) => PluginOutput;
  * ```
  */
 export function definePlugin(handler: VdlPluginHandler): VdlPluginHandler {
-  return handler;
+  return (input: PluginInput): PluginOutput => {
+    try {
+      return handler(input);
+    } catch (error) {
+      return {
+        files: [],
+        errors: [toPluginError(error)],
+      };
+    }
+  };
+}
+
+function toPluginError(error: unknown): PluginOutputError {
+  if (error instanceof PluginError) {
+    return {
+      message: error.message,
+      position: error.position,
+    };
+  }
+
+  if (error instanceof Error) {
+    return {
+      message: error.message,
+    };
+  }
+
+  return {
+    message: "An unknown generation error occurred.",
+  };
 }
