@@ -88,9 +88,10 @@ Output contract reminder:
 
 ## What This Package Includes
 
-Think of the SDK as four pieces that work together:
+Think of the SDK as five pieces that work together:
 
 - The main package for authoring a plugin handler and working with the typed VDL IR.
+- Built-in error primitives for clear diagnostics (\`PluginError\`, \`fail\`, \`assert\`).
 - Tree-shakeable utility subpaths for reusable helper functions used in plugin logic.
 - A separate \`testing\` entry point for building realistic IR fixtures in unit tests.
 - A small CLI plus shared \`tsconfig\` presets for the normal plugin build workflow.
@@ -137,6 +138,34 @@ npx vdl-plugin build
 
 - \`check\` runs TypeScript without emitting files. If a \`tsconfig.vitest.json\` is present, it also type-checks test code.
 - \`build\` bundles the required \`src/index.ts\` entry into \`dist/index.js\`.
+
+## Error handling
+
+\`definePlugin\` wraps your handler with a global safety boundary.
+
+- Throw \`PluginError\` (or use \`fail\` or \`assert\`) for user-facing generation diagnostics.
+- Use \`assert\` when validating required conditions while keeping TypeScript narrowing.
+- Any unexpected thrown value is converted into a safe \`errors\` payload.
+
+Example:
+
+\`\`\`ts
+import { assert, definePlugin, fail } from "@varavel/vdl-plugin-sdk";
+
+export const generate = definePlugin((input) => {
+  const serviceType = input.ir.types.find((typeDef) => typeDef.name === "Service");
+
+  assert(serviceType, 'Missing required type "Service".', input.ir.position);
+
+  if (serviceType.type.kind !== "object") {
+    fail('Type "Service" must be an object.', serviceType.position);
+  }
+
+  return {
+    files: [{ path: "service.txt", content: "ok" }],
+  };
+});
+\`\`\`
 
 ## Agent checklist
 
