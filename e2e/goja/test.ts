@@ -31,6 +31,8 @@ import * as predicates from "../../src/utils/predicates";
 import * as rpc from "../../src/utils/rpc";
 import * as sets from "../../src/utils/sets";
 import * as strings from "../../src/utils/strings";
+import * as toml from "../../src/utils/toml";
+import * as yaml from "../../src/utils/yaml";
 
 /**
  * Global callback injected by the Go runner.
@@ -900,6 +902,127 @@ function createPathSuites(): SmokeSuite[] {
               paths.isAbsolute("generated/models/user.ts"),
               false,
               "paths.isAbsolute relative output",
+            );
+          },
+        },
+      ],
+    },
+  ];
+}
+
+/**
+ * Creates smoke-test suites for YAML parse/stringify helpers.
+ */
+function createYamlSuites(): SmokeSuite[] {
+  return [
+    {
+      name: "yaml",
+      checks: [
+        {
+          name: "parse reads nested YAML values",
+          run: () => {
+            const output = yaml.parse<{
+              service: {
+                enabled: boolean;
+                name: string;
+                ports: number[];
+              };
+            }>(`
+service:
+  enabled: true
+  name: users
+  ports:
+    - 8080
+    - 8081
+`);
+
+            assertDeepEqual(
+              output,
+              {
+                service: {
+                  enabled: true,
+                  name: "users",
+                  ports: [8080, 8081],
+                },
+              },
+              "yaml.parse output",
+            );
+          },
+        },
+        {
+          name: "stringify supports round-tripping",
+          run: () => {
+            const input = {
+              retries: 3,
+              service: {
+                enabled: true,
+                name: "billing",
+              },
+              tags: ["core", "payments"],
+            };
+
+            assertDeepEqual(
+              yaml.parse(yaml.stringify(input)),
+              input,
+              "yaml stringify round-trip",
+            );
+          },
+        },
+      ],
+    },
+  ];
+}
+
+/**
+ * Creates smoke-test suites for TOML parse/stringify helpers.
+ */
+function createTomlSuites(): SmokeSuite[] {
+  return [
+    {
+      name: "toml",
+      checks: [
+        {
+          name: "parse reads nested TOML values",
+          run: () => {
+            const output = toml.parse<{
+              database: {
+                enabled: boolean;
+                ports: number[];
+              };
+            }>(`
+[database]
+enabled = true
+ports = [8000, 8001]
+`);
+
+            assertDeepEqual(
+              output,
+              {
+                database: {
+                  enabled: true,
+                  ports: [8000, 8001],
+                },
+              },
+              "toml.parse output",
+            );
+          },
+        },
+        {
+          name: "stringify supports round-tripping",
+          run: () => {
+            const input: Record<string, unknown> = {
+              retries: 2,
+              service: {
+                enabled: true,
+                name: "users",
+              },
+              tags: ["core", "users"],
+            };
+
+            assertDeepEqual(
+              toml.parse(toml.stringify(input)),
+              input,
+              "toml stringify round-trip",
             );
           },
         },
@@ -2625,6 +2748,8 @@ function createSuites(): SmokeSuite[] {
     ...createIrSuites(),
     ...createRpcSuites(),
     ...createPathSuites(),
+    ...createYamlSuites(),
+    ...createTomlSuites(),
     ...createCryptoSuites(),
     ...createArraySuites(),
     ...createFunctionSuites(),
