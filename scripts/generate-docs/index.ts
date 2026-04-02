@@ -63,6 +63,8 @@ const utilityOrder = [
   "rpc",
   "options",
   "strings",
+  "yaml",
+  "toml",
   "arrays",
   "functions",
   "maps",
@@ -95,6 +97,14 @@ function titleCase(value: string) {
 
   if (value === "rpc") {
     return "RPC";
+  }
+
+  if (value === "yaml") {
+    return "YAML";
+  }
+
+  if (value === "toml") {
+    return "TOML";
   }
 
   return value
