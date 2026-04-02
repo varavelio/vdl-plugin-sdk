@@ -29,6 +29,9 @@ export default defineConfig({
   unbundle: true,
   platform: "neutral",
   target: "es2015",
+  checks: {
+    toleratedTransform: false,
+  },
   dts: true,
   clean: true,
   sourcemap: true,
