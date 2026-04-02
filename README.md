@@ -157,6 +157,21 @@ export const generate = definePlugin((input) => {
 });
 ```
 
+For RPC plugins, prefer a single fail-fast validation call before generation:
+
+```ts
+import { definePlugin } from "@varavel/vdl-plugin-sdk";
+import { assertValidIrForRpc } from "@varavel/vdl-plugin-sdk/utils/rpc";
+
+export const generate = definePlugin((input) => {
+  assertValidIrForRpc(input.ir);
+
+  return {
+    files: [{ path: "rpc.ts", content: "// generated" }],
+  };
+});
+```
+
 ## Typical Plugin Workflow
 
 1. Implement your plugin in `src/index.ts` with `@varavel/vdl-plugin-sdk`.
