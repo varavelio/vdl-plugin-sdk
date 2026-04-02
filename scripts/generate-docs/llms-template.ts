@@ -167,6 +167,21 @@ export const generate = definePlugin((input) => {
 });
 \`\`\`
 
+For RPC plugins, use an \`assertValidIrForRpc\` validation call:
+
+\`\`\`ts
+import { definePlugin } from "@varavel/vdl-plugin-sdk";
+import { assertValidIrForRpc } from "@varavel/vdl-plugin-sdk/utils/rpc";
+
+export const generate = definePlugin((input) => {
+  assertValidIrForRpc(input.ir);
+
+  return {
+    files: [{ path: "rpc.ts", content: "// generated" }],
+  };
+});
+\`\`\`
+
 ## Agent checklist
 
 Before writing code or answering SDK usage questions, verify:
