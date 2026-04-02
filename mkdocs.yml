@@ -109,6 +109,16 @@ nav:
                   - words: api/utils/strings/functions/words.md
               - Type Aliases:
                   - FuzzySearchResult: api/utils/strings/type-aliases/FuzzySearchResult.md
+          - YAML:
+              - Overview: api/utils/yaml/index.md
+              - Functions:
+                  - parse: api/utils/yaml/functions/parse.md
+                  - stringify: api/utils/yaml/functions/stringify.md
+          - TOML:
+              - Overview: api/utils/toml/index.md
+              - Functions:
+                  - parse: api/utils/toml/functions/parse.md
+                  - stringify: api/utils/toml/functions/stringify.md
           - Arrays:
               - Overview: api/utils/arrays/index.md
               - Functions:
