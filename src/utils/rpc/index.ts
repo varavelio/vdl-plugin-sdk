@@ -1,1 +1,1 @@
-export * from "./validate-ir-for-rpc";
+export * from "./assert-valid-ir-for-rpc";

@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
+import { PluginError } from "../../core";
 import * as irb from "../../testing";
-import { validateIrForRpc } from "./validate-ir-for-rpc";
+import { assertValidIrForRpc } from "./assert-valid-ir-for-rpc";
 
 function rpcType(name: string, typeRef = irb.objectType([])) {
   return irb.typeDef(name, typeRef, {
@@ -9,8 +10,21 @@ function rpcType(name: string, typeRef = irb.objectType([])) {
   });
 }
 
-describe("validateIrForRpc", () => {
-  it("returns undefined when there are no @rpc types", () => {
+function getPluginError(action: () => void): PluginError {
+  try {
+    action();
+    throw new Error("Expected assertValidIrForRpc to throw PluginError");
+  } catch (error) {
+    if (!(error instanceof PluginError)) {
+      throw error;
+    }
+
+    return error;
+  }
+}
+
+describe("assertValidIrForRpc", () => {
+  it("does nothing when there are no @rpc types", () => {
     const ir = irb.schema({
       types: [
         irb.typeDef(
@@ -20,10 +34,10 @@ describe("validateIrForRpc", () => {
       ],
     });
 
-    expect(validateIrForRpc(ir)).toBeUndefined();
+    expect(() => assertValidIrForRpc(ir)).not.toThrow();
   });
 
-  it("returns undefined for valid @rpc types", () => {
+  it("does nothing for valid @rpc types", () => {
     const ir = irb.schema({
       types: [
         rpcType(
@@ -54,39 +68,37 @@ describe("validateIrForRpc", () => {
       ],
     });
 
-    expect(validateIrForRpc(ir)).toBeUndefined();
+    expect(() => assertValidIrForRpc(ir)).not.toThrow();
   });
 
-  it("reports an error when @rpc is used on a non-object type", () => {
+  it("throws when @rpc is used on a non-object type", () => {
     const badType = rpcType("BadService", irb.primitiveType("string"));
     const ir = irb.schema({ types: [badType] });
+    const error = getPluginError(() => assertValidIrForRpc(ir));
 
-    expect(validateIrForRpc(ir)).toEqual([
-      {
-        message:
-          'Type "BadService" is annotated with @rpc and must be an object type.',
-        position: badType.position,
-      },
-    ]);
+    expect(error).toMatchObject({
+      message:
+        'Type "BadService" is annotated with @rpc and must be an object type.',
+      position: badType.position,
+    });
   });
 
-  it("reports an error when an operation has both @proc and @stream", () => {
+  it("throws when an operation has both @proc and @stream", () => {
     const operationField = irb.field("syncUser", irb.objectType([]), {
       annotations: [irb.annotation("proc"), irb.annotation("stream")],
     });
     const service = rpcType("UserService", irb.objectType([operationField]));
     const ir = irb.schema({ types: [service] });
+    const error = getPluginError(() => assertValidIrForRpc(ir));
 
-    expect(validateIrForRpc(ir)).toEqual([
-      {
-        message:
-          'Field "UserService.syncUser" cannot be annotated with both @proc and @stream.',
-        position: operationField.position,
-      },
-    ]);
+    expect(error).toMatchObject({
+      message:
+        'Field "UserService.syncUser" cannot be annotated with both @proc and @stream.',
+      position: operationField.position,
+    });
   });
 
-  it("reports an error when @proc or @stream is used on a non-object field", () => {
+  it("throws when @proc or @stream is used on a non-object field", () => {
     const procField = irb.field("createUser", irb.primitiveType("string"), {
       annotations: [irb.annotation("proc")],
     });
@@ -102,19 +114,13 @@ describe("validateIrForRpc", () => {
       irb.objectType([procField, streamField]),
     );
     const ir = irb.schema({ types: [service] });
+    const error = getPluginError(() => assertValidIrForRpc(ir));
 
-    expect(validateIrForRpc(ir)).toEqual([
-      {
-        message:
-          'Field "UserService.createUser" is annotated with @proc and must be an object type.',
-        position: procField.position,
-      },
-      {
-        message:
-          'Field "UserService.watchUsers" is annotated with @stream and must be an object type.',
-        position: streamField.position,
-      },
-    ]);
+    expect(error).toMatchObject({
+      message:
+        'Field "UserService.createUser" is annotated with @proc and must be an object type.',
+      position: procField.position,
+    });
   });
 
   it("treats operations without input/output fields as valid", () => {
@@ -128,10 +134,10 @@ describe("validateIrForRpc", () => {
     const service = rpcType("InfraService", irb.objectType([operation]));
     const ir = irb.schema({ types: [service] });
 
-    expect(validateIrForRpc(ir)).toBeUndefined();
+    expect(() => assertValidIrForRpc(ir)).not.toThrow();
   });
 
-  it("reports errors when input/output are present but not object types", () => {
+  it("throws when input is present but not an object type", () => {
     const inputField = irb.field("input", irb.primitiveType("string"));
     const outputField = irb.field(
       "output",
@@ -146,19 +152,13 @@ describe("validateIrForRpc", () => {
     );
     const service = rpcType("UserService", irb.objectType([operation]));
     const ir = irb.schema({ types: [service] });
+    const error = getPluginError(() => assertValidIrForRpc(ir));
 
-    expect(validateIrForRpc(ir)).toEqual([
-      {
-        message:
-          'Field "input" in operation "UserService.getUser" must be an object type when present.',
-        position: inputField.position,
-      },
-      {
-        message:
-          'Field "output" in operation "UserService.getUser" must be an object type when present.',
-        position: outputField.position,
-      },
-    ]);
+    expect(error).toMatchObject({
+      message:
+        'Field "input" in operation "UserService.getUser" must be an object type when present.',
+      position: inputField.position,
+    });
   });
 
   it("fills missing nested file paths from the operation position", () => {
@@ -180,22 +180,20 @@ describe("validateIrForRpc", () => {
 
     const service = rpcType("UserService", irb.objectType([operationField]));
     const ir = irb.schema({ types: [service] });
-    const errors = validateIrForRpc(ir);
+    const error = getPluginError(() => assertValidIrForRpc(ir));
 
-    expect(errors).toEqual([
-      {
-        message:
-          'Field "input" in operation "UserService.getUser" must be an object type when present.',
-        position: {
-          file: "/schema.vdl",
-          line: 11,
-          column: 9,
-        },
+    expect(error).toMatchObject({
+      message:
+        'Field "input" in operation "UserService.getUser" must be an object type when present.',
+      position: {
+        file: "/schema.vdl",
+        line: 11,
+        column: 9,
       },
-    ]);
+    });
   });
 
-  it("returns all RPC diagnostics from all annotated types", () => {
+  it("fails fast and throws only the first violation", () => {
     const badRpcType = rpcType(
       "BrokenService",
       irb.arrayType(irb.primitiveType("string")),
@@ -222,28 +220,12 @@ describe("validateIrForRpc", () => {
     const ir = irb.schema({
       types: [badRpcType, mixedRpcType],
     });
+    const error = getPluginError(() => assertValidIrForRpc(ir));
 
-    expect(validateIrForRpc(ir)).toEqual([
-      {
-        message:
-          'Type "BrokenService" is annotated with @rpc and must be an object type.',
-        position: badRpcType.position,
-      },
-      {
-        message:
-          'Field "UserService.sync" cannot be annotated with both @proc and @stream.',
-        position: dualAnnotationOperation.position,
-      },
-      {
-        message:
-          'Field "input" in operation "UserService.getUser" must be an object type when present.',
-        position: badInputField.position,
-      },
-      {
-        message:
-          'Field "output" in operation "UserService.getUser" must be an object type when present.',
-        position: badOutputField.position,
-      },
-    ]);
+    expect(error).toMatchObject({
+      message:
+        'Type "BrokenService" is annotated with @rpc and must be an object type.',
+      position: badRpcType.position,
+    });
   });
 });

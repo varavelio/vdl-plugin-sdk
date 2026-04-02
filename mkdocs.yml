@@ -75,7 +75,7 @@ nav:
           - RPC:
               - Overview: api/utils/rpc/index.md
               - Functions:
-                  - validateIrForRpc: api/utils/rpc/functions/validateIrForRpc.md
+                  - assertValidIrForRpc: api/utils/rpc/functions/assertValidIrForRpc.md
           - Options:
               - Overview: api/utils/options/index.md
               - Functions:

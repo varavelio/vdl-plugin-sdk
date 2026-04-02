@@ -769,29 +769,29 @@ function createRpcSuites(): SmokeSuite[] {
       name: "rpc",
       checks: [
         {
-          name: "returns undefined when there are no @rpc types",
+          name: "does not throw when there are no @rpc types",
           run: () => {
-            const validation = rpc.validateIrForRpc(
-              irb.schema({
-                types: [
-                  irb.typeDef(
-                    "User",
-                    irb.objectType([
-                      irb.field("id", irb.primitiveType("string")),
-                    ]),
-                  ),
-                ],
-              }),
-            );
+            const schema = irb.schema({
+              types: [
+                irb.typeDef(
+                  "User",
+                  irb.objectType([
+                    irb.field("id", irb.primitiveType("string")),
+                  ]),
+                ),
+              ],
+            });
 
-            assertUndefined(
-              validation,
-              "validateIrForRpc no-rpc schema output",
+            assertEqual(
+              typeof rpc.assertValidIrForRpc,
+              "function",
+              "assertValidIrForRpc is exported",
             );
+            rpc.assertValidIrForRpc(schema);
           },
         },
         {
-          name: "returns plugin-compatible diagnostics for invalid RPC schemas",
+          name: "throws PluginError for invalid RPC schemas",
           run: () => {
             const badType = irb.typeDef(
               "BrokenService",
@@ -801,54 +801,25 @@ function createRpcSuites(): SmokeSuite[] {
               },
             );
 
-            const dualOperation = irb.field("sync", irb.objectType([]), {
-              annotations: [irb.annotation("proc"), irb.annotation("stream")],
-            });
-            const invalidInput = irb.field(
-              "input",
-              irb.primitiveType("string"),
-            );
-            const badOperation = irb.field(
-              "getUser",
-              irb.objectType([invalidInput]),
-              {
-                annotations: [irb.annotation("proc")],
-              },
-            );
+            try {
+              rpc.assertValidIrForRpc(irb.schema({ types: [badType] }));
+              fail("assertValidIrForRpc should throw for invalid RPC schema");
+            } catch (error) {
+              if (!(error instanceof PluginError)) {
+                fail("assertValidIrForRpc error type");
+              }
 
-            const service = irb.typeDef(
-              "UserService",
-              irb.objectType([dualOperation, badOperation]),
-              {
-                annotations: [irb.annotation("rpc")],
-              },
-            );
-
-            const validation = rpc.validateIrForRpc(
-              irb.schema({ types: [badType, service] }),
-            );
-
-            assertDeepEqual(
-              validation,
-              [
-                {
-                  message:
-                    'Type "BrokenService" is annotated with @rpc and must be an object type.',
-                  position: badType.position,
-                },
-                {
-                  message:
-                    'Field "UserService.sync" cannot be annotated with both @proc and @stream.',
-                  position: dualOperation.position,
-                },
-                {
-                  message:
-                    'Field "input" in operation "UserService.getUser" must be an object type when present.',
-                  position: invalidInput.position,
-                },
-              ],
-              "validateIrForRpc diagnostics output",
-            );
+              assertEqual(
+                error.message,
+                'Type "BrokenService" is annotated with @rpc and must be an object type.',
+                "assertValidIrForRpc message",
+              );
+              assertDeepEqual(
+                error.position,
+                badType.position,
+                "assertValidIrForRpc position",
+              );
+            }
           },
         },
       ],
