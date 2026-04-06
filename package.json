@@ -19,7 +19,7 @@
     "url": "git+https://github.com/varavelio/vdl-plugin-sdk.git"
   },
   "license": "MIT",
-  "author": "Varavel LLC",
+  "author": "Varavel",
   "publishConfig": {
     "access": "public"
   },
