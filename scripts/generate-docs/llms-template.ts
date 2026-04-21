@@ -136,7 +136,7 @@ npx vdl-plugin check
 npx vdl-plugin build
 \`\`\`
 
-- \`check\` runs TypeScript without emitting files. If a \`tsconfig.vitest.json\` is present, it also type-checks test code.
+- \`check\` runs TypeScript without emitting files.
 - \`build\` bundles the required \`src/index.ts\` entry into \`dist/index.js\`.
 
 ## Error handling

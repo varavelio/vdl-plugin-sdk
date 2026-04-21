@@ -91,7 +91,7 @@ npx vdl-plugin check
 npx vdl-plugin build
 ```
 
-- `check`: type-checks plugin code (and tests if `tsconfig.vitest.json` exists).
+- `check`: type-checks plugin code.
 - `build`: bundles `src/index.ts` into `dist/index.js`.
 
 ## Entry Points
@@ -128,7 +128,7 @@ npx vdl-plugin check
 npx vdl-plugin build
 ```
 
-- `check` runs TypeScript with no emit. If `tsconfig.vitest.json` exists, test code is type-checked too.
+- `check` runs TypeScript with no emit.
 - `build` produces the release artifact at `dist/index.js` from `src/index.ts`.
 
 ## Error Handling

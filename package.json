@@ -50,16 +50,16 @@
       "require": "./dist/testing/index.cjs",
       "default": "./dist/testing/index.js"
     },
-    "./tsconfig.base.json": "./tsconfig.base.json",
-    "./tsconfig.vitest.base.json": "./tsconfig.vitest.base.json"
+    "./tsconfig.app.base.json": "./tsconfig.app.base.json",
+    "./tsconfig.test.base.json": "./tsconfig.test.base.json"
   },
   "files": [
     "bin",
     "schemas",
     "src",
     "dist",
-    "tsconfig.base.json",
-    "tsconfig.vitest.base.json",
+    "tsconfig.app.base.json",
+    "tsconfig.test.base.json",
     "README.md",
     "LICENSE"
   ],
