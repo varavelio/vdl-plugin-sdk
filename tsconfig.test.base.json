@@ -1,6 +1,6 @@
 {
-  "extends": "./tsconfig.base.json",
+  "extends": "./tsconfig.app.base.json",
   "compilerOptions": {
-    "types": ["@varavel/vdl-plugin-sdk", "node", "vitest/importMeta"]
+    "types": ["@varavel/vdl-plugin-sdk", "node", "vitest", "vitest/globals", "vitest/importMeta"]
   }
 }

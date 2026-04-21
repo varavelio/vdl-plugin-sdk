@@ -1,3 +1,11 @@
+# Node
 node_modules/
+
+# Build output
 dist/
 site/
+
+# Temporal files
+temp/
+tmp/
+*.tsbuildinfo
