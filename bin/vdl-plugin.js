@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import { execFileSync } from "node:child_process";
-import { existsSync } from "node:fs";
 import { createRequire } from "node:module";
 import { resolve } from "node:path";
 import * as esbuild from "esbuild";
@@ -35,22 +34,11 @@ function runCheck() {
   try {
     const tscPath = require.resolve("typescript/bin/tsc");
 
-    log.info("Checking production code...");
-    execFileSync(
-      process.execPath,
-      [tscPath, "-p", "tsconfig.json", "--noEmit"],
-      { stdio: "inherit" },
-    );
-
-    const vitestTsConfig = resolve(process.cwd(), "tsconfig.vitest.json");
-    if (existsSync(vitestTsConfig)) {
-      log.info("Checking test code...");
-      execFileSync(
-        process.execPath,
-        [tscPath, "-p", "tsconfig.vitest.json", "--noEmit"],
-        { stdio: "inherit" },
-      );
-    }
+    // The "-b" flag tells tsc to build the project with all it's sub-projects
+    // which are the plugin itself and the test suite.
+    execFileSync(process.execPath, [tscPath, "-b", "tsconfig.json"], {
+      stdio: "inherit",
+    });
 
     log.ok("Type checks completed successfully.");
   } catch {
