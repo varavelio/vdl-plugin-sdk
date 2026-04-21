@@ -31,6 +31,15 @@
 </p>
 
 <p align="center">
+  <a href="https://varavel.com">
+    <img src="https://cdn.jsdelivr.net/gh/varavelio/brand@1.0.0/dist/badges/project.svg" alt="A Varavel project"/>
+  </a>
+  <a href="https://varavel.com/vdl">
+    <img src="https://cdn.jsdelivr.net/gh/varavelio/brand@1.0.0/dist/badges/vdl-plugin.svg" alt="VDL Plugin"/>
+  </a>
+</p>
+
+<p align="center">
   <a href="https://vdl-plugin-sdk.varavel.com">Documentation</a>
   ·
   <a href="https://vdl-plugin-sdk.varavel.com/api/core/">API Reference</a>
@@ -143,7 +152,9 @@ npx vdl-plugin build
 import { assert, definePlugin, fail } from "@varavel/vdl-plugin-sdk";
 
 export const generate = definePlugin((input) => {
-  const serviceType = input.ir.types.find((typeDef) => typeDef.name === "Service");
+  const serviceType = input.ir.types.find(
+    (typeDef) => typeDef.name === "Service",
+  );
 
   assert(serviceType, 'Missing required type "Service".', input.ir.position);
 
@@ -216,10 +227,7 @@ The SDK uses a composite TypeScript setup to strictly separate your production c
 {
   "extends": "@varavel/vdl-plugin-sdk/tsconfig.app.base.json",
   "include": ["src/**/*.ts"],
-  "exclude": [
-    "src/**/*.test.ts",
-    "src/**/*.spec.ts"
-  ]
+  "exclude": ["src/**/*.test.ts", "src/**/*.spec.ts"]
 }
 ```
 
@@ -256,12 +264,7 @@ const input = pluginInput({
   options: { prefix: "Api" },
   ir: schema({
     types: [
-      typeDef(
-        "User",
-        objectType([
-          field("id", primitiveType("string")),
-        ]),
-      ),
+      typeDef("User", objectType([field("id", primitiveType("string"))])),
     ],
   }),
 });
