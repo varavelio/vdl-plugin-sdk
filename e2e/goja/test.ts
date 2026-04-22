@@ -23,6 +23,7 @@ import * as crypto from "../../src/utils/crypto";
 import * as functionUtils from "../../src/utils/functions";
 import * as ir from "../../src/utils/ir";
 import * as maps from "../../src/utils/maps";
+import * as markdown from "../../src/utils/markdown";
 import * as math from "../../src/utils/math";
 import * as objects from "../../src/utils/objects";
 import * as options from "../../src/utils/options";
@@ -1075,6 +1076,60 @@ function createCryptoSuites(): SmokeSuite[] {
             const right = crypto.hash({ foo: "baz" });
 
             assert(left !== right, "crypto.hash distinct output");
+          },
+        },
+      ],
+    },
+  ];
+}
+
+/**
+ * Creates smoke-test suites for lightweight Markdown helpers.
+ */
+function createMarkdownSuites(): SmokeSuite[] {
+  return [
+    {
+      name: "markdown",
+      checks: [
+        {
+          name: "extracts the first title or falls back to Untitled",
+          run: () => {
+            assertEqual(
+              markdown.title("Intro\n\n## SDK Overview\n\nBody"),
+              "SDK Overview",
+              "markdown.title heading output",
+            );
+            assertEqual(
+              markdown.title("Body only"),
+              "Untitled",
+              "markdown.title fallback output",
+            );
+          },
+        },
+        {
+          name: "wraps fenced code blocks",
+          run: () => {
+            assertEqual(
+              markdown.wrapCode("const snippet = `value`;\n```nested```", "ts"),
+              "```ts\nconst snippet = \\`value\\`;\n\\`\\`\\`nested\\`\\`\\`\n```",
+              "markdown.wrapCode output",
+            );
+          },
+        },
+        {
+          name: "extracts the first non-heading paragraph line",
+          run: () => {
+            assertEqual(
+              markdown.firstParagraph(
+                "# Title\n\nFirst paragraph\n\nSecond paragraph",
+              ),
+              "First paragraph",
+              "markdown.firstParagraph output",
+            );
+            assertUndefined(
+              markdown.firstParagraph("# Title\n\n## Section"),
+              "markdown.firstParagraph missing paragraph",
+            );
           },
         },
       ],
@@ -2766,6 +2821,7 @@ function createSuites(): SmokeSuite[] {
     ...createYamlSuites(),
     ...createTomlSuites(),
     ...createCryptoSuites(),
+    ...createMarkdownSuites(),
     ...createArraySuites(),
     ...createFunctionSuites(),
     ...createMapSuites(),
