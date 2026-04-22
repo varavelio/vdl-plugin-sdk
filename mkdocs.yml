@@ -226,6 +226,12 @@ nav:
                   - round: api/utils/math/functions/round.md
                   - sum: api/utils/math/functions/sum.md
                   - sumBy: api/utils/math/functions/sumBy.md
+          - Markdown:
+              - Overview: api/utils/markdown/index.md
+              - Functions:
+                  - firstParagraph: api/utils/markdown/functions/firstParagraph.md
+                  - title: api/utils/markdown/functions/title.md
+                  - wrapCode: api/utils/markdown/functions/wrapCode.md
           - Objects:
               - Overview: api/utils/objects/index.md
               - Functions:
