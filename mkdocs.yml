@@ -92,9 +92,13 @@ nav:
                   - ensureSuffix: api/utils/strings/functions/ensureSuffix.md
                   - escapeHtml: api/utils/strings/functions/escapeHtml.md
                   - escapeScriptTag: api/utils/strings/functions/escapeScriptTag.md
+                  - firstNChars: api/utils/strings/functions/firstNChars.md
+                  - firstNWords: api/utils/strings/functions/firstNWords.md
                   - fuzzySearch: api/utils/strings/functions/fuzzySearch.md
                   - indent: api/utils/strings/functions/indent.md
                   - kebabCase: api/utils/strings/functions/kebabCase.md
+                  - lastNChars: api/utils/strings/functions/lastNChars.md
+                  - lastNWords: api/utils/strings/functions/lastNWords.md
                   - limitBlankLines: api/utils/strings/functions/limitBlankLines.md
                   - lowerCase: api/utils/strings/functions/lowerCase.md
                   - pad: api/utils/strings/functions/pad.md
@@ -102,6 +106,7 @@ nav:
                   - padRight: api/utils/strings/functions/padRight.md
                   - pascalCase: api/utils/strings/functions/pascalCase.md
                   - pluralize: api/utils/strings/functions/pluralize.md
+                  - slugify: api/utils/strings/functions/slugify.md
                   - snakeCase: api/utils/strings/functions/snakeCase.md
                   - trim: api/utils/strings/functions/trim.md
                   - trimEnd: api/utils/strings/functions/trimEnd.md
