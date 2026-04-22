@@ -61,6 +61,7 @@
     "dist",
     "tsconfig.app.base.json",
     "tsconfig.test.base.json",
+    "env.d.ts",
     "README.md",
     "LICENSE"
   ],
