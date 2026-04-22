@@ -14,17 +14,17 @@
  *
  * @example
  * ```ts
- * getTitle("# API Reference\n\nGenerated docs");
+ * title("# API Reference\n\nGenerated docs");
  * // "API Reference"
  * ```
  *
  * @example
  * ```ts
- * getTitle("No heading here");
+ * title("No heading here");
  * // "Untitled"
  * ```
  */
-export function getTitle(content: string): string {
+export function title(content: string): string {
   const title = content.match(/^#+\s+(.*)$/m)?.[1];
   return title ? title.trim() : "Untitled";
 }
