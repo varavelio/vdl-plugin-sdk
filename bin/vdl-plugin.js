@@ -71,7 +71,10 @@ function printHelp() {
 
 Commands:
   check          Run TypeScript type checks without emitting files
-  build          Bundle the plugin from src/index.ts into dist/index.js`);
+  build          Bundle the plugin into a single file
+                 Options:
+                   --entry <path>   Entry file (default: src/index.ts)
+                   --out <path>     Output file (default: dist/index.js)`);
 }
 
 /**
@@ -103,19 +106,22 @@ function runCheck() {
 /**
  * Compiles and bundles the VDL plugin using esbuild.
  *
- * Takes `src/index.ts` as the primary entrypoint, applies standard bundling
- * configuration (CommonJS, ES2015, tree shaking), injects the universal `?raw`
- * plugin, and outputs a self-contained Javascript bundle at `dist/index.js`.
+ * Takes a specified entry point (defaulting to `src/index.ts`), applies standard
+ * bundling configuration (CommonJS, ES2015, tree shaking), injects the universal
+ * `?raw` plugin, and outputs a self-contained Javascript bundle at the specified
+ * output path (defaulting to `dist/index.js`).
  *
+ * @param {string} entryPath - The relative path to the entry file.
+ * @param {string} outPath - The relative path to the output bundle file.
  * @returns {Promise<void>}
  */
-async function runBuild() {
-  log.info(`Building VDL plugin...`);
+async function runBuild(entryPath, outPath) {
+  log.info(`Building VDL plugin from ${entryPath} to ${outPath}...`);
 
   try {
     await esbuild.build({
-      entryPoints: [resolve(process.cwd(), "src/index.ts")],
-      outfile: resolve(process.cwd(), "dist/index.js"),
+      entryPoints: [resolve(process.cwd(), entryPath)],
+      outfile: resolve(process.cwd(), outPath),
       format: "cjs",
       platform: "neutral",
       target: "es2015",
@@ -126,7 +132,7 @@ async function runBuild() {
       plugins: [universalRawPlugin],
     });
 
-    log.ok("Plugin built successfully at dist/index.js.");
+    log.ok(`Plugin built successfully at ${outPath}.`);
   } catch (error) {
     log.error("Failed to build the plugin.");
     if (error instanceof Error && error.message) {
@@ -139,7 +145,20 @@ async function runBuild() {
 if (command === "check") {
   runCheck();
 } else if (command === "build") {
-  runBuild();
+  let entry = "src/index.ts";
+  let out = "dist/index.js";
+
+  for (let i = 1; i < args.length; i++) {
+    if (args[i] === "--entry" && args[i + 1]) {
+      entry = args[i + 1];
+      i++;
+    } else if (args[i] === "--out" && args[i + 1]) {
+      out = args[i + 1];
+      i++;
+    }
+  }
+
+  runBuild(entry, out);
 } else {
   if (command) {
     log.error(`Unknown command: ${command}`);
