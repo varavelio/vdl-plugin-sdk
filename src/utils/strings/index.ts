@@ -2,6 +2,8 @@ export * from "./camel-case";
 export * from "./dedent";
 export * from "./ensure-prefix";
 export * from "./ensure-suffix";
+export * from "./escape-html";
+export * from "./escape-script-tag";
 export * from "./fuzzy-search";
 export * from "./indent";
 export * from "./kebab-case";
