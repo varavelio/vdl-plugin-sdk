@@ -522,6 +522,21 @@ function createStringSuites(): SmokeSuite[] {
             );
           },
         },
+        {
+          name: "escapes string characters",
+          run: () => {
+            assertEqual(
+              strings.escapeHtml("<script>"),
+              "&lt;script&gt;",
+              "escapeHtml output",
+            );
+            assertEqual(
+              strings.escapeScriptTag("</script>"),
+              "\\u003c/script\\u003e",
+              "escapeScriptTag output",
+            );
+          },
+        },
       ],
     },
   ];
