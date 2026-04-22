@@ -1,4 +1,4 @@
-/// <reference path="./env.d.ts" />
+import "./raw-env";
 
 export * from "./define-plugin";
 export * from "./errors";
