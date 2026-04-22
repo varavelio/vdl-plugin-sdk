@@ -91,6 +91,8 @@ nav:
                   - dedent: api/utils/strings/functions/dedent.md
                   - ensurePrefix: api/utils/strings/functions/ensurePrefix.md
                   - ensureSuffix: api/utils/strings/functions/ensureSuffix.md
+                  - escapeHtml: api/utils/strings/functions/escapeHtml.md
+                  - escapeScriptTag: api/utils/strings/functions/escapeScriptTag.md
                   - fuzzySearch: api/utils/strings/functions/fuzzySearch.md
                   - indent: api/utils/strings/functions/indent.md
                   - kebabCase: api/utils/strings/functions/kebabCase.md
