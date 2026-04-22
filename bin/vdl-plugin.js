@@ -1,8 +1,16 @@
 #!/usr/bin/env node
 
+/**
+ * VDL Plugin CLI
+ *
+ * Provides command-line utilities for building and type-checking VDL plugins.
+ * Uses esbuild to bundle plugins into a single CommonJS file and tsc for type-checking.
+ */
+
 import { execFileSync } from "node:child_process";
+import fs from "node:fs";
 import { createRequire } from "node:module";
-import { resolve } from "node:path";
+import { isAbsolute, resolve } from "node:path";
 import * as esbuild from "esbuild";
 
 const require = createRequire(import.meta.url);
@@ -20,6 +28,44 @@ const log = {
   error: (msg) => console.error(`${RED}[✗]${RESET} ${msg}`),
 };
 
+/**
+ * esbuild plugin to universally handle `?raw` imports.
+ *
+ * Intercepts any import path ending in `?raw`, resolves its true absolute path
+ * on the filesystem, and forces esbuild to load its content strictly as plaintext
+ * (using the 'text' loader). This allows plugins to easily bundle raw files like
+ * templates, SQL queries, or HTML without additional loaders.
+ *
+ * @type {import('esbuild').Plugin}
+ */
+const universalRawPlugin = {
+  name: "universal-raw",
+  setup(build) {
+    build.onResolve({ filter: /\?raw$/ }, (args) => {
+      const cleanPath = args.path.replace(/\?raw$/, "");
+      const absolutePath = isAbsolute(cleanPath)
+        ? cleanPath
+        : resolve(args.resolveDir, cleanPath);
+
+      return {
+        path: absolutePath,
+        namespace: "raw-file",
+      };
+    });
+
+    build.onLoad({ filter: /.*/, namespace: "raw-file" }, (args) => {
+      const text = fs.readFileSync(args.path, "utf8");
+      return {
+        contents: text,
+        loader: "text",
+      };
+    });
+  },
+};
+
+/**
+ * Prints the available CLI commands and options to standard output.
+ */
 function printHelp() {
   console.log(`Usage: vdl-plugin <command> [options]
 
@@ -28,6 +74,13 @@ Commands:
   build          Bundle the plugin from src/index.ts into dist/index.js`);
 }
 
+/**
+ * Executes a full TypeScript type check across the plugin's source code and tests.
+ *
+ * Uses the locally installed `tsc` compiler via `node:child_process` and builds
+ * the project based on the top-level `tsconfig.json`. This acts as a strict verification
+ * step before compiling or publishing a plugin.
+ */
 function runCheck() {
   log.info("Running TypeScript type checks...");
 
@@ -47,11 +100,20 @@ function runCheck() {
   }
 }
 
-function runBuild() {
+/**
+ * Compiles and bundles the VDL plugin using esbuild.
+ *
+ * Takes `src/index.ts` as the primary entrypoint, applies standard bundling
+ * configuration (CommonJS, ES2015, tree shaking), injects the universal `?raw`
+ * plugin, and outputs a self-contained Javascript bundle at `dist/index.js`.
+ *
+ * @returns {Promise<void>}
+ */
+async function runBuild() {
   log.info(`Building VDL plugin...`);
 
   try {
-    esbuild.buildSync({
+    await esbuild.build({
       entryPoints: [resolve(process.cwd(), "src/index.ts")],
       outfile: resolve(process.cwd(), "dist/index.js"),
       format: "cjs",
@@ -61,6 +123,7 @@ function runBuild() {
       minify: false,
       keepNames: true,
       treeShaking: true,
+      plugins: [universalRawPlugin],
     });
 
     log.ok("Plugin built successfully at dist/index.js.");
