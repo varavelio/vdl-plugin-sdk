@@ -245,6 +245,11 @@ function createStringSuites(): SmokeSuite[] {
               "HTTP-SERVER-URL",
               "kebabCase uppercase output",
             );
+            assertEqual(
+              strings.slugify("Canción Número 1"),
+              "cancion-numero-1",
+              "slugify output",
+            );
           },
         },
         {
@@ -398,6 +403,41 @@ function createStringSuites(): SmokeSuite[] {
               strings.padRight("cat", 8, "_-"),
               "cat_-_-_",
               "padRight output",
+            );
+          },
+        },
+      ],
+    },
+    {
+      name: "strings.truncate",
+      checks: [
+        {
+          name: "truncates by characters from both ends",
+          run: () => {
+            assertEqual(
+              strings.firstNChars("Hello world", 5),
+              "Hello...",
+              "firstNChars output",
+            );
+            assertEqual(
+              strings.lastNChars("Hello world", 5, false),
+              "world",
+              "lastNChars output",
+            );
+          },
+        },
+        {
+          name: "truncates by normalized words from both ends",
+          run: () => {
+            assertEqual(
+              strings.firstNWords("HTTPServer_URL-v2", 2),
+              "HTTP Server...",
+              "firstNWords output",
+            );
+            assertEqual(
+              strings.lastNWords("HTTPServer_URL-v2", 2, false),
+              "URL v2",
+              "lastNWords output",
             );
           },
         },
