@@ -51,7 +51,8 @@
       "default": "./dist/testing/index.js"
     },
     "./tsconfig.app.base.json": "./tsconfig.app.base.json",
-    "./tsconfig.test.base.json": "./tsconfig.test.base.json"
+    "./tsconfig.test.base.json": "./tsconfig.test.base.json",
+    "./env.d.ts": "./env.d.ts"
   },
   "files": [
     "bin",

@@ -54,7 +54,6 @@ nav:
               - PluginOutputFile: api/core/type-aliases/PluginOutputFile.md
               - Position: api/core/type-aliases/Position.md
               - PrimitiveType: api/core/type-aliases/PrimitiveType.md
-              - RuntimeConsole: api/core/type-aliases/RuntimeConsole.md
               - TopLevelDoc: api/core/type-aliases/TopLevelDoc.md
               - TypeDef: api/core/type-aliases/TypeDef.md
               - TypeKind: api/core/type-aliases/TypeKind.md
