@@ -69,6 +69,7 @@ const utilityOrder = [
   "functions",
   "maps",
   "math",
+  "markdown",
   "objects",
   "sets",
   "paths",
