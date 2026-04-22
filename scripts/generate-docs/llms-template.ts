@@ -134,10 +134,35 @@ Use the bundled binary in scripts or with \`npx\`:
 \`\`\`bash
 npx vdl-plugin check
 npx vdl-plugin build
+
+# Or with custom entry/out paths:
+npx vdl-plugin build --entry src/main.ts --out dist/bundle.js
 \`\`\`
 
 - \`check\` runs TypeScript without emitting files.
-- \`build\` bundles the required \`src/index.ts\` entry into \`dist/index.js\`.
+- \`build\` bundles the required \`src/index.ts\` entry into \`dist/index.js\` by default. You can override these defaults using the \`--entry <path>\` and \`--out <path>\` options.
+
+## Importing Raw Files
+
+The SDK's builder includes out-of-the-box support for importing files as raw plaintext strings. This is extremely useful for bundling templates, HTML, or SQL queries directly into your plugin without needing the \`fs\` module at runtime.
+
+Simply append \`?raw\` to any relative import path:
+
+\`\`\`ts
+import { definePlugin } from "@varavel/vdl-plugin-sdk";
+import query from "./query.sql?raw";
+
+export const generate = definePlugin((input) => {
+  return {
+    files: [
+      {
+        path: "output.sql",
+        content: query,
+      },
+    ],
+  };
+});
+\`\`\`
 
 ## Error handling
 
