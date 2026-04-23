@@ -1,1 +1,1 @@
-export * from "./vdl";
+export * from "./vdl/vdl";

@@ -10,8 +10,8 @@ import type {
   TopLevelDoc,
   TypeDef,
   TypeRef,
-} from "../../core/types";
-import { indent } from "../strings/indent";
+} from "../../../core/types";
+import { indent } from "../../strings/indent";
 
 /**
  * Supported VDL IR nodes that can be re-rendered into canonical VDL source.

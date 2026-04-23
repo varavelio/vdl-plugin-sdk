@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import * as irb from "../../testing";
-import { dedent } from "../strings/dedent";
-import { generateVdl } from "./index";
+import * as irb from "../../../testing";
+import { dedent } from "../../strings/dedent";
+import { generateVdl } from "./vdl";
 
 describe("generateVdl", () => {
   it("generates decorated type definitions with nested type references", () => {
