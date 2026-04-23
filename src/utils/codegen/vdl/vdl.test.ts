@@ -1,5 +1,5 @@
 import { execSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import * as irb from "../../../testing";
@@ -7,16 +7,32 @@ import { dedent } from "../../strings/dedent";
 import { generateVdl } from "./vdl";
 
 describe("generateVdlGolden", () => {
-  it("single file golden file test", () => {
-    const expectedPath = path.join(__dirname, "fixtures/single/expected.vdl");
-    const mainPath = path.join(__dirname, "fixtures/single/main.vdl");
+  const fixturesRootPath = path.join(__dirname, "fixtures");
+  const fixtureNames = readdirSync(fixturesRootPath, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .filter((entry) => {
+      const fixturePath = path.join(fixturesRootPath, entry.name);
+      return (
+        existsSync(path.join(fixturePath, "main.vdl")) &&
+        existsSync(path.join(fixturePath, "expected.vdl"))
+      );
+    })
+    .map((entry) => entry.name)
+    .sort();
 
-    const expected = readFileSync(expectedPath);
-    const ir = execSync(`npx vdl compile ${mainPath}`).toString();
-    const got = generateVdl(JSON.parse(ir)).trim();
+  for (const fixtureName of fixtureNames) {
+    it(`${fixtureName} matches expected.vdl`, () => {
+      const fixturePath = path.join(fixturesRootPath, fixtureName);
+      const expectedPath = path.join(fixturePath, "expected.vdl");
+      const mainPath = path.join(fixturePath, "main.vdl");
 
-    expect(got).toBe(expected.toString().trim());
-  });
+      const expected = readFileSync(expectedPath, "utf8").trim();
+      const ir = execSync(`npx vdl compile "${mainPath}"`).toString();
+      const got = generateVdl(JSON.parse(ir)).trim();
+
+      expect(got).toBe(expected);
+    });
+  }
 });
 
 describe("generateVdl", () => {
