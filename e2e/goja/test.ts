@@ -19,6 +19,7 @@ import {
 import type { LiteralValue } from "../../src/core/types";
 import * as irb from "../../src/testing";
 import * as arrays from "../../src/utils/arrays";
+import * as codegen from "../../src/utils/codegen";
 import * as crypto from "../../src/utils/crypto";
 import * as functionUtils from "../../src/utils/functions";
 import * as ir from "../../src/utils/ir";
@@ -810,6 +811,62 @@ function createIrSuites(): SmokeSuite[] {
                 irb.field("request", irb.namedType("ApiRequest")),
               ]),
               "hoistAnonymousTypes rewritten root type",
+            );
+          },
+        },
+      ],
+    },
+  ];
+}
+
+/**
+ * Creates smoke-test suites for VDL source generation helpers.
+ */
+function createCodegenSuites(): SmokeSuite[] {
+  return [
+    {
+      name: "codegen",
+      checks: [
+        {
+          name: "reconstructs canonical VDL from IR nodes",
+          run: () => {
+            const userType = irb.typeDef(
+              "User",
+              irb.objectType([
+                irb.field("id", irb.primitiveType("string")),
+                irb.field("tags", irb.arrayType(irb.primitiveType("string"))),
+              ]),
+            );
+            userType.position = irb.position({ line: 10, column: 1 });
+
+            const defaultStatus = irb.constantDef(
+              "defaultStatus",
+              irb.stringLiteral("active"),
+            );
+            defaultStatus.position = irb.position({ line: 20, column: 1 });
+
+            const schema = irb.schema({
+              docs: [
+                {
+                  position: irb.position({ line: 1, column: 1 }),
+                  content: "Schema overview",
+                },
+              ],
+              types: [userType],
+              constants: [defaultStatus],
+            });
+
+            assertEqual(
+              typeof codegen.generateVdl,
+              "function",
+              "generateVdl is exported",
+            );
+            assertEqual(
+              codegen.generateVdl(schema),
+              '"""Schema overview"""\n\n' +
+                "type User {\n  id string\n  tags string[]\n}\n\n" +
+                'const defaultStatus = "active"',
+              "generateVdl schema output",
             );
           },
         },
@@ -2856,6 +2913,7 @@ function createSuites(): SmokeSuite[] {
     ...createStringSuites(),
     ...createOptionSuites(),
     ...createIrSuites(),
+    ...createCodegenSuites(),
     ...createRpcSuites(),
     ...createPathSuites(),
     ...createYamlSuites(),
