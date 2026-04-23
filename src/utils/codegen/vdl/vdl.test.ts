@@ -1,7 +1,23 @@
+import { execSync } from "node:child_process";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import * as irb from "../../../testing";
 import { dedent } from "../../strings/dedent";
 import { generateVdl } from "./vdl";
+
+describe("generateVdlGolden", () => {
+  it("single file golden file test", () => {
+    const expectedPath = path.join(__dirname, "fixtures/single/expected.vdl");
+    const mainPath = path.join(__dirname, "fixtures/single/main.vdl");
+
+    const expected = readFileSync(expectedPath);
+    const ir = execSync(`npx vdl compile ${mainPath}`).toString();
+    const got = generateVdl(JSON.parse(ir)).trim();
+
+    expect(got).toBe(expected.toString().trim());
+  });
+});
 
 describe("generateVdl", () => {
   it("generates decorated type definitions with nested type references", () => {
@@ -44,14 +60,18 @@ describe("generateVdl", () => {
 
     expect(generateVdl(userType)).toBe(
       dedent(`
-      """Represents a user"""
+      """
+      Represents a user
+      """
       @entity
       @meta({
         owner "core"
         modes ["read" "write"]
       })
       type User {
-        """Unique identifier"""
+        """
+        Unique identifier
+        """
         @id
         id string
 
@@ -88,12 +108,16 @@ describe("generateVdl", () => {
 
     expect(generateVdl(statusEnum)).toBe(
       dedent(`
-      """Lifecycle state"""
+      """
+      Lifecycle state
+      """
       @stable
       enum Status {
         Active
 
-        """Used for soft deletion"""
+        """
+        Used for soft deletion
+        """
         @deprecated("Use Disabled")
         Archived = "archived"
       }
@@ -142,7 +166,9 @@ describe("generateVdl", () => {
 
     expect(generateVdl(configConstant)).toBe(
       dedent(`
-      """Default runtime configuration"""
+      """
+      Default runtime configuration
+      """
       @generated(true)
       const defaultConfig = {
         enabled true
@@ -186,7 +212,9 @@ describe("generateVdl", () => {
       ),
     ).toBe(
       dedent(`
-      """Schema overview"""
+      """
+      Schema overview
+      """
 
       enum Status {
         Active

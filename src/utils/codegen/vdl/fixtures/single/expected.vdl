@@ -1,0 +1,52 @@
+"""
+# Doc test
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.
+"""
+
+type PrimitiveTypes {
+  stringField string
+  intField int
+  floatField float
+  boolField bool
+}
+
+type PrimitiveTypesSpread {
+  stringField string
+  intField int
+  floatField float
+  boolField bool
+  spread bool
+}
+
+type CompositeTypes {
+  mapField map[PrimitiveTypes]
+  arrayField PrimitiveTypes[]
+
+  objField {
+    primitives PrimitiveTypes
+  }
+
+  complexField {
+    subField map[{
+      primitives map[PrimitiveTypes[]]
+    }[][]]
+  }[]
+}
+
+type CompositeTypesSpread {
+  mapField map[PrimitiveTypes]
+  arrayField PrimitiveTypes[]
+
+  objField {
+    primitives PrimitiveTypes
+  }
+
+  complexField {
+    subField map[{
+      primitives map[PrimitiveTypes[]]
+    }[][]]
+  }[]
+
+  spread bool
+}
