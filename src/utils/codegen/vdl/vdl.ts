@@ -307,7 +307,7 @@ function generateDecoratedBlock(
  * @returns A quoted VDL docstring.
  */
 function renderDocstring(content: string): string {
-  return `"""${content.replace(/"""/g, '\\"\\"\\"')}"""`;
+  return `"""\n${content.replace(/"""/g, '\\"\\"\\"')}\n"""`;
 }
 
 /**
