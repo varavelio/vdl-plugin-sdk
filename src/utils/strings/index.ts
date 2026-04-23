@@ -8,6 +8,7 @@ export * from "./first-n-chars";
 export * from "./first-n-words";
 export * from "./fuzzy-search";
 export * from "./indent";
+export * from "./join-lines";
 export * from "./kebab-case";
 export * from "./last-n-chars";
 export * from "./last-n-words";

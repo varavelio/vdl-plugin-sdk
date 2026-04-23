@@ -470,6 +470,21 @@ function createStringSuites(): SmokeSuite[] {
       ],
     },
     {
+      name: "strings.join-lines",
+      checks: [
+        {
+          name: "joins lines while filtering blank entries",
+          run: () => {
+            assertEqual(
+              strings.joinLines(["line1", "", "  ", "line2", "\t", "line3"]),
+              "line1\nline2\nline3",
+              "joinLines output",
+            );
+          },
+        },
+      ],
+    },
+    {
       name: "strings.pluralize",
       checks: [
         {

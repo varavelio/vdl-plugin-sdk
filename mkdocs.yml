@@ -96,6 +96,7 @@ nav:
                   - firstNWords: api/utils/strings/functions/firstNWords.md
                   - fuzzySearch: api/utils/strings/functions/fuzzySearch.md
                   - indent: api/utils/strings/functions/indent.md
+                  - joinLines: api/utils/strings/functions/joinLines.md
                   - kebabCase: api/utils/strings/functions/kebabCase.md
                   - lastNChars: api/utils/strings/functions/lastNChars.md
                   - lastNWords: api/utils/strings/functions/lastNWords.md
