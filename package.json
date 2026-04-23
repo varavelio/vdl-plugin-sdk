@@ -72,7 +72,7 @@
     "format": "npm run format:dprint && npm run format:biome",
     "format:dprint": "dprint fmt --config ./dprint.json --log-level warn",
     "format:biome": "biome format --write --config-path ./biome.json --log-level warn --no-errors-on-unmatched .",
-    "lint": "tsc --noEmit && npm run lint:dprint && npm run lint:biome",
+    "lint": "npx tsc -b tsconfig.json && npm run lint:dprint && npm run lint:biome",
     "lint:dprint": "dprint check --config ./dprint.json --log-level warn",
     "lint:biome": "biome check --config-path ./biome.json --log-level warn --no-errors-on-unmatched .",
     "test": "npm run test:unit && npm run test:e2e",

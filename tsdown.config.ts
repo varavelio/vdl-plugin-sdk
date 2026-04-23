@@ -32,7 +32,9 @@ export default defineConfig({
   checks: {
     toleratedTransform: false,
   },
-  dts: true,
+  dts: {
+    tsconfig: "./tsconfig.app.json",
+  },
   clean: true,
   sourcemap: true,
 });

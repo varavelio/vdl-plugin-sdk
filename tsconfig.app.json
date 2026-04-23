@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.app.base.json",
+  "compilerOptions": {
+    "types": [],
+    "paths": {
+      "@varavel/vdl-plugin-sdk": ["./src/core/index.ts"],
+      "@varavel/vdl-plugin-sdk/testing": ["./src/testing/index.ts"],
+      "@varavel/vdl-plugin-sdk/utils/*": ["./src/utils/*/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "e2e/**/*.ts"],
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/*.spec.ts",
+    "e2e/goja/run.ts",
+    "e2e/**/*.test.ts",
+    "e2e/**/fixtures/**"
+  ]
+}
