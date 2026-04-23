@@ -75,6 +75,7 @@ const utilityOrder = [
   "paths",
   "crypto",
   "predicates",
+  "codegen",
 ] as const;
 
 const groupOrder = [

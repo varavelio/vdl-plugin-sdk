@@ -298,6 +298,12 @@ nav:
                   - isSet: api/utils/predicates/functions/isSet.md
                   - isString: api/utils/predicates/functions/isString.md
                   - isUndefined: api/utils/predicates/functions/isUndefined.md
+          - Codegen:
+              - Overview: api/utils/codegen/index.md
+              - Functions:
+                  - generateVdl: api/utils/codegen/functions/generateVdl.md
+              - Type Aliases:
+                  - GenerateVdlNode: api/utils/codegen/type-aliases/GenerateVdlNode.md
       - Testing:
           - Overview: api/testing/index.md
           - Functions:
