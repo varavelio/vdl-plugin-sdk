@@ -1,0 +1,42 @@
+include "./shared/common.vdl"
+include "./shared/service.vdl"
+
+// Standalone external documentation is resolved before generation.
+""" ./docs/overview.md """
+
+""" ./docs/runtime-config.md """
+@runtime
+const runtimeConfig = {
+  ...baseConfig
+  currentStatus Status.Active
+  fallbackStatus ServiceStatus.Ready
+  retryLimit maxRetries
+  alias baseConfig
+  features featureFlags
+}
+
+"""
+Spread-based composed type.
+"""
+@rpc
+@meta({
+  owner "platform"
+  tier "gold"
+})
+type Service {
+  ...BaseRequest
+  ...SharedFields
+
+  response Envelope
+  config Settings
+}
+
+"""
+Enum spread composition.
+"""
+@audited
+enum AllStatus {
+  ...Status
+  ...ServiceStatus
+  Paused = "paused"
+}

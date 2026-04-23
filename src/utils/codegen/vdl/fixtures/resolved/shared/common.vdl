@@ -1,0 +1,30 @@
+""" ./docs/shared-top.md """
+
+""" ./docs/shared-fields.md """
+type SharedFields {
+  """ ./docs/shared-id.md """
+  sharedId string
+}
+
+""" ./docs/base-request.md """
+type BaseRequest {
+  requestId string
+}
+
+""" ./docs/base-config.md """
+const baseConfig = {
+  host "localhost"
+  retries [100 250]
+}
+
+const maxRetries = 5
+
+const featureFlags = ["read" "write"]
+
+""" ./docs/status.md """
+enum Status {
+  Active
+
+  """ ./docs/status-disabled.md """
+  Disabled = "disabled"
+}

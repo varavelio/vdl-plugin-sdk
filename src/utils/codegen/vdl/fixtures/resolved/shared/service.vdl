@@ -1,0 +1,17 @@
+include "./common.vdl"
+
+""" ./docs/envelope.md """
+type Envelope {
+  payload {
+    ok bool
+  }
+}
+
+type Settings {
+  tags string[]
+}
+
+""" ./docs/service-status.md """
+enum ServiceStatus {
+  Ready
+}

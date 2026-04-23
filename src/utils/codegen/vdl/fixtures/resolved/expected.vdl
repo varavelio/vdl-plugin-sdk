@@ -1,0 +1,147 @@
+"""
+# Resolved Overview
+
+Standalone external documentation is loaded into the IR before generation.
+"""
+
+"""
+# Runtime Config
+
+Resolved references and spreads should inline into canonical VDL.
+"""
+@runtime
+const runtimeConfig = {
+  host "localhost"
+  retries [100 250]
+  currentStatus "Active"
+  fallbackStatus "Ready"
+  retryLimit 5
+  alias {
+    host "localhost"
+    retries [100 250]
+  }
+  features ["read" "write"]
+}
+
+"""
+Spread-based composed type.
+"""
+@rpc
+@meta({
+  owner "platform"
+  tier "gold"
+})
+type Service {
+  requestId string
+
+  """
+  # Shared Id
+
+  Identifier copied into spread-expanded types.
+  """
+  sharedId string
+
+  response Envelope
+  config Settings
+}
+
+"""
+Enum spread composition.
+"""
+@audited
+enum AllStatus {
+  Active
+
+  """
+  # Disabled Status
+
+  This member uses external markdown documentation.
+  """
+  Disabled = "disabled"
+
+  Ready
+  Paused = "paused"
+}
+
+"""
+# Shared Top-Level Doc
+
+Definitions from included files are emitted after the entrypoint file.
+"""
+
+"""
+# Shared Fields
+
+Reusable request metadata.
+"""
+type SharedFields {
+  """
+  # Shared Id
+
+  Identifier copied into spread-expanded types.
+  """
+  sharedId string
+}
+
+"""
+# Base Request
+
+Shared request envelope.
+"""
+type BaseRequest {
+  requestId string
+}
+
+"""
+# Base Config
+
+This object is spread and referenced by entrypoint constants.
+"""
+const baseConfig = {
+  host "localhost"
+  retries [100 250]
+}
+
+const maxRetries = 5
+
+const featureFlags = ["read" "write"]
+
+"""
+# Status Enum
+
+String enum defined in an included file.
+"""
+enum Status {
+  Active
+
+  """
+  # Disabled Status
+
+  This member uses external markdown documentation.
+  """
+  Disabled = "disabled"
+}
+
+"""
+# Envelope
+
+Nested payload object.
+"""
+type Envelope {
+  payload {
+    ok bool
+  }
+}
+
+type Settings {
+  tags string[]
+}
+
+"""
+# Service Status
+
+Additional status values composed through enum spreads.
+"""
+enum ServiceStatus {
+  Ready
+}
