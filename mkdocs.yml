@@ -275,6 +275,7 @@ nav:
           - Crypto:
               - Overview: api/utils/crypto/index.md
               - Functions:
+                  - fingerprint: api/utils/crypto/functions/fingerprint.md
                   - hash: api/utils/crypto/functions/hash.md
           - Predicates:
               - Overview: api/utils/predicates/index.md
