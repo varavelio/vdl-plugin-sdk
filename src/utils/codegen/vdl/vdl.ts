@@ -20,7 +20,7 @@ import { indent } from "../../strings/indent";
  * not restore source features that are intentionally lost during analysis, such
  * as comments, includes, spreads, or reference-based constant values.
  */
-export type VdlNode =
+export type GenerateVdlNode =
   | Partial<IrSchema>
   | ConstantDef
   | EnumDef
@@ -46,7 +46,7 @@ type TopLevelNode = ConstantDef | EnumDef | TypeDef | TopLevelDoc;
  * @param node - Schema or top-level IR node to render.
  * @returns Valid VDL source for the provided node.
  */
-export function generateVdl(node: VdlNode): string {
+export function generateVdl(node: GenerateVdlNode): string {
   // Discriminate node type by presence of unique properties.
   // If no known properties are found, an empty string is returned.
   if ("entryPoint" in node) return generateSchema(node);
