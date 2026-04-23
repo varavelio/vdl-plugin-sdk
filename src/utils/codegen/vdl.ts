@@ -47,7 +47,7 @@ type TopLevelNode = ConstantDef | EnumDef | TypeDef | TopLevelDoc;
  * @returns Valid VDL source for the provided node.
  */
 export function generateVdl(node: VdlNode): string {
-  // Discriminate node type by precense of unique properties.
+  // Discriminate node type by presence of unique properties.
   // If no known properties are found, an empty string is returned.
   if ("entryPoint" in node) return generateSchema(node);
   if ("content" in node) return generateDoc(node);
@@ -307,7 +307,7 @@ function generateDecoratedBlock(
  * @returns A quoted VDL docstring.
  */
 function renderDocstring(content: string): string {
-  return `"""${content}"""`;
+  return `"""${content.replace(/"""/g, '\\"\\"\\"')}"""`;
 }
 
 /**
