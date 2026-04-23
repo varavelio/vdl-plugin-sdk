@@ -28,6 +28,19 @@ export type GenerateVdlNode =
   | TopLevelDoc;
 
 /**
+ * Configures optional behaviors for VDL source reconstruction.
+ */
+export type GenerateVdlOptions = {
+  /**
+   * Controls how docstrings are emitted in the generated VDL source.
+   *
+   * - `"preserve"` (default): emits all available docstrings.
+   * - `"strip"`: omits all docstrings from output.
+   */
+  docstrings?: "preserve" | "strip";
+};
+
+/**
  * Top-level IR nodes that may be emitted as part of a schema or independently.
  */
 type TopLevelNode = ConstantDef | EnumDef | TypeDef | TopLevelDoc;
@@ -44,16 +57,20 @@ type TopLevelNode = ConstantDef | EnumDef | TypeDef | TopLevelDoc;
  * of nodes within each collection.
  *
  * @param node - Schema or top-level IR node to render.
+ * @param options - Optional rendering configuration.
  * @returns Valid VDL source for the provided node.
  */
-export function generateVdl(node: GenerateVdlNode): string {
+export function generateVdl(
+  node: GenerateVdlNode,
+  options: GenerateVdlOptions = {},
+): string {
   // Discriminate node type by presence of unique properties.
   // If no known properties are found, an empty string is returned.
-  if ("entryPoint" in node) return generateSchema(node);
-  if ("content" in node) return generateDoc(node);
-  if ("typeRef" in node) return generateType(node);
-  if ("members" in node) return generateEnum(node);
-  if ("value" in node) return generateConstant(node);
+  if ("entryPoint" in node) return generateSchema(node, options);
+  if ("content" in node) return generateDoc(node, options);
+  if ("typeRef" in node) return generateType(node, options);
+  if ("members" in node) return generateEnum(node, options);
+  if ("value" in node) return generateConstant(node, options);
   return "";
 }
 
@@ -66,7 +83,10 @@ export function generateVdl(node: GenerateVdlNode): string {
  * @param schema - Partial IR schema to generate. Missing collections are treated as empty.
  * @returns Valid VDL source for the provided schema.
  */
-function generateSchema(schema: Partial<IrSchema>): string {
+function generateSchema(
+  schema: Partial<IrSchema>,
+  options: GenerateVdlOptions,
+): string {
   // Flatten all top-level nodes into a single array for sorting and rendering
   const nodes: TopLevelNode[] = [
     ...(schema.docs ?? []),
@@ -90,7 +110,7 @@ function generateSchema(schema: Partial<IrSchema>): string {
         );
       })
       // Generate VDL for each node
-      .map(({ currentNode }) => generateVdl(currentNode))
+      .map(({ currentNode }) => generateVdl(currentNode, options))
       // Filter out empty nodes
       .filter((source) => source.trim().length > 0)
       // Join nodes with an empty line in between
@@ -166,7 +186,11 @@ function compareFilePaths(
  * @param doc - Top-level doc node to render.
  * @returns A VDL docstring literal containing the provided content.
  */
-function generateDoc(doc: TopLevelDoc): string {
+function generateDoc(doc: TopLevelDoc, options: GenerateVdlOptions): string {
+  if (!shouldEmitDocstrings(options)) {
+    return "";
+  }
+
   return renderDocstring(doc.content);
 }
 
@@ -179,11 +203,12 @@ function generateDoc(doc: TopLevelDoc): string {
  * @param typeDef - Type definition to render.
  * @returns VDL source for the provided type definition.
  */
-function generateType(typeDef: TypeDef): string {
+function generateType(typeDef: TypeDef, options: GenerateVdlOptions): string {
   return generateDecoratedBlock(
     typeDef.doc,
     typeDef.annotations,
-    `type ${typeDef.name} ${generateTypeRef(typeDef.typeRef)}`,
+    `type ${typeDef.name} ${generateTypeRef(typeDef.typeRef, options)}`,
+    options,
   );
 }
 
@@ -197,15 +222,16 @@ function generateType(typeDef: TypeDef): string {
  * @param enumDef - Enum definition to render.
  * @returns VDL source for the provided enum definition.
  */
-function generateEnum(enumDef: EnumDef): string {
+function generateEnum(enumDef: EnumDef, options: GenerateVdlOptions): string {
   const members = enumDef.members.map((member) =>
-    generateEnumMember(member, enumDef.enumType),
+    generateEnumMember(member, enumDef.enumType, options),
   );
 
   return generateDecoratedBlock(
     enumDef.doc,
     enumDef.annotations,
     `enum ${enumDef.name} ${generateBlockBody(members)}`,
+    options,
   );
 }
 
@@ -222,6 +248,7 @@ function generateEnum(enumDef: EnumDef): string {
 function generateEnumMember(
   enumMember: EnumMember,
   enumType: EnumDef["enumType"],
+  options: GenerateVdlOptions,
 ): string {
   const assignment = shouldOmitEnumValue(enumMember, enumType)
     ? enumMember.name
@@ -231,6 +258,7 @@ function generateEnumMember(
     enumMember.doc,
     enumMember.annotations,
     assignment,
+    options,
   );
 }
 
@@ -264,11 +292,15 @@ function shouldOmitEnumValue(
  * @param constantDef - Constant definition to render.
  * @returns VDL source for the provided constant definition.
  */
-function generateConstant(constantDef: ConstantDef): string {
+function generateConstant(
+  constantDef: ConstantDef,
+  options: GenerateVdlOptions,
+): string {
   return generateDecoratedBlock(
     constantDef.doc,
     constantDef.annotations,
     `const ${constantDef.name} = ${generateLiteral(constantDef.value)}`,
+    options,
   );
 }
 
@@ -284,10 +316,11 @@ function generateDecoratedBlock(
   doc: string | undefined,
   annotations: Annotation[],
   declaration: string,
+  options: GenerateVdlOptions,
 ): string {
   const lines: string[] = [];
 
-  if (doc !== undefined) {
+  if (doc !== undefined && shouldEmitDocstrings(options)) {
     lines.push(renderDocstring(doc));
   }
 
@@ -331,9 +364,13 @@ function generateAnnotation(annotation: Annotation): string {
  * shapes, returning an empty string when the reference is incomplete.
  *
  * @param typeRef - Type reference to render.
+ * @param options - Optional rendering configuration.
  * @returns VDL source for the provided type reference.
  */
-function generateTypeRef(typeRef: TypeRef): string {
+function generateTypeRef(
+  typeRef: TypeRef,
+  options: GenerateVdlOptions,
+): string {
   switch (typeRef.kind) {
     case "primitive":
       return typeRef.primitiveName ?? "";
@@ -345,13 +382,13 @@ function generateTypeRef(typeRef: TypeRef): string {
       return appendArrayDimensions(
         typeRef.arrayType === undefined
           ? ""
-          : generateTypeRef(typeRef.arrayType),
+          : generateTypeRef(typeRef.arrayType, options),
         typeRef.arrayDims,
       );
     case "map":
-      return `map[${typeRef.mapType === undefined ? "" : generateTypeRef(typeRef.mapType)}]`;
+      return `map[${typeRef.mapType === undefined ? "" : generateTypeRef(typeRef.mapType, options)}]`;
     case "object":
-      return generateObjectType(typeRef.objectFields ?? []);
+      return generateObjectType(typeRef.objectFields ?? [], options);
     default:
       return "";
   }
@@ -375,16 +412,27 @@ function appendArrayDimensions(baseType: string, arrayDims = 1): string {
  * @param fields - Object fields to render.
  * @returns VDL block syntax for the object shape.
  */
-function generateObjectType(fields: Field[]): string {
+function generateObjectType(
+  fields: Field[],
+  options: GenerateVdlOptions,
+): string {
   const fieldBlocks = fields.map((field) =>
     generateDecoratedBlock(
       field.doc,
       field.annotations,
-      `${field.name}${field.optional ? "?" : ""} ${generateTypeRef(field.typeRef)}`,
+      `${field.name}${field.optional ? "?" : ""} ${generateTypeRef(field.typeRef, options)}`,
+      options,
     ),
   );
 
   return generateBlockBody(fieldBlocks);
+}
+
+/**
+ * Indicates whether docstrings must be emitted in the final source.
+ */
+function shouldEmitDocstrings(options: GenerateVdlOptions): boolean {
+  return options.docstrings !== "strip";
 }
 
 /**

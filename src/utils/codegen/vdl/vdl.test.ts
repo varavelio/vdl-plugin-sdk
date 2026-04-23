@@ -242,4 +242,70 @@ describe("generateVdl", () => {
     `),
     );
   });
+
+  it("strips docstrings when docstrings mode is set to strip", () => {
+    const typeDef = irb.typeDef(
+      "User",
+      irb.objectType([
+        irb.field("id", irb.primitiveType("string"), {
+          doc: "Field documentation",
+        }),
+      ]),
+      {
+        doc: "Type documentation",
+        annotations: [irb.annotation("entity")],
+      },
+    );
+    typeDef.position = irb.position({ line: 10, column: 1 });
+
+    const enumDef = irb.enumDef(
+      "Status",
+      "string",
+      [
+        irb.enumMember("Active", irb.stringLiteral("Active"), {
+          doc: "Member documentation",
+        }),
+      ],
+      {
+        doc: "Enum documentation",
+      },
+    );
+    enumDef.position = irb.position({ line: 20, column: 1 });
+
+    const constantDef = irb.constantDef(
+      "apiVersion",
+      irb.stringLiteral("1.0.0"),
+      {
+        doc: "Constant documentation",
+      },
+    );
+    constantDef.position = irb.position({ line: 30, column: 1 });
+
+    const schema = irb.schema({
+      docs: [
+        {
+          position: irb.position({ line: 1, column: 1 }),
+          content: "Standalone documentation",
+        },
+      ],
+      types: [typeDef],
+      enums: [enumDef],
+      constants: [constantDef],
+    });
+
+    expect(generateVdl(schema, { docstrings: "strip" })).toBe(
+      dedent(`
+      @entity
+      type User {
+        id string
+      }
+
+      enum Status {
+        Active
+      }
+
+      const apiVersion = "1.0.0"
+    `),
+    );
+  });
 });

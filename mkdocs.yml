@@ -305,6 +305,7 @@ nav:
                   - generateVdl: api/utils/codegen/functions/generateVdl.md
               - Type Aliases:
                   - GenerateVdlNode: api/utils/codegen/type-aliases/GenerateVdlNode.md
+                  - GenerateVdlOptions: api/utils/codegen/type-aliases/GenerateVdlOptions.md
       - Testing:
           - Overview: api/testing/index.md
           - Functions:

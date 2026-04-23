@@ -870,6 +870,38 @@ function createCodegenSuites(): SmokeSuite[] {
             );
           },
         },
+        {
+          name: "can strip docstrings from generated VDL",
+          run: () => {
+            const userType = irb.typeDef(
+              "User",
+              irb.objectType([
+                irb.field("id", irb.primitiveType("string"), {
+                  doc: "Field documentation",
+                }),
+              ]),
+              {
+                doc: "Type documentation",
+              },
+            );
+
+            const schema = irb.schema({
+              docs: [
+                {
+                  position: irb.position({ line: 1, column: 1 }),
+                  content: "Standalone documentation",
+                },
+              ],
+              types: [userType],
+            });
+
+            assertEqual(
+              codegen.generateVdl(schema, { docstrings: "strip" }),
+              "type User {\n  id string\n}",
+              "generateVdl stripped-docstrings output",
+            );
+          },
+        },
       ],
     },
   ];
