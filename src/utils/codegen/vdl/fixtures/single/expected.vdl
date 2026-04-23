@@ -1,52 +1,115 @@
 """
-# Doc test
+# Inline Top-Level Doc
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.
+This doc stays as a standalone node.
 """
 
-type PrimitiveTypes {
-  stringField string
-  intField int
-  floatField float
-  boolField bool
-}
+"""
+Scalar alias.
+"""
+@schema
+@meta({
+  owner "platform"
+  tags ["core" "single-file"]
+  enabled true
+})
+type UserId string
 
-type PrimitiveTypesSpread {
-  stringField string
-  intField int
-  floatField float
-  boolField bool
-  spread bool
-}
+type ExternalUserId UserId
 
-type CompositeTypes {
-  mapField map[PrimitiveTypes]
-  arrayField PrimitiveTypes[]
+type MultiMatrix float[][]
 
-  objField {
-    primitives PrimitiveTypes
+type UserMap map[UserId]
+
+"""
+Nested object and field syntax.
+"""
+@entity
+@route("users.list")
+@modes(["read" "write"])
+type User {
+  """
+  Unique identifier
+  """
+  @id
+  id UserId
+
+  externalId ExternalUserId
+  aliases string[]
+  matrix float[][]
+  labels? map[string]
+  status Status
+  priority Priority
+
+  profile {
+    nickname string
+
+    stats {
+      loginCount int
+      successRate float
+    }
   }
 
-  complexField {
-    subField map[{
-      primitives map[PrimitiveTypes[]]
-    }[][]]
-  }[]
+  transport? map[{
+    endpoint string
+    secure bool
+  }[]]
 }
 
-type CompositeTypesSpread {
-  mapField map[PrimitiveTypes]
-  arrayField PrimitiveTypes[]
-
-  objField {
-    primitives PrimitiveTypes
+"""
+Runtime feature flags.
+"""
+const defaultConfig = {
+  name "sdk"
+  enabled true
+  retryBackoffMs [100 250 500]
+  sampleRate 3.14
+  emptyList []
+  emptyObject {}
+  workers [
+    {
+      name "alpha"
+      secure true
+    }
+    {
+      name "beta"
+      secure false
+    }
+  ]
+  profile {
+    owner "core"
+    channels ["email" "sms"]
   }
+}
 
-  complexField {
-    subField map[{
-      primitives map[PrimitiveTypes[]]
-    }[][]]
-  }[]
+@flag
+const maxRetries = 5
 
-  spread bool
+const sampleRate = 0.25
+
+const featureEnabled = false
+
+const serviceName = "billing"
+
+"""
+Lifecycle status.
+"""
+@stable
+enum Status {
+  Active
+
+  """
+  Used for soft deletion
+  """
+  @deprecated("Use Disabled")
+  Archived = "archived"
+
+  Disabled = "disabled"
+}
+
+@ordinal
+enum Priority {
+  Low = 1
+  Medium = 2
+  High = 3
 }
