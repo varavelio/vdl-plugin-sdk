@@ -863,7 +863,7 @@ function createCodegenSuites(): SmokeSuite[] {
             );
             assertEqual(
               codegen.generateVdl(schema),
-              '"""Schema overview"""\n\n' +
+              '"""\nSchema overview\n"""\n\n' +
                 "type User {\n  id string\n  tags string[]\n}\n\n" +
                 'const defaultStatus = "active"',
               "generateVdl schema output",
@@ -1173,6 +1173,27 @@ function createCryptoSuites(): SmokeSuite[] {
             const right = crypto.hash({ foo: "baz" });
 
             assert(left !== right, "crypto.hash distinct output");
+          },
+        },
+        {
+          name: "creates stable short fingerprints",
+          run: () => {
+            const first = crypto.fingerprint({ foo: "bar", nested: [1, 2, 3] });
+            const second = crypto.fingerprint({
+              foo: "bar",
+              nested: [1, 2, 3],
+            });
+
+            assertEqual(
+              first,
+              second,
+              "crypto.fingerprint deterministic output",
+            );
+            assertEqual(
+              first,
+              "1c1b0e66",
+              "crypto.fingerprint expected output",
+            );
           },
         },
       ],
