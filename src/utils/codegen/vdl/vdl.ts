@@ -36,8 +36,18 @@ export type GenerateVdlOptions = {
    *
    * - `"preserve"` (default): emits all available docstrings.
    * - `"strip"`: omits all docstrings from output.
+   * - `"strip-first"`: omits only the first encountered docstring.
+   * - `"keep-first"`: emits only the first encountered docstring.
    */
-  docstrings?: "preserve" | "strip";
+  docstrings?: "preserve" | "strip" | "strip-first" | "keep-first";
+};
+
+/**
+ * Internal state shared during one generation call.
+ */
+type GenerateVdlContext = {
+  docstringsMode: NonNullable<GenerateVdlOptions["docstrings"]>;
+  encounteredDocstrings: number;
 };
 
 /**
@@ -64,13 +74,28 @@ export function generateVdl(
   node: GenerateVdlNode,
   options: GenerateVdlOptions = {},
 ): string {
+  const context: GenerateVdlContext = {
+    docstringsMode: options.docstrings ?? "preserve",
+    encounteredDocstrings: 0,
+  };
+
+  return generateVdlWithContext(node, context);
+}
+
+/**
+ * Recursively renders VDL while sharing mutable generation context.
+ */
+function generateVdlWithContext(
+  node: GenerateVdlNode,
+  context: GenerateVdlContext,
+): string {
   // Discriminate node type by presence of unique properties.
   // If no known properties are found, an empty string is returned.
-  if ("entryPoint" in node) return generateSchema(node, options);
-  if ("content" in node) return generateDoc(node, options);
-  if ("typeRef" in node) return generateType(node, options);
-  if ("members" in node) return generateEnum(node, options);
-  if ("value" in node) return generateConstant(node, options);
+  if ("entryPoint" in node) return generateSchema(node, context);
+  if ("content" in node) return generateDoc(node, context);
+  if ("typeRef" in node) return generateType(node, context);
+  if ("members" in node) return generateEnum(node, context);
+  if ("value" in node) return generateConstant(node, context);
   return "";
 }
 
@@ -85,7 +110,7 @@ export function generateVdl(
  */
 function generateSchema(
   schema: Partial<IrSchema>,
-  options: GenerateVdlOptions,
+  context: GenerateVdlContext,
 ): string {
   // Flatten all top-level nodes into a single array for sorting and rendering
   const nodes: TopLevelNode[] = [
@@ -110,7 +135,7 @@ function generateSchema(
         );
       })
       // Generate VDL for each node
-      .map(({ currentNode }) => generateVdl(currentNode, options))
+      .map(({ currentNode }) => generateVdlWithContext(currentNode, context))
       // Filter out empty nodes
       .filter((source) => source.trim().length > 0)
       // Join nodes with an empty line in between
@@ -186,12 +211,14 @@ function compareFilePaths(
  * @param doc - Top-level doc node to render.
  * @returns A VDL docstring literal containing the provided content.
  */
-function generateDoc(doc: TopLevelDoc, options: GenerateVdlOptions): string {
-  if (!shouldEmitDocstrings(options)) {
+function generateDoc(doc: TopLevelDoc, context: GenerateVdlContext): string {
+  const renderedDocstring = renderDocstringByMode(doc.content, context);
+
+  if (renderedDocstring === undefined) {
     return "";
   }
 
-  return renderDocstring(doc.content);
+  return renderedDocstring;
 }
 
 /**
@@ -203,12 +230,12 @@ function generateDoc(doc: TopLevelDoc, options: GenerateVdlOptions): string {
  * @param typeDef - Type definition to render.
  * @returns VDL source for the provided type definition.
  */
-function generateType(typeDef: TypeDef, options: GenerateVdlOptions): string {
+function generateType(typeDef: TypeDef, context: GenerateVdlContext): string {
   return generateDecoratedBlock(
     typeDef.doc,
     typeDef.annotations,
-    `type ${typeDef.name} ${generateTypeRef(typeDef.typeRef, options)}`,
-    options,
+    `type ${typeDef.name} ${generateTypeRef(typeDef.typeRef, context)}`,
+    context,
   );
 }
 
@@ -222,16 +249,16 @@ function generateType(typeDef: TypeDef, options: GenerateVdlOptions): string {
  * @param enumDef - Enum definition to render.
  * @returns VDL source for the provided enum definition.
  */
-function generateEnum(enumDef: EnumDef, options: GenerateVdlOptions): string {
+function generateEnum(enumDef: EnumDef, context: GenerateVdlContext): string {
   const members = enumDef.members.map((member) =>
-    generateEnumMember(member, enumDef.enumType, options),
+    generateEnumMember(member, enumDef.enumType, context),
   );
 
   return generateDecoratedBlock(
     enumDef.doc,
     enumDef.annotations,
     `enum ${enumDef.name} ${generateBlockBody(members)}`,
-    options,
+    context,
   );
 }
 
@@ -248,7 +275,7 @@ function generateEnum(enumDef: EnumDef, options: GenerateVdlOptions): string {
 function generateEnumMember(
   enumMember: EnumMember,
   enumType: EnumDef["enumType"],
-  options: GenerateVdlOptions,
+  context: GenerateVdlContext,
 ): string {
   const assignment = shouldOmitEnumValue(enumMember, enumType)
     ? enumMember.name
@@ -258,7 +285,7 @@ function generateEnumMember(
     enumMember.doc,
     enumMember.annotations,
     assignment,
-    options,
+    context,
   );
 }
 
@@ -294,13 +321,13 @@ function shouldOmitEnumValue(
  */
 function generateConstant(
   constantDef: ConstantDef,
-  options: GenerateVdlOptions,
+  context: GenerateVdlContext,
 ): string {
   return generateDecoratedBlock(
     constantDef.doc,
     constantDef.annotations,
     `const ${constantDef.name} = ${generateLiteral(constantDef.value)}`,
-    options,
+    context,
   );
 }
 
@@ -316,12 +343,16 @@ function generateDecoratedBlock(
   doc: string | undefined,
   annotations: Annotation[],
   declaration: string,
-  options: GenerateVdlOptions,
+  context: GenerateVdlContext,
 ): string {
   const lines: string[] = [];
 
-  if (doc !== undefined && shouldEmitDocstrings(options)) {
-    lines.push(renderDocstring(doc));
+  if (doc !== undefined) {
+    const renderedDocstring = renderDocstringByMode(doc, context);
+
+    if (renderedDocstring !== undefined) {
+      lines.push(renderedDocstring);
+    }
   }
 
   for (const annotation of annotations) {
@@ -369,7 +400,7 @@ function generateAnnotation(annotation: Annotation): string {
  */
 function generateTypeRef(
   typeRef: TypeRef,
-  options: GenerateVdlOptions,
+  context: GenerateVdlContext,
 ): string {
   switch (typeRef.kind) {
     case "primitive":
@@ -382,13 +413,13 @@ function generateTypeRef(
       return appendArrayDimensions(
         typeRef.arrayType === undefined
           ? ""
-          : generateTypeRef(typeRef.arrayType, options),
+          : generateTypeRef(typeRef.arrayType, context),
         typeRef.arrayDims,
       );
     case "map":
-      return `map[${typeRef.mapType === undefined ? "" : generateTypeRef(typeRef.mapType, options)}]`;
+      return `map[${typeRef.mapType === undefined ? "" : generateTypeRef(typeRef.mapType, context)}]`;
     case "object":
-      return generateObjectType(typeRef.objectFields ?? [], options);
+      return generateObjectType(typeRef.objectFields ?? [], context);
     default:
       return "";
   }
@@ -414,14 +445,14 @@ function appendArrayDimensions(baseType: string, arrayDims = 1): string {
  */
 function generateObjectType(
   fields: Field[],
-  options: GenerateVdlOptions,
+  context: GenerateVdlContext,
 ): string {
   const fieldBlocks = fields.map((field) =>
     generateDecoratedBlock(
       field.doc,
       field.annotations,
-      `${field.name}${field.optional ? "?" : ""} ${generateTypeRef(field.typeRef, options)}`,
-      options,
+      `${field.name}${field.optional ? "?" : ""} ${generateTypeRef(field.typeRef, context)}`,
+      context,
     ),
   );
 
@@ -429,10 +460,26 @@ function generateObjectType(
 }
 
 /**
- * Indicates whether docstrings must be emitted in the final source.
+ * Applies the configured docstring strategy and returns a rendered docstring
+ * when the current one should be emitted.
  */
-function shouldEmitDocstrings(options: GenerateVdlOptions): boolean {
-  return options.docstrings !== "strip";
+function renderDocstringByMode(
+  content: string,
+  context: GenerateVdlContext,
+): string | undefined {
+  const currentDocstringIndex = context.encounteredDocstrings;
+  context.encounteredDocstrings += 1;
+
+  switch (context.docstringsMode) {
+    case "strip":
+      return undefined;
+    case "strip-first":
+      return currentDocstringIndex === 0 ? undefined : renderDocstring(content);
+    case "keep-first":
+      return currentDocstringIndex === 0 ? renderDocstring(content) : undefined;
+    default:
+      return renderDocstring(content);
+  }
 }
 
 /**

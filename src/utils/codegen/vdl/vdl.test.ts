@@ -308,4 +308,80 @@ describe("generateVdl", () => {
     `),
     );
   });
+
+  it("strips only the first docstring when docstrings mode is set to strip-first", () => {
+    const schema = irb.schema({
+      docs: [
+        {
+          position: irb.position({ line: 1, column: 1 }),
+          content: "Top-level documentation",
+        },
+      ],
+      types: [
+        irb.typeDef(
+          "User",
+          irb.objectType([
+            irb.field("id", irb.primitiveType("string"), {
+              doc: "Field documentation",
+            }),
+          ]),
+          {
+            doc: "Type documentation",
+          },
+        ),
+      ],
+    });
+
+    expect(generateVdl(schema, { docstrings: "strip-first" })).toBe(
+      dedent(`
+      """
+      Type documentation
+      """
+      type User {
+        """
+        Field documentation
+        """
+        id string
+      }
+    `),
+    );
+  });
+
+  it("keeps only the first docstring when docstrings mode is set to keep-first", () => {
+    const schema = irb.schema({
+      docs: [
+        {
+          position: irb.position({ line: 1, column: 1 }),
+          content: "Top-level documentation",
+        },
+      ],
+      types: [
+        irb.typeDef(
+          "User",
+          irb.objectType([
+            irb.field("id", irb.primitiveType("string"), {
+              doc: "Field documentation",
+            }),
+          ]),
+          {
+            doc: "Type documentation",
+            annotations: [irb.annotation("entity")],
+          },
+        ),
+      ],
+    });
+
+    expect(generateVdl(schema, { docstrings: "keep-first" })).toBe(
+      dedent(`
+      """
+      Top-level documentation
+      """
+
+      @entity
+      type User {
+        id string
+      }
+    `),
+    );
+  });
 });
