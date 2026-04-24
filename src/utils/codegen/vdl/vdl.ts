@@ -212,7 +212,7 @@ function compareFilePaths(
  * @returns A VDL docstring literal containing the provided content.
  */
 function generateDoc(doc: TopLevelDoc, context: GenerateVdlContext): string {
-  const renderedDocstring = renderDocstringByMode(doc.content, context);
+  const renderedDocstring = renderDocstring(doc.content, context);
 
   if (renderedDocstring === undefined) {
     return "";
@@ -348,7 +348,7 @@ function generateDecoratedBlock(
   const lines: string[] = [];
 
   if (doc !== undefined) {
-    const renderedDocstring = renderDocstringByMode(doc, context);
+    const renderedDocstring = renderDocstring(doc, context);
 
     if (renderedDocstring !== undefined) {
       lines.push(renderedDocstring);
@@ -365,12 +365,40 @@ function generateDecoratedBlock(
 }
 
 /**
- * Wraps raw documentation text in VDL triple quotes.
+ * Wraps raw documentation text in VDL triple quotes and applies the configured
+ * docstring strategy when generation context is provided.
  *
  * @param content - Docstring content to render.
- * @returns A quoted VDL docstring.
+ * @param context - Optional generation context for docstring strategy.
+ * @returns A quoted VDL docstring, or undefined when it must be omitted.
  */
-function renderDocstring(content: string): string {
+function renderDocstring(
+  content: string,
+  context?: GenerateVdlContext,
+): string | undefined {
+  if (context !== undefined) {
+    const currentDocstringIndex = context.encounteredDocstrings;
+    context.encounteredDocstrings += 1;
+
+    if (context.docstringsMode === "strip") {
+      return undefined;
+    }
+
+    if (
+      context.docstringsMode === "strip-first" &&
+      currentDocstringIndex === 0
+    ) {
+      return undefined;
+    }
+
+    if (
+      context.docstringsMode === "keep-first" &&
+      currentDocstringIndex !== 0
+    ) {
+      return undefined;
+    }
+  }
+
   return `"""\n${content.replace(/"""/g, '\\"\\"\\"')}\n"""`;
 }
 
@@ -457,29 +485,6 @@ function generateObjectType(
   );
 
   return generateBlockBody(fieldBlocks);
-}
-
-/**
- * Applies the configured docstring strategy and returns a rendered docstring
- * when the current one should be emitted.
- */
-function renderDocstringByMode(
-  content: string,
-  context: GenerateVdlContext,
-): string | undefined {
-  const currentDocstringIndex = context.encounteredDocstrings;
-  context.encounteredDocstrings += 1;
-
-  switch (context.docstringsMode) {
-    case "strip":
-      return undefined;
-    case "strip-first":
-      return currentDocstringIndex === 0 ? undefined : renderDocstring(content);
-    case "keep-first":
-      return currentDocstringIndex === 0 ? renderDocstring(content) : undefined;
-    default:
-      return renderDocstring(content);
-  }
 }
 
 /**

@@ -384,4 +384,87 @@ describe("generateVdl", () => {
     `),
     );
   });
+
+  it("supports strip-first for individual nodes with attached docstrings", () => {
+    const typeDef = irb.typeDef("User", irb.primitiveType("string"), {
+      doc: "Type documentation",
+    });
+    const enumDef = irb.enumDef(
+      "Status",
+      "string",
+      [irb.enumMember("Active", irb.stringLiteral("Active"))],
+      {
+        doc: "Enum documentation",
+      },
+    );
+    const constantDef = irb.constantDef(
+      "apiVersion",
+      irb.stringLiteral("1.0.0"),
+      {
+        doc: "Constant documentation",
+      },
+    );
+
+    expect(generateVdl(typeDef, { docstrings: "strip-first" })).toBe(
+      "type User string",
+    );
+    expect(generateVdl(enumDef, { docstrings: "strip-first" })).toBe(
+      dedent(`
+      enum Status {
+        Active
+      }
+    `),
+    );
+    expect(generateVdl(constantDef, { docstrings: "strip-first" })).toBe(
+      'const apiVersion = "1.0.0"',
+    );
+  });
+
+  it("supports keep-first for individual nodes with attached docstrings", () => {
+    const typeDef = irb.typeDef("User", irb.primitiveType("string"), {
+      doc: "Type documentation",
+    });
+    const enumDef = irb.enumDef(
+      "Status",
+      "string",
+      [irb.enumMember("Active", irb.stringLiteral("Active"))],
+      {
+        doc: "Enum documentation",
+      },
+    );
+    const constantDef = irb.constantDef(
+      "apiVersion",
+      irb.stringLiteral("1.0.0"),
+      {
+        doc: "Constant documentation",
+      },
+    );
+
+    expect(generateVdl(typeDef, { docstrings: "keep-first" })).toBe(
+      dedent(`
+      """
+      Type documentation
+      """
+      type User string
+    `),
+    );
+    expect(generateVdl(enumDef, { docstrings: "keep-first" })).toBe(
+      dedent(`
+      """
+      Enum documentation
+      """
+      enum Status {
+        Active
+      }
+    `),
+    );
+    expect(generateVdl(constantDef, { docstrings: "keep-first" })).toBe(
+      dedent(`
+      """
+      Constant documentation
+      """
+      const apiVersion = "1.0.0"
+    `),
+    );
+  });
 });
