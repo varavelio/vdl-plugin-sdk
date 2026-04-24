@@ -310,45 +310,7 @@ describe("generateVdl", () => {
     );
   });
 
-  it("strips only the first docstring when docstrings mode is set to strip-first", () => {
-    const schema = irb.schema({
-      docs: [
-        {
-          position: irb.position({ line: 1, column: 1 }),
-          content: "Top-level documentation",
-        },
-      ],
-      types: [
-        irb.typeDef(
-          "User",
-          irb.objectType([
-            irb.field("id", irb.primitiveType("string"), {
-              doc: "Field documentation",
-            }),
-          ]),
-          {
-            doc: "Type documentation",
-          },
-        ),
-      ],
-    });
-
-    expect(generateVdl(schema, { docstrings: "strip-first" })).toBe(
-      dedent(`
-      """
-      Type documentation
-      """
-      type User {
-        """
-        Field documentation
-        """
-        id string
-      }
-    `),
-    );
-  });
-
-  it("keeps only the first docstring when docstrings mode is set to keep-first", () => {
+  it("strips only top-level docstrings when docstrings mode is set to strip-top-level", () => {
     const schema = irb.schema({
       docs: [
         {
@@ -370,106 +332,85 @@ describe("generateVdl", () => {
           },
         ),
       ],
+      enums: [
+        irb.enumDef(
+          "Status",
+          "string",
+          [
+            irb.enumMember("Active", irb.stringLiteral("Active"), {
+              doc: "Member documentation",
+            }),
+          ],
+          {
+            doc: "Enum documentation",
+          },
+        ),
+      ],
+      constants: [
+        irb.constantDef("apiVersion", irb.stringLiteral("1.0.0"), {
+          doc: "Constant documentation",
+        }),
+      ],
     });
 
-    expect(generateVdl(schema, { docstrings: "keep-first" })).toBe(
+    expect(generateVdl(schema, { docstrings: "strip-top-level" })).toBe(
       dedent(`
-      """
-      Top-level documentation
-      """
-
       @entity
       type User {
+        """
+        Field documentation
+        """
         id string
       }
-    `),
-    );
-  });
 
-  it("supports strip-first for individual nodes with attached docstrings", () => {
-    const typeDef = irb.typeDef("User", irb.primitiveType("string"), {
-      doc: "Type documentation",
-    });
-    const enumDef = irb.enumDef(
-      "Status",
-      "string",
-      [irb.enumMember("Active", irb.stringLiteral("Active"))],
-      {
-        doc: "Enum documentation",
-      },
-    );
-    const constantDef = irb.constantDef(
-      "apiVersion",
-      irb.stringLiteral("1.0.0"),
-      {
-        doc: "Constant documentation",
-      },
-    );
-
-    expect(generateVdl(typeDef, { docstrings: "strip-first" })).toBe(
-      "type User string",
-    );
-    expect(generateVdl(enumDef, { docstrings: "strip-first" })).toBe(
-      dedent(`
       enum Status {
+        """
+        Member documentation
+        """
         Active
       }
-    `),
-    );
-    expect(generateVdl(constantDef, { docstrings: "strip-first" })).toBe(
-      'const apiVersion = "1.0.0"',
-    );
-  });
 
-  it("supports keep-first for individual nodes with attached docstrings", () => {
-    const typeDef = irb.typeDef("User", irb.primitiveType("string"), {
-      doc: "Type documentation",
-    });
-    const enumDef = irb.enumDef(
-      "Status",
-      "string",
-      [irb.enumMember("Active", irb.stringLiteral("Active"))],
-      {
-        doc: "Enum documentation",
-      },
-    );
-    const constantDef = irb.constantDef(
-      "apiVersion",
-      irb.stringLiteral("1.0.0"),
-      {
-        doc: "Constant documentation",
-      },
-    );
-
-    expect(generateVdl(typeDef, { docstrings: "keep-first" })).toBe(
-      dedent(`
-      """
-      Type documentation
-      """
-      type User string
-    `),
-    );
-    expect(generateVdl(enumDef, { docstrings: "keep-first" })).toBe(
-      dedent(`
-      """
-      Enum documentation
-      """
-      enum Status {
-        Active
-      }
-    `),
-    );
-    expect(generateVdl(constantDef, { docstrings: "keep-first" })).toBe(
-      dedent(`
-      """
-      Constant documentation
-      """
       const apiVersion = "1.0.0"
     `),
     );
   });
 
-  it("treats attached type docstrings as part of first-docstring modes", () => {
+  it("strips attached docs for individual top-level nodes in strip-top-level mode", () => {
+    const typeDef = irb.typeDef("User", irb.primitiveType("string"), {
+      doc: "Type documentation",
+    });
+    const enumDef = irb.enumDef(
+      "Status",
+      "string",
+      [irb.enumMember("Active", irb.stringLiteral("Active"))],
+      {
+        doc: "Enum documentation",
+      },
+    );
+    const constantDef = irb.constantDef(
+      "apiVersion",
+      irb.stringLiteral("1.0.0"),
+      {
+        doc: "Constant documentation",
+      },
+    );
+
+    expect(generateVdl(typeDef, { docstrings: "strip-top-level" })).toBe(
+      "type User string",
+    );
+    expect(generateVdl(enumDef, { docstrings: "strip-top-level" })).toBe(
+      dedent(`
+      enum Status {
+        Active
+      }
+    `),
+    );
+    expect(generateVdl(constantDef, { docstrings: "strip-top-level" })).toBe(
+      'const apiVersion = "1.0.0"',
+    );
+  });
+
+  it("preserves nested field docs when removing only top-level attached docs", () => {
     const enumMemberType = {
       position: {
         file: "/workspaces/vdl-plugin-explorer/ir_local.vdl",
@@ -567,7 +508,7 @@ describe("generateVdl", () => {
       urlPath: "#/types/enum-member-cc5dd2ca",
     } as unknown as TypeDef;
 
-    expect(generateVdl(enumMemberType, { docstrings: "strip-first" })).toBe(
+    expect(generateVdl(enumMemberType, { docstrings: "strip-top-level" })).toBe(
       dedent(`
       type EnumMember {
         """
@@ -593,21 +534,6 @@ describe("generateVdl", () => {
         """
         Member annotations in source order
         """
-        annotations Annotation[]
-      }
-    `),
-    );
-
-    expect(generateVdl(enumMemberType, { docstrings: "keep-first" })).toBe(
-      dedent(`
-      """
-      Enum member definition
-      """
-      type EnumMember {
-        position Position
-        name string
-        value LiteralValue
-        doc? string
         annotations Annotation[]
       }
     `),

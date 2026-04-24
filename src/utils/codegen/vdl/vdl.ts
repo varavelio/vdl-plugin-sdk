@@ -36,10 +36,9 @@ export type GenerateVdlOptions = {
    *
    * - `"preserve"` (default): emits all available docstrings.
    * - `"strip"`: omits all docstrings from output.
-   * - `"strip-first"`: omits only the first encountered docstring.
-   * - `"keep-first"`: emits only the first encountered docstring.
+   * - `"strip-top-level"`: omits only docstrings attached to top-level nodes.
    */
-  docstrings?: "preserve" | "strip" | "strip-first" | "keep-first";
+  docstrings?: "preserve" | "strip" | "strip-top-level";
 };
 
 /**
@@ -47,7 +46,6 @@ export type GenerateVdlOptions = {
  */
 type GenerateVdlContext = {
   docstringsMode: NonNullable<GenerateVdlOptions["docstrings"]>;
-  encounteredDocstrings: number;
 };
 
 /**
@@ -76,7 +74,6 @@ export function generateVdl(
 ): string {
   const context: GenerateVdlContext = {
     docstringsMode: options.docstrings ?? "preserve",
-    encounteredDocstrings: 0,
   };
 
   return generateVdlWithContext(node, context);
@@ -212,7 +209,7 @@ function compareFilePaths(
  * @returns A VDL docstring literal containing the provided content.
  */
 function generateDoc(doc: TopLevelDoc, context: GenerateVdlContext): string {
-  const renderedDocstring = renderDocstring(doc.content, context);
+  const renderedDocstring = renderDocstring(doc.content, context, true);
 
   if (renderedDocstring === undefined) {
     return "";
@@ -234,8 +231,9 @@ function generateType(typeDef: TypeDef, context: GenerateVdlContext): string {
   return generateDecoratedBlock(
     typeDef.doc,
     typeDef.annotations,
-    () => `type ${typeDef.name} ${generateTypeRef(typeDef.typeRef, context)}`,
+    `type ${typeDef.name} ${generateTypeRef(typeDef.typeRef, context)}`,
     context,
+    true,
   );
 }
 
@@ -259,6 +257,7 @@ function generateEnum(enumDef: EnumDef, context: GenerateVdlContext): string {
     enumDef.annotations,
     `enum ${enumDef.name} ${generateBlockBody(members)}`,
     context,
+    true,
   );
 }
 
@@ -328,6 +327,7 @@ function generateConstant(
     constantDef.annotations,
     `const ${constantDef.name} = ${generateLiteral(constantDef.value)}`,
     context,
+    true,
   );
 }
 
@@ -337,18 +337,20 @@ function generateConstant(
  * @param doc - Optional docstring content to place before the declaration.
  * @param annotations - Annotations to emit in source order.
  * @param declaration - Core declaration text to append last.
+ * @param isTopLevelNode - Marks whether the declaration is a top-level schema node.
  * @returns A complete decorated VDL block.
  */
 function generateDecoratedBlock(
   doc: string | undefined,
   annotations: Annotation[],
-  declaration: string | (() => string),
+  declaration: string,
   context: GenerateVdlContext,
+  isTopLevelNode = false,
 ): string {
   const lines: string[] = [];
 
   if (doc !== undefined) {
-    const renderedDocstring = renderDocstring(doc, context);
+    const renderedDocstring = renderDocstring(doc, context, isTopLevelNode);
 
     if (renderedDocstring !== undefined) {
       lines.push(renderedDocstring);
@@ -359,44 +361,31 @@ function generateDecoratedBlock(
     lines.push(generateAnnotation(annotation));
   }
 
-  lines.push(typeof declaration === "function" ? declaration() : declaration);
+  lines.push(declaration);
 
   return lines.join("\n");
 }
 
 /**
  * Wraps raw documentation text in VDL triple quotes and applies the configured
- * docstring strategy when generation context is provided.
+ * docstring strategy.
  *
  * @param content - Docstring content to render.
- * @param context - Optional generation context for docstring strategy.
+ * @param context - Generation context containing the active docstring mode.
+ * @param isTopLevelNode - Whether this docstring belongs to a top-level schema node.
  * @returns A quoted VDL docstring, or undefined when it must be omitted.
  */
 function renderDocstring(
   content: string,
-  context?: GenerateVdlContext,
+  context: GenerateVdlContext,
+  isTopLevelNode: boolean,
 ): string | undefined {
-  if (context !== undefined) {
-    const currentDocstringIndex = context.encounteredDocstrings;
-    context.encounteredDocstrings += 1;
+  if (context.docstringsMode === "strip") {
+    return undefined;
+  }
 
-    if (context.docstringsMode === "strip") {
-      return undefined;
-    }
-
-    if (
-      context.docstringsMode === "strip-first" &&
-      currentDocstringIndex === 0
-    ) {
-      return undefined;
-    }
-
-    if (
-      context.docstringsMode === "keep-first" &&
-      currentDocstringIndex !== 0
-    ) {
-      return undefined;
-    }
+  if (context.docstringsMode === "strip-top-level" && isTopLevelNode) {
+    return undefined;
   }
 
   return `"""\n${content.replace(/"""/g, '\\"\\"\\"')}\n"""`;
@@ -423,7 +412,7 @@ function generateAnnotation(annotation: Annotation): string {
  * shapes, returning an empty string when the reference is incomplete.
  *
  * @param typeRef - Type reference to render.
- * @param options - Optional rendering configuration.
+ * @param context - Generation context shared across nested rendering calls.
  * @returns VDL source for the provided type reference.
  */
 function generateTypeRef(
