@@ -234,7 +234,7 @@ function generateType(typeDef: TypeDef, context: GenerateVdlContext): string {
   return generateDecoratedBlock(
     typeDef.doc,
     typeDef.annotations,
-    `type ${typeDef.name} ${generateTypeRef(typeDef.typeRef, context)}`,
+    () => `type ${typeDef.name} ${generateTypeRef(typeDef.typeRef, context)}`,
     context,
   );
 }
@@ -342,7 +342,7 @@ function generateConstant(
 function generateDecoratedBlock(
   doc: string | undefined,
   annotations: Annotation[],
-  declaration: string,
+  declaration: string | (() => string),
   context: GenerateVdlContext,
 ): string {
   const lines: string[] = [];
@@ -359,7 +359,7 @@ function generateDecoratedBlock(
     lines.push(generateAnnotation(annotation));
   }
 
-  lines.push(declaration);
+  lines.push(typeof declaration === "function" ? declaration() : declaration);
 
   return lines.join("\n");
 }

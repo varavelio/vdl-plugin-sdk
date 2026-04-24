@@ -2,6 +2,7 @@ import { execSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import type { TypeDef } from "../../../core/types";
 import * as irb from "../../../testing";
 import { dedent } from "../../strings/dedent";
 import { generateVdl } from "./vdl";
@@ -464,6 +465,151 @@ describe("generateVdl", () => {
       Constant documentation
       """
       const apiVersion = "1.0.0"
+    `),
+    );
+  });
+
+  it("treats attached type docstrings as part of first-docstring modes", () => {
+    const enumMemberType = {
+      position: {
+        file: "/workspaces/vdl-plugin-explorer/ir_local.vdl",
+        line: 475,
+        column: 1,
+      },
+      name: "EnumMember",
+      doc: "Enum member definition",
+      annotations: [],
+      typeRef: {
+        kind: "object",
+        objectFields: [
+          {
+            position: {
+              file: "/workspaces/vdl-plugin-explorer/ir_local.vdl",
+              line: 477,
+              column: 3,
+            },
+            name: "position",
+            doc: "Source position of this member",
+            optional: false,
+            annotations: [],
+            typeRef: {
+              kind: "type",
+              typeName: "Position",
+            },
+          },
+          {
+            position: {
+              file: "/workspaces/vdl-plugin-explorer/ir_local.vdl",
+              line: 480,
+              column: 3,
+            },
+            name: "name",
+            doc: "Member name",
+            optional: false,
+            annotations: [],
+            typeRef: {
+              kind: "primitive",
+              primitiveName: "string",
+            },
+          },
+          {
+            position: {
+              file: "/workspaces/vdl-plugin-explorer/ir_local.vdl",
+              line: 483,
+              column: 3,
+            },
+            name: "value",
+            doc: "Fully resolved member value",
+            optional: false,
+            annotations: [],
+            typeRef: {
+              kind: "type",
+              typeName: "LiteralValue",
+            },
+          },
+          {
+            position: {
+              file: "/workspaces/vdl-plugin-explorer/ir_local.vdl",
+              line: 486,
+              column: 3,
+            },
+            name: "doc",
+            doc: "Optional member documentation",
+            optional: true,
+            annotations: [],
+            typeRef: {
+              kind: "primitive",
+              primitiveName: "string",
+            },
+          },
+          {
+            position: {
+              file: "/workspaces/vdl-plugin-explorer/ir_local.vdl",
+              line: 489,
+              column: 3,
+            },
+            name: "annotations",
+            doc: "Member annotations in source order",
+            optional: false,
+            annotations: [],
+            typeRef: {
+              kind: "array",
+              arrayType: {
+                kind: "type",
+                typeName: "Annotation",
+              },
+              arrayDims: 1,
+            },
+          },
+        ],
+      },
+      id: "enum-member-cc5dd2ca",
+      urlPath: "#/types/enum-member-cc5dd2ca",
+    } as unknown as TypeDef;
+
+    expect(generateVdl(enumMemberType, { docstrings: "strip-first" })).toBe(
+      dedent(`
+      type EnumMember {
+        """
+        Source position of this member
+        """
+        position Position
+
+        """
+        Member name
+        """
+        name string
+
+        """
+        Fully resolved member value
+        """
+        value LiteralValue
+
+        """
+        Optional member documentation
+        """
+        doc? string
+
+        """
+        Member annotations in source order
+        """
+        annotations Annotation[]
+      }
+    `),
+    );
+
+    expect(generateVdl(enumMemberType, { docstrings: "keep-first" })).toBe(
+      dedent(`
+      """
+      Enum member definition
+      """
+      type EnumMember {
+        position Position
+        name string
+        value LiteralValue
+        doc? string
+        annotations Annotation[]
+      }
     `),
     );
   });
