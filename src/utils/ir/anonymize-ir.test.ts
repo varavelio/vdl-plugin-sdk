@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import * as irb from "../../testing";
-import { sanitizeIr } from "./sanitize-ir";
+import { anonymizeIr } from "./anonymize-ir";
 
-describe("sanitizeIr", () => {
+describe("anonymizeIr", () => {
   it("redacts entryPoint and all nested positions while preserving shape", () => {
     const schema = irb.schema({
       entryPoint: "/private/schemas/service.vdl",
@@ -38,25 +38,25 @@ describe("sanitizeIr", () => {
       ],
     });
 
-    const sanitized = sanitizeIr(schema);
+    const anonymized = anonymizeIr(schema);
 
-    expect(sanitized.entryPoint).toBe("");
-    expect(sanitized.docs[0]?.position).toEqual({
+    expect(anonymized.entryPoint).toBe("");
+    expect(anonymized.docs[0]?.position).toEqual({
       file: "schema.vdl",
       line: 1,
       column: 1,
     });
-    expect(sanitized.types[0]?.position).toEqual({
+    expect(anonymized.types[0]?.position).toEqual({
       file: "schema.vdl",
       line: 1,
       column: 1,
     });
-    expect(sanitized.types[0]?.typeRef.objectFields?.[0]?.position).toEqual({
+    expect(anonymized.types[0]?.typeRef.objectFields?.[0]?.position).toEqual({
       file: "schema.vdl",
       line: 1,
       column: 1,
     });
-    expect(sanitized.constants[0]?.value.position).toEqual({
+    expect(anonymized.constants[0]?.value.position).toEqual({
       file: "schema.vdl",
       line: 1,
       column: 1,
@@ -72,12 +72,12 @@ describe("sanitizeIr", () => {
     const originalPosition = schema.types[0]?.position;
     const originalEntryPoint = schema.entryPoint;
 
-    const sanitized = sanitizeIr(schema);
+    const anonymized = anonymizeIr(schema);
 
     expect(schema.entryPoint).toBe(originalEntryPoint);
     expect(schema.types[0]?.position).toBe(originalPosition);
-    expect(sanitized).not.toBe(schema);
-    expect(sanitized.types[0]?.position).not.toBe(originalPosition);
+    expect(anonymized).not.toBe(schema);
+    expect(anonymized.types[0]?.position).not.toBe(originalPosition);
   });
 
   it("supports generic nested objects outside IrSchema", () => {
@@ -95,7 +95,7 @@ describe("sanitizeIr", () => {
       },
     };
 
-    expect(sanitizeIr(input)).toEqual({
+    expect(anonymizeIr(input)).toEqual({
       request: {
         entryPoint: "",
         payload: {

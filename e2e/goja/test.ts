@@ -856,30 +856,30 @@ function createIrSuites(): SmokeSuite[] {
 
             const originalEntryPoint = schema.entryPoint;
             const originalTypePosition = schema.types[0]?.position;
-            const sanitized = ir.sanitizeIr(schema);
+            const anonymized = ir.anonymizeIr(schema);
 
             assertEqual(
-              sanitized.entryPoint,
+              anonymized.entryPoint,
               "",
-              "sanitizeIr entryPoint output",
+              "anonymizeIr entryPoint output",
             );
             assertDeepEqual(
-              sanitized.types[0]?.position,
+              anonymized.types[0]?.position,
               {
                 file: "schema.vdl",
                 line: 1,
                 column: 1,
               },
-              "sanitizeIr type position output",
+              "anonymizeIr type position output",
             );
             assertEqual(
               schema.entryPoint,
               originalEntryPoint,
-              "sanitizeIr preserves original entryPoint",
+              "anonymizeIr preserves original entryPoint",
             );
             assert(
               schema.types[0]?.position === originalTypePosition,
-              "sanitizeIr preserves original position reference",
+              "anonymizeIr preserves original position reference",
             );
           },
         },

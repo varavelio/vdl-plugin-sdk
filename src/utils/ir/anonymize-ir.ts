@@ -6,10 +6,10 @@ const hasOwn = Object.prototype.hasOwnProperty;
  * Object shape that explicitly carries IR source metadata.
  *
  * This type is used to provide stronger TypeScript guidance when callers pass
- * known IR-like objects. `sanitizeIr` also accepts generic objects through a
+ * known IR-like objects. `anonymizeIr` also accepts generic objects through a
  * fallback overload, so this type is opt-in and non-breaking.
  */
-export type SanitizeIrInput = {
+export type AnonymizableIr = {
   entryPoint?: string;
   position?: Position;
 };
@@ -32,30 +32,30 @@ export type SanitizeIrInput = {
  *
  * @example
  * ```ts
- * const safeIr = sanitizeIr(irSchema);
+ * const safeIr = anonymizeIr(irSchema);
  * // safeIr.entryPoint === ""
  * // safeIr.types[0].position.file === "schema.vdl"
  * ```
  */
-export function sanitizeIr<T extends SanitizeIrInput>(input: T): T;
-export function sanitizeIr<T extends object>(input: T): T;
-export function sanitizeIr<T extends object>(input: T): T {
-  return sanitizeValue(input) as T;
+export function anonymizeIr<T extends AnonymizableIr>(input: T): T;
+export function anonymizeIr<T extends object>(input: T): T;
+export function anonymizeIr<T extends object>(input: T): T {
+  return anonymizeValue(input) as T;
 }
 
 /**
  * Recursively sanitizes one runtime value.
  */
-function sanitizeValue(value: unknown): unknown {
+function anonymizeValue(value: unknown): unknown {
   if (Array.isArray(value)) {
-    return value.map((currentItem) => sanitizeValue(currentItem));
+    return value.map((currentItem) => anonymizeValue(currentItem));
   }
 
   if (!isRecord(value)) {
     return value;
   }
 
-  const sanitizedRecord: Record<string, unknown> = {};
+  const anonymizedRecord: Record<string, unknown> = {};
 
   for (const key in value) {
     if (!hasOwn.call(value, key)) {
@@ -65,25 +65,25 @@ function sanitizeValue(value: unknown): unknown {
     const currentValue = value[key];
 
     if (key === "entryPoint" && typeof currentValue === "string") {
-      sanitizedRecord[key] = "";
+      anonymizedRecord[key] = "";
       continue;
     }
 
     if (key === "position" && isRecord(currentValue)) {
-      sanitizedRecord[key] = createSanitizedPosition();
+      anonymizedRecord[key] = createAnonymizedPosition();
       continue;
     }
 
-    sanitizedRecord[key] = sanitizeValue(currentValue);
+    anonymizedRecord[key] = anonymizeValue(currentValue);
   }
 
-  return sanitizedRecord;
+  return anonymizedRecord;
 }
 
 /**
  * Creates the canonical redacted `Position` payload.
  */
-function createSanitizedPosition(): Position {
+function createAnonymizedPosition(): Position {
   return {
     file: "schema.vdl",
     line: 1,
