@@ -161,18 +161,20 @@ function compareTopLevelNodes(
   leftIndex: number,
   rightIndex: number,
 ): number {
-  const fileOrder = compareFilePaths(
-    left.position.file,
-    right.position.file,
-    entryPoint,
-  );
-  if (fileOrder !== 0) return fileOrder;
+  if (left.position && right.position) {
+    const fileOrder = compareFilePaths(
+      left.position.file,
+      right.position.file,
+      entryPoint,
+    );
+    if (fileOrder !== 0) return fileOrder;
 
-  const lineOrder = left.position.line - right.position.line;
-  if (lineOrder !== 0) return lineOrder;
+    const lineOrder = left.position.line - right.position.line;
+    if (lineOrder !== 0) return lineOrder;
 
-  const columnOrder = left.position.column - right.position.column;
-  if (columnOrder !== 0) return columnOrder;
+    const columnOrder = left.position.column - right.position.column;
+    if (columnOrder !== 0) return columnOrder;
+  }
 
   return leftIndex - rightIndex;
 }
