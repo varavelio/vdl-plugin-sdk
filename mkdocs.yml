@@ -68,9 +68,11 @@ nav:
                   - getAnnotation: api/utils/ir/functions/getAnnotation.md
                   - getAnnotationArg: api/utils/ir/functions/getAnnotationArg.md
                   - hoistAnonymousTypes: api/utils/ir/functions/hoistAnonymousTypes.md
+                  - sanitizeIr: api/utils/ir/functions/sanitizeIr.md
                   - unwrapLiteral: api/utils/ir/functions/unwrapLiteral.md
               - Type Aliases:
                   - HoistNameContext: api/utils/ir/type-aliases/HoistNameContext.md
+                  - SanitizeIrInput: api/utils/ir/type-aliases/SanitizeIrInput.md
           - RPC:
               - Overview: api/utils/rpc/index.md
               - Functions:
