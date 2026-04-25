@@ -829,6 +829,60 @@ function createIrSuites(): SmokeSuite[] {
             );
           },
         },
+        {
+          name: "sanitizes entryPoint and nested positions without mutating input",
+          run: () => {
+            const schema = irb.schema({
+              entryPoint: "/private/workspace/schema.vdl",
+              docs: [
+                {
+                  position: irb.position({
+                    file: "/private/workspace/schema.vdl",
+                    line: 4,
+                    column: 2,
+                  }),
+                  content: "Top-level docs",
+                },
+              ],
+              types: [
+                irb.typeDef(
+                  "User",
+                  irb.objectType([
+                    irb.field("id", irb.primitiveType("string")),
+                  ]),
+                ),
+              ],
+            });
+
+            const originalEntryPoint = schema.entryPoint;
+            const originalTypePosition = schema.types[0]?.position;
+            const sanitized = ir.sanitizeIr(schema);
+
+            assertEqual(
+              sanitized.entryPoint,
+              "",
+              "sanitizeIr entryPoint output",
+            );
+            assertDeepEqual(
+              sanitized.types[0]?.position,
+              {
+                file: "schema.vdl",
+                line: 1,
+                column: 1,
+              },
+              "sanitizeIr type position output",
+            );
+            assertEqual(
+              schema.entryPoint,
+              originalEntryPoint,
+              "sanitizeIr preserves original entryPoint",
+            );
+            assert(
+              schema.types[0]?.position === originalTypePosition,
+              "sanitizeIr preserves original position reference",
+            );
+          },
+        },
       ],
     },
   ];
