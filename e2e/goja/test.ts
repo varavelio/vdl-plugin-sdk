@@ -917,6 +917,43 @@ function createCodegenSuites(): SmokeSuite[] {
             );
           },
         },
+        {
+          name: "keeps stable ordering when top-level positions are missing",
+          run: () => {
+            const schema = irb.schema({
+              docs: [
+                {
+                  position: irb.position({ line: 1, column: 1 }),
+                  content: "Schema overview",
+                },
+              ],
+              types: [irb.typeDef("User", irb.primitiveType("string"))],
+              enums: [
+                irb.enumDef("Status", "string", [
+                  irb.enumMember("Active", irb.stringLiteral("Active")),
+                ]),
+              ],
+              constants: [
+                irb.constantDef("apiVersion", irb.stringLiteral("1.0.0")),
+              ],
+            });
+
+            (schema.docs[0] as { position?: unknown }).position = undefined;
+            (schema.types[0] as { position?: unknown }).position = undefined;
+            (schema.enums[0] as { position?: unknown }).position = undefined;
+            (schema.constants[0] as { position?: unknown }).position =
+              undefined;
+
+            assertEqual(
+              codegen.generateVdl(schema),
+              '"""\nSchema overview\n"""\n\n' +
+                "type User string\n\n" +
+                "enum Status {\n  Active\n}\n\n" +
+                'const apiVersion = "1.0.0"',
+              "generateVdl missing-positions output",
+            );
+          },
+        },
       ],
     },
   ];

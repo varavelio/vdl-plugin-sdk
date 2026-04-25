@@ -244,6 +244,51 @@ describe("generateVdl", () => {
     );
   });
 
+  it("falls back to collection index ordering when top-level positions are missing", () => {
+    const topLevelDoc = {
+      position: irb.position({ line: 1, column: 1 }),
+      content: "Schema overview",
+    };
+    const typeDef = irb.typeDef("User", irb.primitiveType("string"));
+    const enumDef = irb.enumDef("Status", "string", [
+      irb.enumMember("Active", irb.stringLiteral("Active")),
+    ]);
+    const constantDef = irb.constantDef(
+      "apiVersion",
+      irb.stringLiteral("1.0.0"),
+    );
+
+    (topLevelDoc as { position?: unknown }).position = undefined;
+    (typeDef as { position?: unknown }).position = undefined;
+    (enumDef as { position?: unknown }).position = undefined;
+    (constantDef as { position?: unknown }).position = undefined;
+
+    expect(
+      generateVdl(
+        irb.schema({
+          types: [typeDef],
+          enums: [enumDef],
+          constants: [constantDef],
+          docs: [topLevelDoc],
+        }),
+      ),
+    ).toBe(
+      dedent(`
+      """
+      Schema overview
+      """
+
+      type User string
+
+      enum Status {
+        Active
+      }
+
+      const apiVersion = "1.0.0"
+    `),
+    );
+  });
+
   it("strips docstrings when docstrings mode is set to strip", () => {
     const typeDef = irb.typeDef(
       "User",
