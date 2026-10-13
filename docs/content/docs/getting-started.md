@@ -74,6 +74,6 @@ Example `package.json` scripts:
 
 ## Next steps
 
-- Learn the [entry points](./guides/entry-points/) for runtime, utils, and testing imports.
-- Learn the [CLI](./guides/cli/) options for custom entry and output paths.
-- Browse the [API reference](./api/) when you need exact types and helpers.
+- Learn the [entry points](/docs/guides/entry-points/) for runtime, utils, and testing imports.
+- Learn the [CLI](/docs/guides/cli/) options for custom entry and output paths.
+- Browse the [API reference](/docs/api/) when you need exact types and helpers.

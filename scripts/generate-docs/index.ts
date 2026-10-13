@@ -543,39 +543,49 @@ function buildFrontmatter(title: string, description: string, weight: number) {
   ].join("\n");
 }
 
-function toVetaLink(target: string) {
-  const [targetPath, hash = ""] = target.split("#");
-  const suffix = hash.length > 0 ? `#${hash}` : "";
+const docsApiRoutePrefix = "/docs/api";
 
-  if (targetPath === "" || targetPath.endsWith("/")) {
-    return `${targetPath}${suffix}`;
-  }
-
-  if (targetPath.endsWith("/index.md")) {
-    return `${targetPath.slice(0, -"index.md".length)}${suffix}`;
-  }
-
-  if (targetPath === "index.md") {
-    return `./${suffix}`;
-  }
-
-  if (targetPath.endsWith(".md")) {
-    return `${targetPath.slice(0, -".md".length)}/${suffix}`;
-  }
-
-  return target;
-}
-
-function rewriteVetaTarget(target: string) {
+function toAbsoluteApiLink(sourceApiDir: string, target: string) {
   if (
     target.startsWith("#") ||
     /^https?:\/\//.test(target) ||
-    target.startsWith("mailto:")
+    target.startsWith("mailto:") ||
+    target.startsWith("/")
   ) {
     return target;
   }
 
-  return toVetaLink(target);
+  const [targetPath, hash = ""] = target.split("#");
+  const suffix = hash.length > 0 ? `#${hash}` : "";
+
+  if (targetPath === "") {
+    return target;
+  }
+
+  // Resolve against the source file directory inside the API tree. Veta
+  // renders `dir/file.md` at the `dir/file/` route, so relative links from
+  // member pages would resolve one level too deep in the browser. Absolute
+  // links stay correct regardless of page depth.
+  const resolved = path.posix.normalize(
+    path.posix.join(sourceApiDir, targetPath),
+  );
+
+  if (resolved === "index.md" || resolved === ".") {
+    return sourceApiDir === "."
+      ? `${docsApiRoutePrefix}/${suffix}`
+      : `${docsApiRoutePrefix}/${sourceApiDir}/${suffix}`;
+  }
+
+  if (resolved.endsWith("/index.md")) {
+    const dir = resolved.slice(0, -"/index.md".length);
+    return `${docsApiRoutePrefix}/${dir}/${suffix}`;
+  }
+
+  if (resolved.endsWith(".md")) {
+    return `${docsApiRoutePrefix}/${resolved.slice(0, -".md".length)}/${suffix}`;
+  }
+
+  return target;
 }
 
 async function rewriteAllApiMarkdownLinksForVeta() {
@@ -584,10 +594,14 @@ async function rewriteAllApiMarkdownLinksForVeta() {
   await Promise.all(
     markdownFilePaths.map(async (markdownFilePath) => {
       const currentContents = await readFile(markdownFilePath, "utf8");
-      const nextContents = rewriteMarkdownLinks(
-        currentContents,
-        rewriteVetaTarget,
-      );
+      const apiRelativePath = path
+        .relative(docsApiDirectoryPath, markdownFilePath)
+        .split(path.sep)
+        .join("/");
+      const sourceApiDir = path.posix.dirname(apiRelativePath);
+      const nextContents = rewriteMarkdownLinks(currentContents, (target) => {
+        return toAbsoluteApiLink(sourceApiDir, target);
+      });
 
       if (nextContents !== currentContents) {
         await writeFile(markdownFilePath, nextContents, "utf8");
@@ -620,7 +634,8 @@ function appendModuleReferenceList(
   lines.push(`## ${heading}`, "");
 
   for (const module of modules) {
-    const vetaOverviewLink = toVetaLink(module.overviewPath);
+    const moduleDir = module.overviewPath.replace(/\/index\.md$/, "");
+    const vetaOverviewLink = `${docsApiRoutePrefix}/${moduleDir}/`;
     lines.push(
       `- [${module.title}](${vetaOverviewLink}) - \`${module.importPath}\``,
     );
