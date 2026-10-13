@@ -16,7 +16,7 @@ COPY --from=varavel/vdl:0.5.0 /usr/local/bin/vdl /usr/local/bin/vdl
 COPY --from=varavel/veta:0.1.1 /usr/local/bin/veta /usr/local/bin/veta
 
 # Install dprint
-COPY --from=ghcr.io/varavelio/container-tools/dprint:0.62.0 /usr/local/bin/dprint /usr/local/bin/dprint
+COPY --from=ghcr.io/varavelio/container-tools/dprint:0.63.0 /usr/local/bin/dprint /usr/local/bin/dprint
 
 # Environment variables
 ENV \
