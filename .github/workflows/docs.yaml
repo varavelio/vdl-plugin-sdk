@@ -26,8 +26,10 @@ jobs:
           push: never
           runCmd: /bin/bash -c "npm run build"
 
-      - name: Remove node_modules (required for wrangler-action)
-        run: rm -rf ./node_modules
+      - name: Remove node_modules
+        # node_modules is owned by root because the build above runs inside
+        # so we need to delete it before using cloudflare/wrangler-action
+        run: sudo rm -rf ./node_modules
 
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
