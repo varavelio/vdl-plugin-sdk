@@ -63,7 +63,7 @@
 <p align="center">
   <a href="https://vdl-plugin-sdk.varavel.com">Documentation</a>
   ·
-  <a href="https://vdl-plugin-sdk.varavel.com/api/core/">API Reference</a>
+  <a href="https://vdl-plugin-sdk.varavel.com/docs/api/">API Reference</a>
   ·
   <a href="https://github.com/varavelio/vdl-plugin-template">Plugin Template</a>
 </p>

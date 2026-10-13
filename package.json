@@ -20,17 +20,8 @@
   },
   "license": "MIT",
   "author": "Varavel",
-  "publishConfig": {
-    "access": "public"
-  },
-  "type": "module",
   "sideEffects": false,
-  "main": "./dist/core/index.cjs",
-  "module": "./dist/core/index.js",
-  "types": "./dist/core/index.d.ts",
-  "bin": {
-    "vdl-plugin": "./bin/vdl-plugin.js"
-  },
+  "type": "module",
   "exports": {
     ".": {
       "types": "./dist/core/index.d.ts",
@@ -53,6 +44,12 @@
     "./tsconfig.app.base.json": "./tsconfig.app.base.json",
     "./tsconfig.test.base.json": "./tsconfig.test.base.json",
     "./env.d.ts": "./env.d.ts"
+  },
+  "main": "./dist/core/index.cjs",
+  "module": "./dist/core/index.js",
+  "types": "./dist/core/index.d.ts",
+  "bin": {
+    "vdl-plugin": "./bin/vdl-plugin.js"
   },
   "files": [
     "bin",
@@ -98,5 +95,8 @@
     "typedoc-plugin-markdown": "4.11.0",
     "vitest": "4.0.18",
     "yaml": "2.8.3"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

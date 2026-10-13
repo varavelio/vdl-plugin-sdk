@@ -23,7 +23,7 @@
     "includeFolders": true,
     "includeGroups": false
   },
-  "out": "./docs/api",
+  "out": "./docs/content/docs/api",
   "parametersFormat": "table",
   "plugin": ["typedoc-plugin-markdown"],
   "readme": "none",

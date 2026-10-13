@@ -1,19 +1,10 @@
 /// <reference types="node" />
 
 import { execFileSync } from "node:child_process";
-import {
-  copyFile,
-  mkdir,
-  readdir,
-  readFile,
-  rename,
-  rm,
-  writeFile,
-} from "node:fs/promises";
+import { readdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { llmsTemplate } from "./llms-template.ts";
 
 type DocsSection = "core" | "testing" | "utilities";
 
@@ -46,17 +37,13 @@ const currentFilePath = fileURLToPath(import.meta.url);
 const scriptsDirectoryPath = path.dirname(currentFilePath);
 const workspaceRootPath = path.resolve(scriptsDirectoryPath, "../..");
 const docsDirectoryPath = path.join(workspaceRootPath, "docs");
-const docsApiDirectoryPath = path.join(docsDirectoryPath, "api");
-const docsLlmsIndexPath = path.join(docsDirectoryPath, "llms.txt");
-const docsLlmsFullPath = path.join(docsDirectoryPath, "llms-full.txt");
-const mkdocsConfigPath = path.join(workspaceRootPath, "mkdocs.yml");
-const siteDirectoryPath = path.join(workspaceRootPath, "site");
-const siteLlmsApiDirectoryPath = path.join(siteDirectoryPath, "llms", "api");
+const docsApiDirectoryPath = path.join(
+  docsDirectoryPath,
+  "content",
+  "docs",
+  "api",
+);
 const typedocConfigPath = path.join(workspaceRootPath, "typedoc.json");
-
-const llmsBaseUrl = "https://vdl-plugin-sdk.varavel.com/llms/api";
-const mkdocsNavStartMarker = "      # AUTO-GENERATED API NAV START";
-const mkdocsNavEndMarker = "      # AUTO-GENERATED API NAV END";
 
 const utilityOrder = [
   "ir",
@@ -116,10 +103,6 @@ function titleCase(value: string) {
     .join(" ");
 }
 
-function getGroupTitle(groupKey: string) {
-  return titleCase(groupKey);
-}
-
 function getModuleDefinitions(): ModuleDefinition[] {
   const modules: ModuleDefinition[] = [
     {
@@ -133,7 +116,7 @@ function getModuleDefinitions(): ModuleDefinition[] {
     },
     {
       description:
-        "Build realistic plugin input and IR fixtures for tests with the `irb` helpers.",
+        "Build realistic plugin input and IR fixtures for tests with the testing builders.",
       directoryPath: "testing",
       importPath: "@varavel/vdl-plugin-sdk/testing",
       section: "testing",
@@ -144,7 +127,7 @@ function getModuleDefinitions(): ModuleDefinition[] {
 
   for (const [index, utilityName] of utilityOrder.entries()) {
     modules.push({
-      directoryPath: `utils/${utilityName}`,
+      directoryPath: utilityName,
       importPath: `@varavel/vdl-plugin-sdk/utils/${utilityName}`,
       section: "utilities",
       sortOrder: index,
@@ -170,15 +153,31 @@ function truncateText(value: string, maxLength: number) {
 }
 
 function extractFirstHeading(markdown: string) {
-  const lines = markdown.split("\n");
+  const withoutFrontmatter = stripFrontmatter(markdown);
+  const lines = withoutFrontmatter.split("\n");
   return lines.find((line) => line.startsWith("# ")) ?? "# Untitled";
 }
 
+function stripFrontmatter(markdown: string) {
+  if (!markdown.startsWith("---\n")) {
+    return markdown;
+  }
+
+  const endIndex = markdown.indexOf("\n---\n", 4);
+
+  if (endIndex === -1) {
+    return markdown;
+  }
+
+  return markdown.slice(endIndex + 5);
+}
+
 function stripLeadingHeading(markdown: string) {
-  const lines = markdown.split("\n");
+  const body = stripFrontmatter(markdown);
+  const lines = body.split("\n");
 
   if (!lines[0]?.startsWith("# ")) {
-    return markdown.trim();
+    return body.trim();
   }
 
   let index = 1;
@@ -202,7 +201,8 @@ function cleanMemberTitle(rawHeading: string) {
 }
 
 function extractSummaryFromMarkdown(markdown: string) {
-  const lines = markdown.split("\n");
+  const body = stripFrontmatter(markdown);
+  const lines = body.split("\n");
   let index = 0;
 
   if (lines[index]?.startsWith("# ")) {
@@ -344,6 +344,57 @@ async function renameCoreModuleDirectory() {
   await rewriteAllApiMarkdownLinksForCoreRename();
 }
 
+async function flattenUtilityModules(utilityNames: readonly string[]) {
+  const utilsDirectoryPath = path.join(docsApiDirectoryPath, "utils");
+
+  for (const utilityName of utilityNames) {
+    const nestedPath = path.join(utilsDirectoryPath, utilityName);
+    const flatPath = path.join(docsApiDirectoryPath, utilityName);
+
+    try {
+      await rename(nestedPath, flatPath);
+    } catch (error) {
+      const errorCode = (error as NodeJS.ErrnoException).code;
+
+      if (errorCode !== "ENOENT") {
+        throw error;
+      }
+    }
+  }
+
+  try {
+    await rm(utilsDirectoryPath, { force: true, recursive: true });
+  } catch {
+    // Ignore missing utils directory after flattening.
+  }
+
+  // Flattening reduces depth by one level for utility pages.
+  // Fix cross-module relative links that climbed to the previous layout:
+  // - member pages used `../../../core/` (now `../../core/`)
+  // - overview pages used `../../core/` (now `../core/`)
+  const markdownFilePaths = await listMarkdownFiles(docsApiDirectoryPath);
+
+  await Promise.all(
+    markdownFilePaths.map(async (markdownFilePath) => {
+      const currentContents = await readFile(markdownFilePath, "utf8");
+      let nextContents = currentContents;
+
+      if (path.basename(markdownFilePath) === "index.md") {
+        nextContents = nextContents
+          .replaceAll("../../../", "../../")
+          .replaceAll("../../core/", "../core/")
+          .replaceAll("../../testing/", "../testing/");
+      } else {
+        nextContents = nextContents.replaceAll("../../../", "../../");
+      }
+
+      if (nextContents !== currentContents) {
+        await writeFile(markdownFilePath, nextContents, "utf8");
+      }
+    }),
+  );
+}
+
 async function decorateModuleOverview(moduleDefinition: ModuleDefinition) {
   const overviewPath = path.join(
     docsApiDirectoryPath,
@@ -474,6 +525,89 @@ function getModulesBySection(modules: BuiltModule[], section: DocsSection) {
   return modules.filter((module) => module.section === section);
 }
 
+function escapeYamlString(value: string) {
+  return `"${value.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, " ")}"`;
+}
+
+function buildFrontmatter(title: string, description: string, weight: number) {
+  const safeTitle = escapeYamlString(truncateText(title, 120));
+  const safeDescription = escapeYamlString(truncateText(description, 200));
+
+  return [
+    "---",
+    `title: ${safeTitle}`,
+    `description: ${safeDescription}`,
+    `weight: ${weight}`,
+    "---",
+    "",
+  ].join("\n");
+}
+
+function toVetaLink(target: string) {
+  const [targetPath, hash = ""] = target.split("#");
+  const suffix = hash.length > 0 ? `#${hash}` : "";
+
+  if (targetPath === "" || targetPath.endsWith("/")) {
+    return `${targetPath}${suffix}`;
+  }
+
+  if (targetPath.endsWith("/index.md")) {
+    return `${targetPath.slice(0, -"index.md".length)}${suffix}`;
+  }
+
+  if (targetPath === "index.md") {
+    return `./${suffix}`;
+  }
+
+  if (targetPath.endsWith(".md")) {
+    return `${targetPath.slice(0, -".md".length)}/${suffix}`;
+  }
+
+  return target;
+}
+
+function rewriteVetaTarget(target: string) {
+  if (
+    target.startsWith("#") ||
+    /^https?:\/\//.test(target) ||
+    target.startsWith("mailto:")
+  ) {
+    return target;
+  }
+
+  return toVetaLink(target);
+}
+
+async function rewriteAllApiMarkdownLinksForVeta() {
+  const markdownFilePaths = await listMarkdownFiles(docsApiDirectoryPath);
+
+  await Promise.all(
+    markdownFilePaths.map(async (markdownFilePath) => {
+      const currentContents = await readFile(markdownFilePath, "utf8");
+      const nextContents = rewriteMarkdownLinks(
+        currentContents,
+        rewriteVetaTarget,
+      );
+
+      if (nextContents !== currentContents) {
+        await writeFile(markdownFilePath, nextContents, "utf8");
+      }
+    }),
+  );
+}
+
+function getModuleWeight(module: BuiltModule) {
+  if (module.section === "core") {
+    return 1;
+  }
+
+  if (module.section === "testing") {
+    return 50;
+  }
+
+  return 10 + module.sortOrder;
+}
+
 function appendModuleReferenceList(
   lines: string[],
   heading: string,
@@ -486,8 +620,9 @@ function appendModuleReferenceList(
   lines.push(`## ${heading}`, "");
 
   for (const module of modules) {
+    const vetaOverviewLink = toVetaLink(module.overviewPath);
     lines.push(
-      `- [${module.title}](${module.overviewPath}) - \`${module.importPath}\``,
+      `- [${module.title}](${vetaOverviewLink}) - \`${module.importPath}\``,
     );
 
     if (module.description !== undefined) {
@@ -503,6 +638,11 @@ async function writeApiOverview(modules: BuiltModule[]) {
   const utilityModules = getModulesBySection(modules, "utilities");
   const testingModules = getModulesBySection(modules, "testing");
   const lines = [
+    buildFrontmatter(
+      "API Reference",
+      "Generated from the public TypeScript surface with TypeDoc and organized by import path.",
+      3,
+    ),
     "# API Reference",
     "",
     "Generated from the public TypeScript surface with TypeDoc and organized by import path.",
@@ -520,362 +660,55 @@ async function writeApiOverview(modules: BuiltModule[]) {
   );
 }
 
-function getPagesForGroup(module: BuiltModule, groupKey: string) {
-  return module.memberPages.filter((page) => page.groupKey === groupKey);
-}
-
-function buildModuleNavLines(module: BuiltModule, indent: string) {
-  const lines = [
-    `${indent}- ${module.title}:`,
-    `${indent}    - Overview: api/${module.overviewPath}`,
-  ];
-
-  for (const groupKey of groupOrder) {
-    const pages = getPagesForGroup(module, groupKey);
-
-    if (pages.length === 0) {
-      continue;
-    }
-
-    lines.push(`${indent}    - ${getGroupTitle(groupKey)}:`);
-
-    for (const page of pages) {
-      lines.push(`${indent}        - ${page.title}: api/${page.relativePath}`);
-    }
-  }
-
-  return lines;
-}
-
-async function updateMkDocsNav(modules: BuiltModule[]) {
-  const mkdocsContents = await readFile(mkdocsConfigPath, "utf8");
-  const startMarkerIndex = mkdocsContents.indexOf(mkdocsNavStartMarker);
-  const endMarkerIndex = mkdocsContents.indexOf(mkdocsNavEndMarker);
-
-  if (
-    startMarkerIndex === -1 ||
-    endMarkerIndex === -1 ||
-    endMarkerIndex < startMarkerIndex
-  ) {
-    throw new Error("mkdocs.yml is missing the generated API nav markers");
-  }
-
-  const coreModules = getModulesBySection(modules, "core");
-  const utilityModules = getModulesBySection(modules, "utilities");
-  const testingModules = getModulesBySection(modules, "testing");
-  const generatedNavLines = ["      - Overview: api/index.md"];
-
-  for (const module of coreModules) {
-    generatedNavLines.push(...buildModuleNavLines(module, "      "));
-  }
-
-  if (utilityModules.length > 0) {
-    generatedNavLines.push("      - Utils:");
-
-    for (const module of utilityModules) {
-      generatedNavLines.push(...buildModuleNavLines(module, "          "));
-    }
-  }
-
-  for (const module of testingModules) {
-    generatedNavLines.push(...buildModuleNavLines(module, "      "));
-  }
-
-  const before = mkdocsContents.slice(
-    0,
-    startMarkerIndex + mkdocsNavStartMarker.length,
-  );
-  const after = mkdocsContents.slice(endMarkerIndex);
-  const nextContents = `${before}\n${generatedNavLines.join("\n")}\n${after}`;
-
-  await writeFile(mkdocsConfigPath, nextContents, "utf8");
-}
-
-function getLlmsUrl(relativePath: string) {
-  return `${llmsBaseUrl}/${relativePath}`;
-}
-
-function rewriteRelativeLinksForLlms(
-  markdown: string,
-  currentRelativePath: string,
-) {
-  return rewriteMarkdownLinks(markdown, (target) => {
-    if (target.startsWith("#") || /^https?:\/\//.test(target)) {
-      return target;
-    }
-
-    const [targetPath, hash = ""] = target.split("#");
-    const resolvedPath = path.posix.normalize(
-      path.posix.join(path.posix.dirname(currentRelativePath), targetPath),
-    );
-
-    if (!resolvedPath.endsWith(".md")) {
-      return target;
-    }
-
-    return hash.length > 0
-      ? `${getLlmsUrl(resolvedPath)}#${hash}`
-      : getLlmsUrl(resolvedPath);
-  });
-}
-
-function removeLeadingTitle(markdown: string) {
-  const lines = markdown.split("\n");
-
-  if (!lines[0]?.startsWith("# ")) {
-    return markdown.trim();
-  }
-
-  let index = 1;
-
-  while (lines[index]?.trim() === "") {
-    index += 1;
-  }
-
-  return lines.slice(index).join("\n").trim();
-}
-
-type LlmsModuleRenderOptions = {
-  groupHeadingLevel: number;
-  itemHeadingLevel: number;
-  moduleHeadingLevel?: number;
-};
-
-function buildLlmsModuleHeading(
-  module: BuiltModule,
-  options: LlmsModuleRenderOptions,
-) {
-  return options.moduleHeadingLevel !== undefined
-    ? `${"#".repeat(options.moduleHeadingLevel)} ${module.title}`
-    : undefined;
-}
-
-function buildLlmsIndexModuleBlock(module: BuiltModule) {
-  const lines = [`import: \`${module.importPath}\``];
-
-  if (module.description !== undefined) {
-    lines.push(module.description);
-  }
-
-  lines.push(getLlmsUrl(module.overviewPath));
-
-  return lines.join("\n");
-}
-
-function buildLlmsFullModuleBlocks(module: BuiltModule) {
-  return [
-    `import: \`${module.importPath}\``,
-    rewriteRelativeLinksForLlms(
-      removeLeadingTitle(module.overviewContent),
-      module.overviewPath,
-    ),
-  ];
-}
-
-function buildLlmsIndexMemberBlock(page: MemberPage, memberHeading: string) {
-  return [
-    `${memberHeading} ${page.title}`,
-    truncateText(page.summary, 140),
-    getLlmsUrl(page.relativePath),
-  ].join("\n");
-}
-
-function buildLlmsFullMemberBlock(page: MemberPage, memberHeading: string) {
-  return [
-    `${memberHeading} ${page.title}`,
-    rewriteRelativeLinksForLlms(
-      removeLeadingTitle(page.content),
-      page.relativePath,
-    ),
-  ].join("\n");
-}
-
-function buildModuleLlmsIndex(
-  module: BuiltModule,
-  options: LlmsModuleRenderOptions,
-) {
-  const groupHeading = "#".repeat(options.groupHeadingLevel);
-  const memberHeading = "#".repeat(options.itemHeadingLevel);
-  const heading = buildLlmsModuleHeading(module, options);
-  const parts: string[] = [buildLlmsIndexModuleBlock(module)];
-
-  if (heading !== undefined) {
-    parts.unshift(heading);
-  }
-
-  for (const groupKey of groupOrder) {
-    const pages = getPagesForGroup(module, groupKey);
-
-    if (pages.length === 0) {
-      continue;
-    }
-
-    parts.push(`${groupHeading} ${getGroupTitle(groupKey)}`);
-
-    for (const page of pages) {
-      parts.push(buildLlmsIndexMemberBlock(page, memberHeading));
-    }
-  }
-
-  return parts.join("\n\n");
-}
-
-function buildModuleLlmsFull(
-  module: BuiltModule,
-  options: LlmsModuleRenderOptions,
-) {
-  const groupHeading = "#".repeat(options.groupHeadingLevel);
-  const memberHeading = "#".repeat(options.itemHeadingLevel);
-  const heading = buildLlmsModuleHeading(module, options);
-  const parts: string[] = [...buildLlmsFullModuleBlocks(module)];
-
-  if (heading !== undefined) {
-    parts.unshift(heading);
-  }
-
-  for (const groupKey of groupOrder) {
-    const pages = getPagesForGroup(module, groupKey);
-
-    if (pages.length === 0) {
-      continue;
-    }
-
-    parts.push(`${groupHeading} ${getGroupTitle(groupKey)}`);
-
-    for (const page of pages) {
-      parts.push(buildLlmsFullMemberBlock(page, memberHeading));
-    }
-  }
-
-  return parts.join("\n\n");
-}
-
-function appendLlmsSection(
-  parts: string[],
-  sectionTitle: string,
-  modules: BuiltModule[],
-  options: LlmsModuleRenderOptions,
-  full: boolean,
-) {
-  if (modules.length === 0) {
-    return;
-  }
-
-  parts.push("", `## ${sectionTitle}`);
-
-  for (const module of modules) {
-    parts.push(
-      "",
-      full
-        ? buildModuleLlmsFull(module, options)
-        : buildModuleLlmsIndex(module, options),
-    );
-  }
-}
-
-function removeLlmsSection(markdown: string, heading: string) {
-  const lines = markdown.split("\n");
-  const headingLine = `## ${heading}`;
-  const startIndex = lines.findIndex((line) => line.trim() === headingLine);
-
-  if (startIndex === -1) {
-    return markdown;
-  }
-
-  let endIndex = startIndex + 1;
-
-  while (endIndex < lines.length) {
-    const line = lines[endIndex]?.trim() ?? "";
-
-    if (line.startsWith("## ")) {
-      break;
-    }
-
-    endIndex += 1;
-  }
-
-  return [...lines.slice(0, startIndex), ...lines.slice(endIndex)]
-    .join("\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-}
-
-async function writeLlmsFiles(modules: BuiltModule[]) {
-  const llmsIndexParts = [llmsTemplate];
-  const llmsFullParts = [
-    removeLlmsSection(llmsTemplate, "How to use this document"),
-  ];
-
-  appendLlmsSection(
-    llmsIndexParts,
-    "Core",
-    getModulesBySection(modules, "core"),
-    { groupHeadingLevel: 3, itemHeadingLevel: 4 },
-    false,
-  );
-  appendLlmsSection(
-    llmsFullParts,
-    "Core",
-    getModulesBySection(modules, "core"),
-    { groupHeadingLevel: 3, itemHeadingLevel: 4 },
-    true,
-  );
-  appendLlmsSection(
-    llmsIndexParts,
-    "Utilities",
-    getModulesBySection(modules, "utilities"),
-    { groupHeadingLevel: 4, itemHeadingLevel: 5, moduleHeadingLevel: 3 },
-    false,
-  );
-  appendLlmsSection(
-    llmsFullParts,
-    "Utilities",
-    getModulesBySection(modules, "utilities"),
-    { groupHeadingLevel: 4, itemHeadingLevel: 5, moduleHeadingLevel: 3 },
-    true,
-  );
-  appendLlmsSection(
-    llmsIndexParts,
-    "Testing",
-    getModulesBySection(modules, "testing"),
-    { groupHeadingLevel: 3, itemHeadingLevel: 4 },
-    false,
-  );
-  appendLlmsSection(
-    llmsFullParts,
-    "Testing",
-    getModulesBySection(modules, "testing"),
-    { groupHeadingLevel: 3, itemHeadingLevel: 4 },
-    true,
-  );
-
-  await writeFile(
-    docsLlmsIndexPath,
-    `${llmsIndexParts.join("\n").trim()}\n`,
-    "utf8",
-  );
-  await writeFile(
-    docsLlmsFullPath,
-    `${llmsFullParts.join("\n").trim()}\n`,
-    "utf8",
-  );
-}
-
-async function copyLlmsMarkdownMirror() {
-  await rm(siteLlmsApiDirectoryPath, { force: true, recursive: true });
-
-  const markdownFilePaths = await listMarkdownFiles(docsApiDirectoryPath);
-
+async function writeModuleFrontmatter(modules: BuiltModule[]) {
   await Promise.all(
-    markdownFilePaths.map(async (markdownFilePath) => {
-      const relativePath = path.relative(
+    modules.map(async (module) => {
+      const overviewFilePath = path.join(
         docsApiDirectoryPath,
-        markdownFilePath,
+        module.overviewPath,
       );
-      const targetPath = path.join(siteLlmsApiDirectoryPath, relativePath);
+      const overviewBody = await readFile(overviewFilePath, "utf8");
+      const overviewDescription =
+        module.description ?? `Import from \`${module.importPath}\`.`;
+      const overviewFrontmatter = buildFrontmatter(
+        module.title,
+        overviewDescription,
+        getModuleWeight(module),
+      );
 
-      await mkdir(path.dirname(targetPath), { recursive: true });
-      await copyFile(markdownFilePath, targetPath);
+      await writeFile(
+        overviewFilePath,
+        `${overviewFrontmatter}\n${stripFrontmatter(overviewBody).trim()}\n`,
+        "utf8",
+      );
+
+      const moduleDirectoryPath = path.join(
+        docsApiDirectoryPath,
+        module.directoryPath,
+      );
+      const markdownFilePaths = await listMarkdownFiles(moduleDirectoryPath);
+      const memberFilePaths = markdownFilePaths.filter((filePath) => {
+        return path.basename(filePath) !== "index.md";
+      });
+
+      await Promise.all(
+        memberFilePaths.map(async (memberFilePath) => {
+          const memberBody = await readFile(memberFilePath, "utf8");
+          const title = cleanMemberTitle(extractFirstHeading(memberBody));
+          const summary = extractSummaryFromMarkdown(memberBody);
+          const description =
+            summary.length > 0
+              ? summary
+              : `Import from \`${module.importPath}\`.`;
+          const frontmatter = buildFrontmatter(title, description, 999999);
+
+          await writeFile(
+            memberFilePath,
+            `${frontmatter}\n${stripFrontmatter(memberBody).trim()}\n`,
+            "utf8",
+          );
+        }),
+      );
     }),
   );
 }
@@ -898,10 +731,10 @@ function runTypeDoc() {
   );
 }
 
-function runMkDocsBuild() {
+function runVetaBuild() {
   try {
-    execFileSync("mkdocs", ["build", "--strict"], {
-      cwd: workspaceRootPath,
+    execFileSync("veta", ["build"], {
+      cwd: docsDirectoryPath,
       stdio: "inherit",
     });
   } catch (error) {
@@ -912,7 +745,7 @@ function runMkDocsBuild() {
       error.code === "ENOENT"
     ) {
       throw new Error(
-        "mkdocs is required to build the documentation site. Install MkDocs with Material before running `npm run build:docs`.",
+        "veta is required to build the documentation site. Install Veta before running `npm run build:docs`.",
       );
     }
 
@@ -925,6 +758,7 @@ async function main() {
 
   runTypeDoc();
   await renameCoreModuleDirectory();
+  await flattenUtilityModules(utilityOrder);
 
   const moduleDefinitions = getModuleDefinitions();
 
@@ -940,10 +774,9 @@ async function main() {
   );
 
   await writeApiOverview(builtModules);
-  await updateMkDocsNav(builtModules);
-  await writeLlmsFiles(builtModules);
-  runMkDocsBuild();
-  await copyLlmsMarkdownMirror();
+  await writeModuleFrontmatter(builtModules);
+  await rewriteAllApiMarkdownLinksForVeta();
+  runVetaBuild();
 }
 
 await main();

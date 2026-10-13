@@ -1,0 +1,9 @@
+title: "VDL Plugin SDK"
+description: "SDK to build plugins for VDL using TypeScript"
+site_url: "https://vdl-plugin-sdk.varavel.com"
+favicon: "https://cdn.jsdelivr.net/gh/varavelio/vdl@a6a9ea/assets/svg/icon.svg"
+logo_light: "https://cdn.jsdelivr.net/gh/varavelio/vdl@a6a9ea/assets/svg/vdl.svg"
+logo_dark: "https://cdn.jsdelivr.net/gh/varavelio/vdl@a6a9ea/assets/svg/vdl.svg"
+
+docs_github_repo: "varavelio/vdl-plugin-sdk"
+docs_show_title: false

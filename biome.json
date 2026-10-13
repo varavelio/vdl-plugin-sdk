@@ -18,8 +18,8 @@
       "!**/dist",
       "!**/tmp",
       "!**/temp",
-      "!**/site",
-      "!docs/api"
+      "!docs/dist",
+      "!docs/content/docs/api"
     ]
   },
   "formatter": {
