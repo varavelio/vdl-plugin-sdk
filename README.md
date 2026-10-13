@@ -1,6 +1,6 @@
 <p align="center">
   <img
-    src="https://raw.githubusercontent.com/varavelio/vdl/9cb8432f972f986ba91ffa1e4fe82220a8aa373f/assets/png/vdl.png"
+    src="https://cdn.jsdelivr.net/gh/varavelio/vdl@9cb843/assets/png/vdl.png"
     alt="VDL logo"
     width="130"
   />
@@ -14,28 +14,49 @@
 
 <p align="center">
   <a href="https://github.com/varavelio/vdl-plugin-sdk/actions">
-    <img src="https://github.com/varavelio/vdl-plugin-sdk/actions/workflows/ci.yaml/badge.svg" alt="CI status"/>
+    <img
+      src="https://github.com/varavelio/vdl-plugin-sdk/actions/workflows/ci.yaml/badge.svg"
+      alt="CI status"
+    />
   </a>
   <a href="https://github.com/varavelio/vdl-plugin-sdk/releases/latest">
-    <img src="https://img.shields.io/github/release/varavelio/vdl-plugin-sdk.svg" alt="Release Version"/>
+    <img
+      src="https://img.shields.io/github/release/varavelio/vdl-plugin-sdk.svg"
+      alt="Release Version"
+    />
   </a>
   <a href="https://www.npmjs.com/package/@varavel/vdl-plugin-sdk">
-    <img src="https://img.shields.io/npm/v/%40varavel%2Fvdl-plugin-sdk" alt="NPM Version"/>
+    <img
+      src="https://img.shields.io/npm/v/%40varavel%2Fvdl-plugin-sdk"
+      alt="NPM Version"
+    />
   </a>
   <a href="https://github.com/varavelio/vdl-plugin-sdk">
-    <img src="https://img.shields.io/github/stars/varavelio/vdl-plugin-sdk?style=flat&label=github+stars" alt="GitHub Stars"/>
+    <img
+      src="https://img.shields.io/github/stars/varavelio/vdl-plugin-sdk?style=flat&label=github+stars"
+      alt="GitHub Stars"
+    />
   </a>
   <a href="https://github.com/varavelio/vdl-plugin-sdk/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/varavelio/vdl-plugin-sdk.svg" alt="License"/>
+    <img
+      src="https://img.shields.io/github/license/varavelio/vdl-plugin-sdk.svg"
+      alt="License"
+    />
   </a>
 </p>
 
 <p align="center">
   <a href="https://varavel.com">
-    <img src="https://cdn.jsdelivr.net/gh/varavelio/brand@1.0.0/dist/badges/project.svg" alt="A Varavel project"/>
+    <img
+      src="https://cdn.jsdelivr.net/gh/varavelio/brand@1.0.0/dist/badges/project.svg"
+      alt="A Varavel project"
+    />
   </a>
   <a href="https://varavel.com/vdl">
-    <img src="https://cdn.jsdelivr.net/gh/varavelio/brand@1.0.0/dist/badges/vdl-plugin.svg" alt="VDL Plugin"/>
+    <img
+      src="https://cdn.jsdelivr.net/gh/varavelio/brand@1.0.0/dist/badges/vdl-plugin.svg"
+      alt="VDL Plugin"
+    />
   </a>
 </p>
 
