@@ -6,6 +6,7 @@ cat << 'EOF' >> /root/.bashrc
 # Define command aliases
 alias ll='ls -alh'
 alias c='clear'
+alias task='npm run'
 alias t='npm run'
 alias n='npm'
 
