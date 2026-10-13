@@ -29,6 +29,18 @@ export default function ({ files, parse }) {
     const weight = Number(pageMd.frontmatter.weight) || 999999;
     const icon = String(pageMd.frontmatter.icon || "");
 
+    // Generated API pages have no source file in the repo, so they get
+    // no footer links.
+    const docsFooterLinks = permalink.startsWith("/docs/api/")
+      ? []
+      : [
+          {
+            title: "Edit this page",
+            href: `https://github.com/varavelio/vdl-plugin-sdk/edit/main/docs/${path}`,
+            icon: "pencil-line",
+          },
+        ];
+
     pages.push({
       permalink,
       template: "vara-docs",
@@ -37,13 +49,7 @@ export default function ({ files, parse }) {
       weight,
       icon,
       content: pageContent,
-      docs_footer_links: [
-        {
-          title: "Edit this page",
-          href: `https://github.com/varavelio/vdl-plugin-sdk/edit/main/docs/${path}`,
-          icon: "pencil-line",
-        },
-      ],
+      docs_footer_links: docsFooterLinks,
     });
 
     pages.push({
