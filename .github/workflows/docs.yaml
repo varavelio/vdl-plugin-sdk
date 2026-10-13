@@ -20,15 +20,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create mount directories
-        run: |
-          mkdir -p ~/.claude ~/.config/opencode ~/.local/share/opencode
-
-      - name: Run CI Task
+      - name: Build docs
         uses: devcontainers/ci@v0.3
         with:
           push: never
-          runCmd: /bin/bash -c "npm install && npm run build"
+          runCmd: /bin/bash -c "npm run build"
+
+      - name: Remove node_modules (required for wrangler-action)
+        run: rm -rf ./node_modules
 
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
