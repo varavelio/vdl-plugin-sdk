@@ -7,32 +7,33 @@ import type {
   TypeDef,
 } from "../../core/types";
 
-const RPC_ANNOTATION_NAME = "rpc";
+const HTTP_RPC_ANNOTATION_NAME = "httpRpc";
 const PROC_ANNOTATION_NAME = "proc";
-const STREAM_ANNOTATION_NAME = "stream";
 
 /**
- * Asserts that RPC-annotated IR structures follow SDK RPC conventions.
+ * Asserts that HTTP-RPC IR structures follow VPP-2 conventions.
  *
- * This helper is intended for RPC-oriented plugins that want a single fail-fast
+ * This helper is intended for HTTP-RPC plugins that want a single fail-fast
  * validation call before generation starts.
  *
  * Validation rules:
  *
- * 1. If no type is annotated with `@rpc`, validation is skipped.
- * 2. Every `@rpc` type must be an object type.
- * 3. Inside each `@rpc` object, only fields annotated with `@proc` or `@stream`
- *    are validated as RPC operations.
- * 4. An operation field cannot have both `@proc` and `@stream`.
- * 5. Every `@proc` or `@stream` field must be an object type.
- * 6. If an operation declares `input` or `output` fields, each one must be an
+ * 1. If no type is annotated with `@httpRpc`, validation is skipped.
+ * 2. Every `@httpRpc` annotation must not have arguments.
+ * 3. Every `@httpRpc` type must be an object type.
+ * 4. Inside each `@httpRpc` object, only fields annotated with `@proc` are
+ *    validated as operations. Orphan `@proc` fields outside `@httpRpc` are
+ *    ignored.
+ * 5. Every `@proc` annotation must not have arguments.
+ * 6. Every `@proc` field must be an object type.
+ * 7. If an operation declares `input` or `output` fields, each one must be an
  *    object type.
- * 7. The contents inside valid `input`/`output` objects are intentionally not
+ * 8. The contents inside valid `input`/`output` objects are intentionally not
  *    validated by this helper and can be anything.
  *
  * The function is fail-fast and non-returning for invalid input:
  *
- * - It returns `void` when RPC structures are valid.
+ * - It returns `void` when HTTP-RPC structures are valid.
  * - It throws `PluginError` on the first violation.
  * - `definePlugin` catches that error and turns it into plugin diagnostics.
  *
@@ -41,10 +42,10 @@ const STREAM_ANNOTATION_NAME = "stream";
  * @example
  * ```ts
  * import { definePlugin } from "@varavel/vdl-plugin-sdk";
- * import { assertValidIrForRpc } from "@varavel/vdl-plugin-sdk/utils/rpc";
+ * import { assertValidIrForHttpRpc } from "@varavel/vdl-plugin-sdk/utils/rpc";
  *
  * export const generate = definePlugin((input) => {
- *   assertValidIrForRpc(input.ir);
+ *   assertValidIrForHttpRpc(input.ir);
  *
  *   return {
  *     files: [{ path: "rpc.ts", content: "// ..." }],
@@ -52,52 +53,65 @@ const STREAM_ANNOTATION_NAME = "stream";
  * });
  * ```
  */
-export function assertValidIrForRpc(ir: IrSchema): void {
+export function assertValidIrForHttpRpc(ir: IrSchema): void {
   const rpcTypes = ir.types.filter((typeDef) => {
-    return hasAnnotation(typeDef.annotations, RPC_ANNOTATION_NAME);
+    return hasAnnotation(typeDef.annotations, HTTP_RPC_ANNOTATION_NAME);
   });
 
   for (const rpcType of rpcTypes) {
-    assertValidRpcType(rpcType);
+    assertValidHttpRpcType(rpcType);
   }
 }
 
-function assertValidRpcType(typeDef: TypeDef): void {
+function assertValidHttpRpcType(typeDef: TypeDef): void {
+  const rpcAnnotation = findAnnotation(
+    typeDef.annotations,
+    HTTP_RPC_ANNOTATION_NAME,
+  );
+
+  if (rpcAnnotation?.argument !== undefined) {
+    fail(
+      `Type ${JSON.stringify(typeDef.name)} annotation @httpRpc must not have arguments.`,
+      rpcAnnotation.position,
+    );
+  }
+
   assert(
     typeDef.typeRef.kind === "object",
-    `Type ${JSON.stringify(typeDef.name)} is annotated with @rpc and must be an object type.`,
+    `Type ${JSON.stringify(typeDef.name)} is annotated with @httpRpc and must be an object type.`,
     typeDef.position,
   );
 
   const fields = typeDef.typeRef.objectFields ?? [];
 
   for (const field of fields) {
-    assertValidRpcOperationField(typeDef, field);
+    assertValidHttpRpcOperationField(typeDef, field);
   }
 }
 
-function assertValidRpcOperationField(rpcType: TypeDef, field: Field): void {
-  const hasProc = hasAnnotation(field.annotations, PROC_ANNOTATION_NAME);
-  const hasStream = hasAnnotation(field.annotations, STREAM_ANNOTATION_NAME);
+function assertValidHttpRpcOperationField(
+  rpcType: TypeDef,
+  field: Field,
+): void {
+  const procAnnotation = findAnnotation(
+    field.annotations,
+    PROC_ANNOTATION_NAME,
+  );
 
-  if (!hasProc && !hasStream) {
+  if (!procAnnotation) {
     return;
   }
 
-  if (hasProc && hasStream) {
+  if (procAnnotation.argument !== undefined) {
     fail(
-      `Field ${JSON.stringify(`${rpcType.name}.${field.name}`)} cannot be annotated with both @proc and @stream.`,
-      field.position,
+      `Field ${JSON.stringify(`${rpcType.name}.${field.name}`)} annotation @proc must not have arguments.`,
+      procAnnotation.position,
     );
   }
 
-  const operationAnnotation = hasProc
-    ? PROC_ANNOTATION_NAME
-    : STREAM_ANNOTATION_NAME;
-
   assert(
     field.typeRef.kind === "object",
-    `Field ${JSON.stringify(`${rpcType.name}.${field.name}`)} is annotated with @${operationAnnotation} and must be an object type.`,
+    `Field ${JSON.stringify(`${rpcType.name}.${field.name}`)} is annotated with @proc and must be an object type.`,
     field.position,
   );
 
@@ -121,6 +135,13 @@ function assertValidRpcOperationField(rpcType: TypeDef, field: Field): void {
 
 function hasAnnotation(annotations: Annotation[], name: string): boolean {
   return annotations.some((annotation) => annotation.name === name);
+}
+
+function findAnnotation(
+  annotations: Annotation[],
+  name: string,
+): Annotation | undefined {
+  return annotations.find((annotation) => annotation.name === name);
 }
 
 function findFieldByName(

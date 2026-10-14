@@ -2,18 +2,18 @@ import { describe, expect, it } from "vitest";
 
 import { PluginError } from "../../core";
 import * as irb from "../../testing";
-import { assertValidIrForRpc } from "./assert-valid-ir-for-rpc";
+import { assertValidIrForHttpRpc } from "./assert-valid-ir-for-http-rpc";
 
-function rpcType(name: string, typeRef = irb.objectType([])) {
+function httpRpcType(name: string, typeRef = irb.objectType([])) {
   return irb.typeDef(name, typeRef, {
-    annotations: [irb.annotation("rpc")],
+    annotations: [irb.annotation("httpRpc")],
   });
 }
 
 function getPluginError(action: () => void): PluginError {
   try {
     action();
-    throw new Error("Expected assertValidIrForRpc to throw PluginError");
+    throw new Error("Expected assertValidIrForHttpRpc to throw PluginError");
   } catch (error) {
     if (!(error instanceof PluginError)) {
       throw error;
@@ -23,8 +23,8 @@ function getPluginError(action: () => void): PluginError {
   }
 }
 
-describe("assertValidIrForRpc", () => {
-  it("does nothing when there are no @rpc types", () => {
+describe("assertValidIrForHttpRpc", () => {
+  it("does nothing when there are no @httpRpc types", () => {
     const ir = irb.schema({
       types: [
         irb.typeDef(
@@ -34,13 +34,30 @@ describe("assertValidIrForRpc", () => {
       ],
     });
 
-    expect(() => assertValidIrForRpc(ir)).not.toThrow();
+    expect(() => assertValidIrForHttpRpc(ir)).not.toThrow();
   });
 
-  it("does nothing for valid @rpc types", () => {
+  it("ignores legacy @rpc types and orphan @proc fields", () => {
+    const legacy = irb.typeDef("Legacy", irb.primitiveType("string"), {
+      annotations: [irb.annotation("rpc")],
+    });
+    const orphan = irb.typeDef(
+      "Orphan",
+      irb.objectType([
+        irb.field("doThing", irb.primitiveType("string"), {
+          annotations: [irb.annotation("proc")],
+        }),
+      ]),
+    );
+    const ir = irb.schema({ types: [legacy, orphan] });
+
+    expect(() => assertValidIrForHttpRpc(ir)).not.toThrow();
+  });
+
+  it("does nothing for valid @httpRpc types", () => {
     const ir = irb.schema({
       types: [
-        rpcType(
+        httpRpcType(
           "UserService",
           irb.objectType([
             irb.field(
@@ -68,53 +85,61 @@ describe("assertValidIrForRpc", () => {
       ],
     });
 
-    expect(() => assertValidIrForRpc(ir)).not.toThrow();
+    expect(() => assertValidIrForHttpRpc(ir)).not.toThrow();
   });
 
-  it("throws when @rpc is used on a non-object type", () => {
-    const badType = rpcType("BadService", irb.primitiveType("string"));
+  it("throws when @httpRpc is used on a non-object type", () => {
+    const badType = httpRpcType("BadService", irb.primitiveType("string"));
     const ir = irb.schema({ types: [badType] });
-    const error = getPluginError(() => assertValidIrForRpc(ir));
+    const error = getPluginError(() => assertValidIrForHttpRpc(ir));
 
     expect(error).toMatchObject({
       message:
-        'Type "BadService" is annotated with @rpc and must be an object type.',
+        'Type "BadService" is annotated with @httpRpc and must be an object type.',
       position: badType.position,
     });
   });
 
-  it("throws when an operation has both @proc and @stream", () => {
-    const operationField = irb.field("syncUser", irb.objectType([]), {
-      annotations: [irb.annotation("proc"), irb.annotation("stream")],
+  it("throws when @httpRpc has arguments", () => {
+    const annotation = irb.annotation("httpRpc", irb.stringLiteral("args"));
+    const badType = irb.typeDef("BadService", irb.objectType([]), {
+      annotations: [annotation],
     });
-    const service = rpcType("UserService", irb.objectType([operationField]));
-    const ir = irb.schema({ types: [service] });
-    const error = getPluginError(() => assertValidIrForRpc(ir));
+    const ir = irb.schema({ types: [badType] });
+    const error = getPluginError(() => assertValidIrForHttpRpc(ir));
 
     expect(error).toMatchObject({
-      message:
-        'Field "UserService.syncUser" cannot be annotated with both @proc and @stream.',
-      position: operationField.position,
+      message: 'Type "BadService" annotation @httpRpc must not have arguments.',
+      position: annotation.position,
     });
   });
 
-  it("throws when @proc or @stream is used on a non-object field", () => {
+  it("throws when @proc has arguments", () => {
+    const annotation = irb.annotation("proc", irb.stringLiteral("args"));
+    const operationField = irb.field("getUser", irb.objectType([]), {
+      annotations: [annotation],
+    });
+    const service = httpRpcType(
+      "UserService",
+      irb.objectType([operationField]),
+    );
+    const ir = irb.schema({ types: [service] });
+    const error = getPluginError(() => assertValidIrForHttpRpc(ir));
+
+    expect(error).toMatchObject({
+      message:
+        'Field "UserService.getUser" annotation @proc must not have arguments.',
+      position: annotation.position,
+    });
+  });
+
+  it("throws when @proc is used on a non-object field", () => {
     const procField = irb.field("createUser", irb.primitiveType("string"), {
       annotations: [irb.annotation("proc")],
     });
-    const streamField = irb.field(
-      "watchUsers",
-      irb.arrayType(irb.primitiveType("string")),
-      {
-        annotations: [irb.annotation("stream")],
-      },
-    );
-    const service = rpcType(
-      "UserService",
-      irb.objectType([procField, streamField]),
-    );
+    const service = httpRpcType("UserService", irb.objectType([procField]));
     const ir = irb.schema({ types: [service] });
-    const error = getPluginError(() => assertValidIrForRpc(ir));
+    const error = getPluginError(() => assertValidIrForHttpRpc(ir));
 
     expect(error).toMatchObject({
       message:
@@ -131,10 +156,10 @@ describe("assertValidIrForRpc", () => {
         annotations: [irb.annotation("proc")],
       },
     );
-    const service = rpcType("InfraService", irb.objectType([operation]));
+    const service = httpRpcType("InfraService", irb.objectType([operation]));
     const ir = irb.schema({ types: [service] });
 
-    expect(() => assertValidIrForRpc(ir)).not.toThrow();
+    expect(() => assertValidIrForHttpRpc(ir)).not.toThrow();
   });
 
   it("throws when input is present but not an object type", () => {
@@ -150,9 +175,9 @@ describe("assertValidIrForRpc", () => {
         annotations: [irb.annotation("proc")],
       },
     );
-    const service = rpcType("UserService", irb.objectType([operation]));
+    const service = httpRpcType("UserService", irb.objectType([operation]));
     const ir = irb.schema({ types: [service] });
-    const error = getPluginError(() => assertValidIrForRpc(ir));
+    const error = getPluginError(() => assertValidIrForHttpRpc(ir));
 
     expect(error).toMatchObject({
       message:
@@ -178,9 +203,12 @@ describe("assertValidIrForRpc", () => {
       column: 3,
     });
 
-    const service = rpcType("UserService", irb.objectType([operationField]));
+    const service = httpRpcType(
+      "UserService",
+      irb.objectType([operationField]),
+    );
     const ir = irb.schema({ types: [service] });
-    const error = getPluginError(() => assertValidIrForRpc(ir));
+    const error = getPluginError(() => assertValidIrForHttpRpc(ir));
 
     expect(error).toMatchObject({
       message:
@@ -194,14 +222,11 @@ describe("assertValidIrForRpc", () => {
   });
 
   it("fails fast and throws only the first violation", () => {
-    const badRpcType = rpcType(
+    const badRpcType = httpRpcType(
       "BrokenService",
       irb.arrayType(irb.primitiveType("string")),
     );
 
-    const dualAnnotationOperation = irb.field("sync", irb.objectType([]), {
-      annotations: [irb.annotation("proc"), irb.annotation("stream")],
-    });
     const badInputField = irb.field("input", irb.primitiveType("string"));
     const badOutputField = irb.field("output", irb.primitiveType("bool"));
     const badOperation = irb.field(
@@ -212,19 +237,19 @@ describe("assertValidIrForRpc", () => {
       },
     );
 
-    const mixedRpcType = rpcType(
+    const mixedRpcType = httpRpcType(
       "UserService",
-      irb.objectType([dualAnnotationOperation, badOperation]),
+      irb.objectType([badOperation]),
     );
 
     const ir = irb.schema({
       types: [badRpcType, mixedRpcType],
     });
-    const error = getPluginError(() => assertValidIrForRpc(ir));
+    const error = getPluginError(() => assertValidIrForHttpRpc(ir));
 
     expect(error).toMatchObject({
       message:
-        'Type "BrokenService" is annotated with @rpc and must be an object type.',
+        'Type "BrokenService" is annotated with @httpRpc and must be an object type.',
       position: badRpcType.position,
     });
   });

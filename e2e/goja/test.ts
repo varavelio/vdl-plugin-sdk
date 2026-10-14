@@ -1022,7 +1022,7 @@ function createRpcSuites(): SmokeSuite[] {
       name: "rpc",
       checks: [
         {
-          name: "does not throw when there are no @rpc types",
+          name: "does not throw when there are no @httpRpc types",
           run: () => {
             const schema = irb.schema({
               types: [
@@ -1036,41 +1036,43 @@ function createRpcSuites(): SmokeSuite[] {
             });
 
             assertEqual(
-              typeof rpc.assertValidIrForRpc,
+              typeof rpc.assertValidIrForHttpRpc,
               "function",
-              "assertValidIrForRpc is exported",
+              "assertValidIrForHttpRpc is exported",
             );
-            rpc.assertValidIrForRpc(schema);
+            rpc.assertValidIrForHttpRpc(schema);
           },
         },
         {
-          name: "throws PluginError for invalid RPC schemas",
+          name: "throws PluginError for invalid HTTP-RPC schemas",
           run: () => {
             const badType = irb.typeDef(
               "BrokenService",
               irb.primitiveType("string"),
               {
-                annotations: [irb.annotation("rpc")],
+                annotations: [irb.annotation("httpRpc")],
               },
             );
 
             try {
-              rpc.assertValidIrForRpc(irb.schema({ types: [badType] }));
-              fail("assertValidIrForRpc should throw for invalid RPC schema");
+              rpc.assertValidIrForHttpRpc(irb.schema({ types: [badType] }));
+              fail(
+                "assertValidIrForHttpRpc should throw for invalid HTTP-RPC schema",
+              );
             } catch (error) {
               if (!(error instanceof PluginError)) {
-                fail("assertValidIrForRpc error type");
+                fail("assertValidIrForHttpRpc error type");
               }
 
               assertEqual(
                 error.message,
-                'Type "BrokenService" is annotated with @rpc and must be an object type.',
-                "assertValidIrForRpc message",
+                'Type "BrokenService" is annotated with @httpRpc and must be an object type.',
+                "assertValidIrForHttpRpc message",
               );
               assertDeepEqual(
                 error.position,
                 badType.position,
-                "assertValidIrForRpc position",
+                "assertValidIrForHttpRpc position",
               );
             }
           },
