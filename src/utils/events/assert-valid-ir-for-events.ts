@@ -16,7 +16,7 @@ const EVENT_ANNOTATION_NAME = "event";
  * Asserts that event IR structures follow VPP-4 conventions.
  *
  * This helper validates `@event` types in one fail-fast pass and returns
- * resolved events with placeholder metadata for trivial code generation.
+ * resolved events with placeholder metadata for code generation.
  *
  * Validation covers annotation shape, object payloads, placeholder syntax,
  * top-level field existence, primitive field types and first-appearance

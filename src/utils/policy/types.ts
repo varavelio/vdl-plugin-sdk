@@ -86,7 +86,7 @@ export type PolicyArray = {
 };
 
 /**
- * Policy expression with resolved types for trivial code generation.
+ * Policy expression with resolved types for code generation.
  */
 export type PolicyExpr =
   | { kind: "or"; options: PolicyExpr[] }
