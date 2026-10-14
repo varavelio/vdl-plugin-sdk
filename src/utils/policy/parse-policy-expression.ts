@@ -394,7 +394,7 @@ class Parser {
       this.next();
       const inner = this.parseOr();
       const closing = this.next();
-      if (!closing || closing.kind !== "rparen") {
+      if (closing?.kind !== "rparen") {
         throw new Error(
           `Missing closing parenthesis at offset ${token.start} in ${snippet(this.source, token.start)}`,
         );
@@ -457,13 +457,13 @@ class Parser {
   private parseHas(): SyntaxExpr {
     const start = this.next() as Token;
     const open = this.next();
-    if (!open || open.kind !== "lparen") {
+    if (open?.kind !== "lparen") {
       throw new Error(
         `Missing opening parenthesis for has at offset ${start.start} in ${snippet(this.source, start.start)}`,
       );
     }
     const refToken = this.peek();
-    if (!refToken || refToken.kind !== "ident") {
+    if (refToken?.kind !== "ident") {
       throw new Error(
         `has() expects a reference at offset ${open.end} in ${snippet(this.source, open.end)}`,
       );
@@ -479,7 +479,7 @@ class Parser {
     }
     const ref = this.parseRef() as SyntaxRef;
     const closing = this.next();
-    if (!closing || closing.kind !== "rparen") {
+    if (closing?.kind !== "rparen") {
       throw new Error(
         `Missing closing parenthesis for has at offset ${start.start} in ${snippet(this.source, start.start)}`,
       );
@@ -495,18 +495,18 @@ class Parser {
     const path: string[] = [];
     let end = root.end;
     const dot = this.peek();
-    if (!dot || dot.kind !== "dot") {
+    if (dot?.kind !== "dot") {
       throw new Error(
         `Reference ${JSON.stringify(root.kind === "ident" ? (root as { text: string }).text : "")} needs a field path at offset ${root.start} in ${snippet(this.source, root.start)}`,
       );
     }
     for (;;) {
       const separator = this.next();
-      if (!separator || separator.kind !== "dot") {
+      if (separator?.kind !== "dot") {
         break;
       }
       const field = this.next();
-      if (!field || field.kind !== "ident") {
+      if (field?.kind !== "ident") {
         throw new Error(
           `Expected field name at offset ${separator.end} in ${snippet(this.source, separator.end)}`,
         );
@@ -514,7 +514,7 @@ class Parser {
       path.push(field.text);
       end = field.end;
       const next = this.peek();
-      if (!next || next.kind !== "dot") {
+      if (next?.kind !== "dot") {
         break;
       }
     }
@@ -557,7 +557,7 @@ class Parser {
       break;
     }
     const closing = this.next();
-    if (!closing || closing.kind !== "rbracket") {
+    if (closing?.kind !== "rbracket") {
       throw new Error(
         `Missing closing bracket at offset ${open.start} in ${snippet(this.source, open.start)}`,
       );

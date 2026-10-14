@@ -152,7 +152,10 @@ describe("assertValidIrForPolicy", () => {
     expect(result?.resourceType).toBe("Invoice");
     expect(result?.contextType).toBe("SessionContext");
     expect(result?.allow.kind).toBe("comparison");
-    const ref = (result?.allow as { left: { path: string[] } }).left;
+    if (result === undefined) {
+      throw new Error("expected one policy");
+    }
+    const ref = (result.allow as { left: { path: string[] } }).left;
     expect(ref.path).toEqual(["id"]);
   });
 
@@ -1587,7 +1590,10 @@ describe("assertValidIrForPolicy guard and output edges", () => {
     const [out] = assertValidIrForPolicy(irb.schema({ types: [user, policy] }));
     expect(out?.name).toBe("CanX");
     expect(out?.allow.kind).toBe("and");
-    const clauses = (out?.allow as { clauses: { kind: string }[] }).clauses;
+    if (out === undefined) {
+      throw new Error("expected one policy");
+    }
+    const clauses = (out.allow as { clauses: { kind: string }[] }).clauses;
     expect(clauses).toHaveLength(2);
     expect(clauses[0]?.kind).toBe("has");
     const cmp = clauses[1] as {

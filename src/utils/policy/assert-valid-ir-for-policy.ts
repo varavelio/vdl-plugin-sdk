@@ -300,7 +300,7 @@ function resolveNamedObjectType(
     return undefined;
   }
   const target = typesByName.get(typeRef.typeName);
-  if (!target || target.typeRef.kind !== "object") {
+  if (target?.typeRef.kind !== "object") {
     return undefined;
   }
   return target.name;
@@ -849,7 +849,7 @@ class PolicyContext {
 
     if (currentTypeName) {
       const rootDef = this.typesByName.get(currentTypeName);
-      if (!rootDef || rootDef.typeRef.kind !== "object") {
+      if (rootDef?.typeRef.kind !== "object") {
         fail(
           `Type ${JSON.stringify(this.policyType.name)} annotation @policy root ${JSON.stringify(root)} points to unknown object type.`,
           this.annotationPosition,

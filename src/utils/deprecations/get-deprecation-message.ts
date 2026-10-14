@@ -21,7 +21,7 @@ export function getDeprecationMessage(
   annotations: Annotation[] | undefined,
 ): string | undefined {
   const argument = getAnnotationArg(annotations, "deprecated");
-  if (!argument || argument.kind !== "string") {
+  if (argument?.kind !== "string") {
     return undefined;
   }
   return argument.stringValue;
