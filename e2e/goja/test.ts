@@ -21,6 +21,7 @@ import * as irb from "../../src/testing";
 import * as arrays from "../../src/utils/arrays";
 import * as codegen from "../../src/utils/codegen";
 import * as crypto from "../../src/utils/crypto";
+import * as deprecations from "../../src/utils/deprecations";
 import * as events from "../../src/utils/events";
 import * as functionUtils from "../../src/utils/functions";
 import * as ir from "../../src/utils/ir";
@@ -1257,6 +1258,48 @@ function createEventSuites(): SmokeSuite[] {
                 "message mentions region",
               );
             }
+          },
+        },
+      ],
+    },
+  ];
+}
+
+/**
+ * Creates smoke-test suites for the deprecation readers.
+ */
+function createDeprecationsSuites(): SmokeSuite[] {
+  return [
+    {
+      name: "deprecations",
+      checks: [
+        {
+          name: "detects the flag and reads string messages only",
+          run: () => {
+            assertEqual(
+              deprecations.isDeprecated([irb.annotation("deprecated")]),
+              true,
+              "isDeprecated flag",
+            );
+            assertEqual(
+              deprecations.isDeprecated(undefined),
+              false,
+              "isDeprecated missing list",
+            );
+            assertEqual(
+              deprecations.getDeprecationMessage([
+                irb.annotation("deprecated", irb.stringLiteral("Use X.")),
+              ]),
+              "Use X.",
+              "getDeprecationMessage string",
+            );
+            assertEqual(
+              deprecations.getDeprecationMessage([
+                irb.annotation("deprecated", irb.intLiteral(1)),
+              ]),
+              undefined,
+              "getDeprecationMessage non-string",
+            );
           },
         },
       ],
@@ -3260,6 +3303,7 @@ function createSuites(): SmokeSuite[] {
     ...createRpcSuites(),
     ...createPolicySuites(),
     ...createEventSuites(),
+    ...createDeprecationsSuites(),
     ...createPathSuites(),
     ...createYamlSuites(),
     ...createTomlSuites(),
