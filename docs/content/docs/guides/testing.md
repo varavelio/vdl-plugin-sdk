@@ -1,7 +1,6 @@
 ---
 title: "Testing"
 description: "Build realistic IR fixtures for plugin unit tests."
-icon: "flask-conical"
 weight: 5
 ---
 

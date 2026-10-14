@@ -1,7 +1,6 @@
 ---
 title: "Error Handling"
 description: "Report structured plugin diagnostics with positions."
-icon: "triangle-alert"
 weight: 3
 ---
 

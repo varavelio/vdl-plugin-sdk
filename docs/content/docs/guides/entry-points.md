@@ -1,7 +1,6 @@
 ---
 title: "Entry Points"
 description: "Runtime, utility, and testing imports for VDL plugins."
-icon: "plug"
 weight: 1
 ---
 

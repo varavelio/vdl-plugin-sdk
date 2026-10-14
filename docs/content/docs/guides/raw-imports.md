@@ -1,7 +1,6 @@
 ---
 title: "Raw Imports"
 description: "Bundle text templates inside the plugin with ?raw imports."
-icon: "file-text"
 weight: 6
 ---
 

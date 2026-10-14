@@ -1,7 +1,6 @@
 ---
 title: "CLI"
 description: "Type-check and bundle plugins with the vdl-plugin CLI."
-icon: "terminal"
 weight: 2
 ---
 

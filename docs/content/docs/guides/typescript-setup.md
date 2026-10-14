@@ -1,7 +1,6 @@
 ---
 title: "TypeScript Setup"
 description: "Composite configs that separate plugin code from tests."
-icon: "file-code"
 weight: 4
 ---
 
