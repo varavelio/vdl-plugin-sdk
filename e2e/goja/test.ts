@@ -21,6 +21,7 @@ import * as irb from "../../src/testing";
 import * as arrays from "../../src/utils/arrays";
 import * as codegen from "../../src/utils/codegen";
 import * as crypto from "../../src/utils/crypto";
+import * as events from "../../src/utils/events";
 import * as functionUtils from "../../src/utils/functions";
 import * as ir from "../../src/utils/ir";
 import * as maps from "../../src/utils/maps";
@@ -1168,6 +1169,92 @@ function createPolicySuites(): SmokeSuite[] {
                 error.message.includes("ownerId"),
                 true,
                 "assertValidIrForPolicy message mentions ownerId",
+              );
+            }
+          },
+        },
+      ],
+    },
+  ];
+}
+
+/**
+ * Creates smoke-test suites for event IR validation.
+ */
+function createEventSuites(): SmokeSuite[] {
+  return [
+    {
+      name: "events",
+      checks: [
+        {
+          name: "validates an event with placeholders",
+          run: () => {
+            const type = irb.typeDef(
+              "UserCreatedEvent",
+              irb.objectType([
+                irb.field("userId", irb.primitiveType("string")),
+                irb.field("email", irb.primitiveType("string")),
+              ]),
+              {
+                annotations: [
+                  irb.annotation(
+                    "event",
+                    irb.stringLiteral("auth.userCreated.{userId}"),
+                  ),
+                ],
+              },
+            );
+            const validated = events.assertValidIrForEvents(
+              irb.schema({ types: [type] }),
+            );
+
+            assertEqual(
+              typeof events.assertValidIrForEvents,
+              "function",
+              "assertValidIrForEvents is exported",
+            );
+            assertEqual(validated.length, 1, "one event returned");
+            assertEqual(
+              validated[0]?.subjectTemplate,
+              "auth.userCreated.{userId}",
+              "subject template",
+            );
+            assertEqual(
+              validated[0]?.placeholders.length,
+              1,
+              "one placeholder",
+            );
+          },
+        },
+        {
+          name: "throws PluginError for missing placeholder fields",
+          run: () => {
+            const bad = irb.typeDef(
+              "DeliveryFailed",
+              irb.objectType([
+                irb.field("deliveryId", irb.primitiveType("string")),
+              ]),
+              {
+                annotations: [
+                  irb.annotation(
+                    "event",
+                    irb.stringLiteral("logistics.{region}.failed"),
+                  ),
+                ],
+              },
+            );
+
+            try {
+              events.assertValidIrForEvents(irb.schema({ types: [bad] }));
+              fail("assertValidIrForEvents should throw for missing field");
+            } catch (error) {
+              if (!(error instanceof PluginError)) {
+                fail("assertValidIrForEvents error type");
+              }
+              assertEqual(
+                error.message.includes("region"),
+                true,
+                "message mentions region",
               );
             }
           },
@@ -3172,6 +3259,7 @@ function createSuites(): SmokeSuite[] {
     ...createCodegenSuites(),
     ...createRpcSuites(),
     ...createPolicySuites(),
+    ...createEventSuites(),
     ...createPathSuites(),
     ...createYamlSuites(),
     ...createTomlSuites(),

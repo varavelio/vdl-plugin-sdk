@@ -249,6 +249,24 @@ export const generate = definePlugin((input) => {
 });
 ```
 
+For event plugins, use the validated result for generation:
+
+```ts
+import { definePlugin } from "@varavel/vdl-plugin-sdk";
+import { assertValidIrForEvents } from "@varavel/vdl-plugin-sdk/utils/events";
+
+export const generate = definePlugin((input) => {
+  const events = assertValidIrForEvents(input.ir);
+
+  return {
+    files: events.map((event) => ({
+      path: `${event.name}.ts`,
+      content: `// ${event.subjectTemplate}`,
+    })),
+  };
+});
+```
+
 ## Typical Plugin Workflow
 
 1. Implement your plugin in `src/index.ts` with `@varavel/vdl-plugin-sdk`.
