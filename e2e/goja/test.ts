@@ -29,6 +29,7 @@ import * as math from "../../src/utils/math";
 import * as objects from "../../src/utils/objects";
 import * as options from "../../src/utils/options";
 import * as paths from "../../src/utils/paths";
+import * as policy from "../../src/utils/policy";
 import * as predicates from "../../src/utils/predicates";
 import * as rpc from "../../src/utils/rpc";
 import * as sets from "../../src/utils/sets";
@@ -1073,6 +1074,100 @@ function createRpcSuites(): SmokeSuite[] {
                 error.position,
                 badType.position,
                 "assertValidIrForHttpRpc position",
+              );
+            }
+          },
+        },
+      ],
+    },
+  ];
+}
+
+/**
+ * Creates smoke-test suites for policy IR validation.
+ */
+function createPolicySuites(): SmokeSuite[] {
+  return [
+    {
+      name: "policy",
+      checks: [
+        {
+          name: "validates a minimal policy",
+          run: () => {
+            const user = irb.typeDef(
+              "User",
+              irb.objectType([irb.field("id", irb.primitiveType("string"))]),
+            );
+            const policyType = irb.typeDef(
+              "CanRead",
+              irb.objectType([irb.field("principal", irb.namedType("User"))]),
+              {
+                annotations: [
+                  irb.annotation(
+                    "policy",
+                    irb.objectLiteral({ allow: irb.stringLiteral("true") }),
+                  ),
+                ],
+              },
+            );
+            const policies = policy.assertValidIrForPolicy(
+              irb.schema({ types: [user, policyType] }),
+            );
+
+            assertEqual(
+              typeof policy.assertValidIrForPolicy,
+              "function",
+              "assertValidIrForPolicy is exported",
+            );
+            assertEqual(policies.length, 1, "one policy returned");
+            assertEqual(policies[0]?.name, "CanRead", "policy name");
+            assertEqual(policies[0]?.principalType, "User", "principal type");
+          },
+        },
+        {
+          name: "throws PluginError for unknown policy fields",
+          run: () => {
+            const user = irb.typeDef(
+              "User",
+              irb.objectType([irb.field("id", irb.primitiveType("string"))]),
+            );
+            const invoice = irb.typeDef(
+              "Invoice",
+              irb.objectType([irb.field("isPaid", irb.primitiveType("bool"))]),
+            );
+            const bad = irb.typeDef(
+              "CanApproveInvoice",
+              irb.objectType([
+                irb.field("principal", irb.namedType("User")),
+                irb.field("resource", irb.namedType("Invoice")),
+              ]),
+              {
+                annotations: [
+                  irb.annotation(
+                    "policy",
+                    irb.objectLiteral({
+                      allow: irb.stringLiteral(
+                        "principal.id == resource.ownerId",
+                      ),
+                    }),
+                  ),
+                ],
+              },
+            );
+
+            try {
+              policy.assertValidIrForPolicy(
+                irb.schema({ types: [user, invoice, bad] }),
+              );
+              fail("assertValidIrForPolicy should throw for unknown field");
+            } catch (error) {
+              if (!(error instanceof PluginError)) {
+                fail("assertValidIrForPolicy error type");
+              }
+              assertEqual(
+                error.message.includes("ownerId"),
+                true,
+                "assertValidIrForPolicy message mentions ownerId",
               );
             }
           },
@@ -3076,6 +3171,7 @@ function createSuites(): SmokeSuite[] {
     ...createIrSuites(),
     ...createCodegenSuites(),
     ...createRpcSuites(),
+    ...createPolicySuites(),
     ...createPathSuites(),
     ...createYamlSuites(),
     ...createTomlSuites(),
