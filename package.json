@@ -78,23 +78,23 @@
     "ci": "npm run lint && npm run test && npm run build"
   },
   "dependencies": {
-    "esbuild": "0.27.3",
+    "esbuild": "0.28.2",
     "typescript": "5.9.3"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.6",
+    "@biomejs/biome": "2.5.15",
     "@types/node": "26.6.5",
     "dedent": "1.7.2",
-    "es-toolkit": "1.45.1",
-    "ohash": "2.0.11",
+    "es-toolkit": "1.52.0",
+    "ohash": "2.0.12",
     "pathe": "2.0.3",
     "pluralize": "8.0.0",
-    "smol-toml": "1.6.1",
-    "tsdown": "0.21.0",
-    "typedoc": "0.28.18",
-    "typedoc-plugin-markdown": "4.11.0",
-    "vitest": "4.0.18",
-    "yaml": "2.8.3"
+    "smol-toml": "1.9.1",
+    "tsdown": "0.23.1",
+    "typedoc": "0.28.20",
+    "typedoc-plugin-markdown": "4.14.0",
+    "vitest": "5.0.4",
+    "yaml": "2.9.1"
   },
   "publishConfig": {
     "access": "public"
