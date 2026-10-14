@@ -529,7 +529,12 @@ function escapeYamlString(value: string) {
   return `"${value.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, " ")}"`;
 }
 
-function buildFrontmatter(title: string, description: string, weight: number) {
+function buildFrontmatter(
+  title: string,
+  description: string,
+  weight: number,
+  icon?: string,
+) {
   const safeTitle = escapeYamlString(truncateText(title, 120));
   const safeDescription = escapeYamlString(truncateText(description, 200));
 
@@ -538,6 +543,7 @@ function buildFrontmatter(title: string, description: string, weight: number) {
     `title: ${safeTitle}`,
     `description: ${safeDescription}`,
     `weight: ${weight}`,
+    ...(icon === undefined ? [] : [`icon: ${escapeYamlString(icon)}`]),
     "---",
     "",
   ].join("\n");
@@ -657,6 +663,7 @@ async function writeApiOverview(modules: BuiltModule[]) {
       "API Reference",
       "Generated from the public TypeScript surface with TypeDoc and organized by import path.",
       3,
+      "braces",
     ),
     "# API Reference",
     "",
