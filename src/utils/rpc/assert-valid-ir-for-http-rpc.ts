@@ -25,9 +25,9 @@ const PROC_ANNOTATION_NAME = "proc";
  *    validated as operations. Orphan `@proc` fields outside `@httpRpc` are
  *    ignored.
  * 5. Every `@proc` annotation must not have arguments.
- * 6. Every `@proc` field must be an object type.
+ * 6. Every `@proc` field must be an inline object type.
  * 7. If an operation declares `input` or `output` fields, each one must be an
- *    object type.
+ *    inline object type.
  * 8. The contents inside valid `input`/`output` objects are intentionally not
  *    validated by this helper and can be anything.
  *
@@ -111,7 +111,7 @@ function assertValidHttpRpcOperationField(
 
   assert(
     field.typeRef.kind === "object",
-    `Field ${JSON.stringify(`${rpcType.name}.${field.name}`)} is annotated with @proc and must be an object type.`,
+    `Field ${JSON.stringify(`${rpcType.name}.${field.name}`)} is annotated with @proc and must be an inline object type.`,
     field.position,
   );
 
@@ -120,14 +120,14 @@ function assertValidHttpRpcOperationField(
 
   if (inputField && inputField.typeRef.kind !== "object") {
     fail(
-      `Field "input" in operation ${JSON.stringify(`${rpcType.name}.${field.name}`)} must be an object type when present.`,
+      `Field "input" in operation ${JSON.stringify(`${rpcType.name}.${field.name}`)} must be an inline object type when present.`,
       withFallbackFile(inputField.position, field.position),
     );
   }
 
   if (outputField && outputField.typeRef.kind !== "object") {
     fail(
-      `Field "output" in operation ${JSON.stringify(`${rpcType.name}.${field.name}`)} must be an object type when present.`,
+      `Field "output" in operation ${JSON.stringify(`${rpcType.name}.${field.name}`)} must be an inline object type when present.`,
       withFallbackFile(outputField.position, field.position),
     );
   }

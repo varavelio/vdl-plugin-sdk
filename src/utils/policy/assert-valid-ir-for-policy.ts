@@ -553,12 +553,11 @@ class PolicyContext {
       .valueType;
 
     if (leftType.kind === "enum" && rightType.kind === "enum") {
-      if (
-        (leftType as { enumName: string }).enumName !==
-        (rightType as { enumName: string }).enumName
-      ) {
+      const leftEnum = (leftType as { enumName: string }).enumName;
+      const rightEnum = (rightType as { enumName: string }).enumName;
+      if (leftEnum !== rightEnum) {
         fail(
-          `Type ${JSON.stringify(this.policyType.name)} annotation @policy ${which} compares different enums.`,
+          `Type ${JSON.stringify(this.policyType.name)} annotation @policy ${which} compares different enums ${JSON.stringify(leftEnum)} and ${JSON.stringify(rightEnum)}.`,
           this.annotationPosition,
         );
       }

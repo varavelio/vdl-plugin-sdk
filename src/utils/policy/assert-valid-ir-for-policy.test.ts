@@ -890,14 +890,16 @@ describe("assertValidIrForPolicy edges", () => {
         ],
       },
     );
-    expect(() =>
+    const diffError = errorOf(() =>
       assertValidIrForPolicy(
         irb.schema({
           types: [user, holder, cmpDiff],
           enums: [statusA, statusB],
         }),
       ),
-    ).toThrow(PluginError);
+    );
+    expect(diffError.message).toContain('"StatusA"');
+    expect(diffError.message).toContain('"StatusB"');
 
     const unknownRef = irb.typeDef(
       "CanY",

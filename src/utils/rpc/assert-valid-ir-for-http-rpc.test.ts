@@ -143,7 +143,7 @@ describe("assertValidIrForHttpRpc", () => {
 
     expect(error).toMatchObject({
       message:
-        'Field "UserService.createUser" is annotated with @proc and must be an object type.',
+        'Field "UserService.createUser" is annotated with @proc and must be an inline object type.',
       position: procField.position,
     });
   });
@@ -181,7 +181,7 @@ describe("assertValidIrForHttpRpc", () => {
 
     expect(error).toMatchObject({
       message:
-        'Field "input" in operation "UserService.getUser" must be an object type when present.',
+        'Field "input" in operation "UserService.getUser" must be an inline object type when present.',
       position: inputField.position,
     });
   });
@@ -212,7 +212,7 @@ describe("assertValidIrForHttpRpc", () => {
 
     expect(error).toMatchObject({
       message:
-        'Field "input" in operation "UserService.getUser" must be an object type when present.',
+        'Field "input" in operation "UserService.getUser" must be an inline object type when present.',
       position: {
         file: "/schema.vdl",
         line: 11,
