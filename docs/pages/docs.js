@@ -1,3 +1,14 @@
+function normalizeCollapsed(value) {
+  if (value === undefined || value === null || value === "") return null;
+  if (typeof value === "boolean") return value;
+
+  const normalized = String(value).trim().toLowerCase();
+  if (normalized === "true") return true;
+  if (normalized === "false") return false;
+
+  return null;
+}
+
 // Generates every documentation page, its raw Markdown twin, and the docs
 // support routes (search index and llms.txt outputs).
 export default function ({ files, parse }) {
@@ -28,6 +39,9 @@ export default function ({ files, parse }) {
     const description = String(pageMd.frontmatter.description || "");
     const weight = Number(pageMd.frontmatter.weight) || 999999;
     const icon = String(pageMd.frontmatter.icon || "");
+    const sidebarCollapsed = normalizeCollapsed(
+      pageMd.frontmatter.sidebar_collapsed,
+    );
 
     // Generated API pages have no source file in the repo, so they get
     // no footer links.
@@ -48,6 +62,7 @@ export default function ({ files, parse }) {
       description,
       weight,
       icon,
+      sidebar_collapsed: sidebarCollapsed,
       content: pageContent,
       docs_footer_links: docsFooterLinks,
     });
@@ -59,6 +74,7 @@ export default function ({ files, parse }) {
       description,
       weight,
       icon,
+      sidebar_collapsed: sidebarCollapsed,
       content: pageMarkdown,
     });
   }

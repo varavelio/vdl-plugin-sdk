@@ -534,6 +534,7 @@ function buildFrontmatter(
   description: string,
   weight: number,
   icon?: string,
+  sidebarCollapsed?: boolean,
 ) {
   const safeTitle = escapeYamlString(truncateText(title, 120));
   const safeDescription = escapeYamlString(truncateText(description, 200));
@@ -544,6 +545,9 @@ function buildFrontmatter(
     `description: ${safeDescription}`,
     `weight: ${weight}`,
     ...(icon === undefined ? [] : [`icon: ${escapeYamlString(icon)}`]),
+    ...(sidebarCollapsed === undefined
+      ? []
+      : [`sidebar_collapsed: ${sidebarCollapsed ? "true" : "false"}`]),
     "---",
     "",
   ].join("\n");
@@ -696,6 +700,8 @@ async function writeModuleFrontmatter(modules: BuiltModule[]) {
         module.title,
         overviewDescription,
         getModuleWeight(module),
+        undefined,
+        true,
       );
 
       await writeFile(
