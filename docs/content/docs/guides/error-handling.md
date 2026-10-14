@@ -46,3 +46,21 @@ export const generate = definePlugin((input) => {
   };
 });
 ```
+
+For policy plugins, use the validated result for generation:
+
+```ts
+import { definePlugin } from "@varavel/vdl-plugin-sdk";
+import { assertValidIrForPolicy } from "@varavel/vdl-plugin-sdk/utils/policy";
+
+export const generate = definePlugin((input) => {
+  const policies = assertValidIrForPolicy(input.ir);
+
+  return {
+    files: policies.map((policy) => ({
+      path: `${policy.name}.ts`,
+      content: `// ${policy.name}`,
+    })),
+  };
+});
+```
