@@ -1,8 +1,8 @@
 <p align="center">
   <img
-    src="https://cdn.jsdelivr.net/gh/varavelio/vdl@9cb843/assets/png/vdl.png"
-    alt="VDL logo"
-    width="130"
+    src="https://cdn.jsdelivr.net/gh/varavelio/vdl-plugin-sdk@94ef4e/docs/public/logo-sdk.svg"
+    alt="VDL Plugin SDK logo"
+    width="260"
   />
 </p>
 
