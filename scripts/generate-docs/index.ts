@@ -47,7 +47,10 @@ const typedocConfigPath = path.join(workspaceRootPath, "typedoc.json");
 
 const utilityOrder = [
   "ir",
+  "deprecations",
   "rpc",
+  "policy",
+  "events",
   "options",
   "strings",
   "yaml",
