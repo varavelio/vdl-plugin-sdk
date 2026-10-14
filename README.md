@@ -1,6 +1,6 @@
 <p align="center">
   <img
-    src="https://cdn.jsdelivr.net/gh/varavelio/vdl-plugin-sdk@94ef4e/docs/public/logo-sdk.svg"
+    src="https://cdn.jsdelivr.net/gh/varavelio/vdl-plugin-sdk@98261a/docs/public/logo-sdk.svg"
     alt="VDL Plugin SDK logo"
     width="260"
   />
