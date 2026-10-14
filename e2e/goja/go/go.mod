@@ -1,6 +1,6 @@
 module github.com/varavelio/vdl-plugin-sdk/e2e/goja/go
 
-go 1.26.1
+go 1.27.2
 
 require github.com/dop251/goja v0.0.0-20260311135729-065cd970411c
 
