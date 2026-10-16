@@ -148,7 +148,7 @@ describe("assertValidIrForHttpRpc", () => {
     });
   });
 
-  it("treats operations without input/output fields as valid", () => {
+  it("treats procs without input/output fields as valid", () => {
     const operation = irb.field(
       "healthcheck",
       irb.objectType([irb.field("kind", irb.primitiveType("string"))]),

@@ -22,7 +22,7 @@ const PROC_ANNOTATION_NAME = "proc";
  * 2. Every `@httpRpc` annotation must not have arguments.
  * 3. Every `@httpRpc` type must be an object type.
  * 4. Inside each `@httpRpc` object, only fields annotated with `@proc` are
- *    validated as operations. Orphan `@proc` fields outside `@httpRpc` are
+ *    validated as procedures. Orphan `@proc` fields outside `@httpRpc` are
  *    ignored.
  * 5. Every `@proc` annotation must not have arguments.
  * 6. Every `@proc` field must be an inline object type.
